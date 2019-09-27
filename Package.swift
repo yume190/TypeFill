@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/jpsim/SourceKitten", .branch("swift-5.1")),
+        .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.26.0")),
         .package(url: "https://github.com/Carthage/Commandant.git", .upToNextMinor(from: "0.16.0")),
     ],
     targets: [
