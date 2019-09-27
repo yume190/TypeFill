@@ -34,3 +34,7 @@ enum SourceKittenError: Error, CustomStringConvertible {
         }
     }
 }
+
+enum TypeFillError: Error {
+    case utf8
+}

@@ -10,6 +10,8 @@ import Commandant
 import Result
 import SourceKittenFramework
 
+import Foundation
+
 struct DocCommand: CommandProtocol {
     let verb = "doc"
     let function = "Print Swift or Objective-C docs as JSON"
@@ -56,46 +58,46 @@ struct DocCommand: CommandProtocol {
     func run(_ options: Options) -> Result<(), SourceKittenError> {
         let args = options.arguments
         let moduleName: String? = options.moduleName.isEmpty ? nil : options.moduleName
+        let rewriter = RewriterFactory.build(rewriters: [RewriterFactory.typeFill])
         if options.spm {
-            return runSPMModule(moduleName: moduleName, args: args)
+            return runSPMModule(rewriter: rewriter, moduleName: moduleName, args: args)
         } else if options.objc {
             return runObjC(options: options, args: args)
         } else if options.singleFile {
-            return runSwiftSingleFile(args: args)
+            return runSwiftSingleFile(rewriter: rewriter, args: args)
         }
-        return runSwiftModule(moduleName: moduleName, args: args)
+        return runSwiftModule(rewriter: rewriter, moduleName: moduleName, args: args)
     }
 
-    func runSPMModule(moduleName: String?, args: [String]) -> Result<(), SourceKittenError> {
+    func runSPMModule(rewriter: Rewriter, moduleName: String?, args: [String]) -> Result<(), SourceKittenError> {
         if let docs = Module(spmArguments: args, spmName: moduleName)?.docs {
-            print(docs)
-            return .success(())
+            return self.rewrite(rewriter: rewriter, docsList: docs)
         }
         return .failure(.docFailed)
     }
 
-    func runSwiftModule(moduleName: String?, args: [String]) -> Result<(), SourceKittenError> {
+    func runSwiftModule(rewriter: Rewriter, moduleName: String?, args: [String]) -> Result<(), SourceKittenError> {
         let module = Module(xcodeBuildArguments: args, name: moduleName)
 
         if let docs = module?.docs {
-            print(docs)
-            return .success(())
+            return self.rewrite(rewriter: rewriter, docsList: docs)
         }
         return .failure(.docFailed)
     }
 
-    func runSwiftSingleFile(args: [String]) -> Result<(), SourceKittenError> {
+    func runSwiftSingleFile(rewriter: Rewriter, args: [String]) -> Result<(), SourceKittenError> {
         if args.isEmpty {
             return .failure(.invalidArgument(description: "at least 5 arguments are required when using `--single-file`"))
         }
         let sourcekitdArguments = Array(args.dropFirst(1))
         if let file = File(path: args[0]),
-           let docs = SwiftDocs(file: file, arguments: sourcekitdArguments) {
-            print(docs)
-            return .success(())
+            let docs = SwiftDocs(file: file, arguments: sourcekitdArguments) {
+            return self.rewrite(rewriter: rewriter, docs: docs)
         }
         return .failure(.readFailed(path: args[0]))
     }
+    
+    
 
     func runObjC(options: Options, args: [String]) -> Result<(), SourceKittenError> {
         #if os(Linux)
@@ -108,5 +110,48 @@ struct DocCommand: CommandProtocol {
         print(translationUnit)
         return .success(())
         #endif
+    }
+}
+
+extension DocCommand {
+    func rewrite(rewriter: Rewriter, docsList: [SwiftDocs]) -> Result<(), SourceKittenError> {
+        return docsList.reduce(Result<(), SourceKittenError>.success(())) { (result: Result<(), SourceKittenError>, docs: SwiftDocs) -> Result<(), SourceKittenError> in
+            if case .failure(_) = result {
+                return result
+            }
+            return self.rewrite(rewriter: rewriter, docs: docs)
+        }
+    }
+    
+    func rewrite(rewriter: Rewriter, docs: SwiftDocs) -> Result<(), SourceKittenError> {
+        do {
+            guard let docsData = docs.description.utf8 else {return .failure(.docFailed)}
+            let decoder = JSONDecoder()
+            
+            let docsInfo = try decoder.decode(
+                [String: SwiftDocInfo].self,
+                from: docsData
+            )
+            return self.rewrite(rewriter: rewriter, docsInfo: docsInfo)
+        } catch {
+            return .failure(.failed(error))
+        }
+        
+    }
+    
+    func rewrite(rewriter: Rewriter, docsInfo: [String: SwiftDocInfo]) -> Result<(), SourceKittenError> {
+        return docsInfo.reduce(Result<(), SourceKittenError>.success(())) { (result: Result<(), SourceKittenError>, next: (path: String, doc: SwiftDocInfo)) -> Result<(), SourceKittenError> in
+            if case .failure(_) = result { return result }
+            do {
+                let raw = try Data(contentsOf: URL(fileURLWithPath: next.path))
+                guard let data = rewriter.rewrite(description: next.doc, raw: raw).string else {
+                    return .failure(.failed(TypeFillError.utf8))
+                }
+                print(data)
+                return .success(())
+            } catch {
+                return .failure(.failed(error))
+            }
+        }
     }
 }

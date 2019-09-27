@@ -1,7 +1,32 @@
 import XCTest
 import class Foundation.Bundle
 
+func origin(word: UInt8) -> Bool {
+    return word != 58 && word != 44 && word != 41
+}
+
+func next(word: UInt8) -> Bool {
+    return !(word == 58 || word == 44 || word == 41)
+}
+
 final class AutoFillTests: XCTestCase {
+    func testOrigin() {
+        XCTAssertFalse(origin(word: 41))
+        XCTAssertFalse(origin(word: 44))
+        XCTAssertFalse(origin(word: 58))
+        
+        XCTAssertTrue(origin(word: 59))
+    }
+    
+    func testNext() {
+        XCTAssertFalse(next(word: 41))
+        XCTAssertFalse(next(word: 44))
+        XCTAssertFalse(next(word: 58))
+        
+        XCTAssertTrue(next(word: 59))
+    }
+    
+    
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct

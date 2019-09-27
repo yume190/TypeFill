@@ -1,44 +1,38 @@
 //
-//  Attributes.swift
-//  AutoFill
+//  SwiftDoc.swift
+//  TypeFill
 //
-//  Created by 林煒峻 on 2019/9/25.
+//  Created by 林煒峻 on 2019/9/27.
 //
 
 import Foundation
 
-
-enum Kind: String, Codable {
-    case `struct` = "source.lang.swift.decl.struct"
-    
-    case memberVar = "source.lang.swift.decl.var.instance"
-    case localVar = "source.lang.swift.decl.var.local"
-}
-
-
-
-struct SourceKittenItem: Codable {
-    let accessibility: Accessibility
-//    "key.annotated_decl"
-    let attributes: [Attribute] //?
+struct SwiftDoc: Codable, Doc {
+    var structure: SwiftDoc? {return self}
+    let accessibility: Accessibility?
+    //    "key.annotated_decl"
+    let attributes: [Attribute]?
     let filePath: String?
-//    "key.fully_annotated_decl"
-//    let bodyLength: Int // 1 only
-//    let bodyOffset: Int // 1 only
-    let kind: Kind
+    //    "key.fully_annotated_decl"
+    
+    //    let bodyLength: Int // 1 only
+    //    let bodyOffset: Int // 1 only
+    let kind: DeclarationKind
     let length: Int
     let name: String
     let nameLength: Int
     let nameOffset: Int
     let offset: Int
     
-//    "key.parsed_declaration"
-//    "key.parsed_scope.
-//    "key.parsed_scope.
-//    "key.setter_accessibility"
+    //    "key.parsed_declaration"
+    //    "key.parsed_scope.
+    //    "key.parsed_scope.
+    //    "key.setter_accessibility"
     let typeName: String?
-//    "key.typeusr"
-//    "key.usr"
+    //    "key.typeusr"
+    //    "key.usr"
+    
+    let substructure: [SwiftDoc]?
     
     enum CodingKeys: String, CodingKey {
         case accessibility = "key.accessibility"
@@ -46,8 +40,9 @@ struct SourceKittenItem: Codable {
         case attributes = "key.attributes"
         case filePath = "key.filepath"
         //    "key.fully_annotated_decl"
-        case bodyLength = "key.bodylength"
-        case bodyOffset = "key.bodyoffset"
+        
+        //        case bodyLength = "key.bodylength"
+        //        case bodyOffset = "key.bodyoffset"
         case kind = "key.kind"
         case length = "key.length"
         case name = "key.name"
@@ -62,17 +57,19 @@ struct SourceKittenItem: Codable {
         case typeName = "key.typename"
         //    "key.typeusr"
         //    "key.usr"
+        
+        case substructure = "key.substructure"
     }
 }
 
 // MARK: Public
-extension SourceKittenItem {
+extension SwiftDoc {
     public func isImplicitVariable(raw: Data) -> Bool {
         return self.isVariable && self.isImplicitType(raw: raw)
     }
     
     /// 96 `
-    func isKeywordVar(raw: Data) -> Bool {
+    public func isKeywordVar(raw: Data) -> Bool {
         let before = raw[self.nameOffset]
         let after = raw[self.nameOffset + nameLength + 1]
         return before == 96 && before == after
@@ -83,29 +80,35 @@ extension SourceKittenItem {
         let name = self.isKeywordVar(raw: raw) ? "`\(self.name)`" : self.name
         return "\(name): \(type)"
     }
+    
+    func getNameTypeData(raw: Data) -> Data {
+        return self.getNameType(raw: raw).utf8 ?? self.name.utf8 ?? Data()
+    }
 }
 
-extension SourceKittenItem {
+extension SwiftDoc {
     private var isVariable: Bool  {
-        return self.kind == Kind.localVar || self.kind == Kind.memberVar
+        return
+            self.kind == DeclarationKind.varClass ||
+            self.kind == DeclarationKind.varGlobal ||
+            self.kind == DeclarationKind.varInstance ||
+            self.kind == DeclarationKind.varLocal ||
+            self.kind == DeclarationKind.varParameter ||
+            self.kind == DeclarationKind.varStatic
     }
-    //    if (isKindVar(json) && isImplicitType(raw, json)) {
-    //        raw = replacedString(raw, json)
-    //    }
     
     /// 58 ":"
     private func isColon(word: UInt8) -> Bool {
         return word == 58
     }
     
-    /// 44 ,
-    /// 41 )
+    /// 44 "," 41 ")"
     private func isTupleMember(word: UInt8) -> Bool {
         return word == 44 || word == 41
     }
     
     private func checkIsImplicitType(word: UInt8) -> Bool {
-        return self.isColon(word: word) || self.isTupleMember(word: word)
+        return !(self.isColon(word: word) || self.isTupleMember(word: word))
     }
     
     private func isImplicitType(raw: Data) -> Bool {
@@ -115,6 +118,5 @@ extension SourceKittenItem {
         let word = raw[index]
         return self.checkIsImplicitType(word: word)
     }
-    
-    
 }
+

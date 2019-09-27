@@ -17,13 +17,6 @@ import Glibc
 import Dispatch
 
 import Foundation
-//enum Skill: Int {
-//    case swiftUI, combine, arkit = 3
-//    static subscript(n: Int) -> Skill? {
-//        return Skill(rawValue: n)
-//    }
-//}
-//let skill = Skill[2]
 
 extension String {
     var utf8: Data? {
@@ -37,29 +30,11 @@ extension Data {
     }
 }
 
-//    // 58 ":"
-//    // 44 ,
-//    // 41 )
-//    // 96 `
-
-let abc = ":,)`abc你".data(using: .utf8)
-let cba = String(data: abc!, encoding: .utf8)
-
-
-
 // `sourcekitd_set_notification_handler()` sets the handler to be executed on main thread queue.
 // So, we vacate main thread to `dispatchMain()`.
 DispatchQueue.global(qos: .default).async {
     let registry = CommandRegistry<SourceKittenError>()
-//    registry.register(CompleteCommand())
     registry.register(DocCommand())
-//    registry.register(FormatCommand())
-//    registry.register(IndexCommand())
-//    registry.register(ModuleInfoCommand())
-//    registry.register(SyntaxCommand())
-//    registry.register(StructureCommand())
-//    registry.register(RequestCommand())
-//    registry.register(VersionCommand())
     registry.register(HelpCommand(registry: registry))
 
     registry.main(defaultVerb: "help") { error in
