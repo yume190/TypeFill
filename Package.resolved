@@ -59,9 +59,9 @@
         "package": "SourceKitten",
         "repositoryURL": "https://github.com/jpsim/SourceKitten",
         "state": {
-          "branch": "swift-5.1",
-          "revision": "27d3b393c299d47bab4a815a9938a966f49f3f19",
-          "version": null
+          "branch": null,
+          "revision": "cc1f16acc70630d27498e81078789f5fa55d7463",
+          "version": "0.26.0"
         }
       },
       {
