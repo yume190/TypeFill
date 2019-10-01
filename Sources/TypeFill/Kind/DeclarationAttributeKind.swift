@@ -68,7 +68,7 @@ public enum DeclarationAttributeKind: String, Codable, CaseIterable {
     case objcRuntimeName = "source.decl.attribute._objcRuntimeName"
     case staticInitializeObjCMetadata = "source.decl.attribute._staticInitializeObjCMetadata"
     case restatedObjCConformance = "source.decl.attribute._restatedObjCConformance"
-    
+
     // only available in Swift >= 4.1
     case `private` = "source.decl.attribute.private"
     case `fileprivate` = "source.decl.attribute.fileprivate"
@@ -83,7 +83,7 @@ public enum DeclarationAttributeKind: String, Codable, CaseIterable {
     case optimize = "source.decl.attribute._optimize"
     case consuming = "source.decl.attribute.__consuming"
     case implicitlyUnwrappedOptional = "source.decl.attribute._implicitly_unwrapped_optional"
-    
+
     // only available in Swift >= 4.1.50
     case underscoredObjcNonLazyRealization = "source.decl.attribute._objc_non_lazy_realization"
     case clangImporterSynthesizedType = "source.decl.attribute._clangImporterSynthesizedType"
@@ -93,11 +93,11 @@ public enum DeclarationAttributeKind: String, Codable, CaseIterable {
     case inlinable = "source.decl.attribute.inlinable"
     case dynamicMemberLookup = "source.decl.attribute.dynamicMemberLookup"
     case _frozen = "source.decl.attribute._frozen"
-    
+
     // only available in Swift < 4.1
     case autoclosure = "source.decl.attribute.autoclosure"
     case noescape = "source.decl.attribute.noescape"
-    
+
     // only available in Swift >= 5.0
     case __raw_doc_comment = "source.decl.attribute.__raw_doc_comment"
     case __setter_access = "source.decl.attribute.__setter_access"
@@ -110,7 +110,7 @@ public enum DeclarationAttributeKind: String, Codable, CaseIterable {
     case _private = "source.decl.attribute._private"
     case _show_in_interface = "source.decl.attribute._show_in_interface"
     case dynamicCallable = "source.decl.attribute.dynamicCallable"
-    
+
     // only available in Swift >= 5.1
     case frozen = "source.decl.attribute.frozen"
     case _projectedValueProperty = "source.decl.attribute._projectedValueProperty"

@@ -1,0 +1,6 @@
+key.request: source.request.cursorinfo
+key.name: "/Users/yume/git/TypeFill/example/sample.swift"
+key.sourcefile: "/Users/yume/git/TypeFill/example/sample.swift"
+key.offset: 4
+key.compilerargs:
+  - "/Users/yume/git/TypeFill/example/sample.swift"

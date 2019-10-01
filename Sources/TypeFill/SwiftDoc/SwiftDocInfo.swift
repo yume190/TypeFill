@@ -9,7 +9,7 @@ import Foundation
 
 struct SwiftDocInfo: Codable, Doc {
     var structure: SwiftDoc? {return nil}
-    
+
     let diagnosticStage: String
     let length: Int
     let offset: Int

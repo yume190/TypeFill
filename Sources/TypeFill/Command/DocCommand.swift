@@ -9,7 +9,6 @@
 import Commandant
 import Result
 import SourceKittenFramework
-
 import Foundation
 
 struct DocCommand: CommandProtocol {
@@ -92,12 +91,11 @@ struct DocCommand: CommandProtocol {
         let sourcekitdArguments = Array(args.dropFirst(1))
         if let file = File(path: args[0]),
             let docs = SwiftDocs(file: file, arguments: sourcekitdArguments) {
+            defer { logger.log() }
             return self.rewrite(rewriter: rewriter, docs: docs)
         }
         return .failure(.readFailed(path: args[0]))
     }
-    
-    
 
     func runObjC(options: Options, args: [String]) -> Result<(), SourceKittenError> {
         #if os(Linux)
@@ -115,6 +113,7 @@ struct DocCommand: CommandProtocol {
 
 extension DocCommand {
     func rewrite(rewriter: Rewriter, docsList: [SwiftDocs]) -> Result<(), SourceKittenError> {
+        defer { logger.log() }
         return docsList.reduce(Result<(), SourceKittenError>.success(())) { (result: Result<(), SourceKittenError>, docs: SwiftDocs) -> Result<(), SourceKittenError> in
             if case .failure(_) = result {
                 return result
@@ -122,34 +121,41 @@ extension DocCommand {
             return self.rewrite(rewriter: rewriter, docs: docs)
         }
     }
-    
+
     func rewrite(rewriter: Rewriter, docs: SwiftDocs) -> Result<(), SourceKittenError> {
         do {
-            guard let docsData = docs.description.utf8 else {return .failure(.docFailed)}
+            guard let docsData = docs.description.utf8 else {
+                print("[UTF8 Error]: \(docs.description)")
+                return .failure(.docFailed)
+            }
             let decoder = JSONDecoder()
-            
+
             let docsInfo = try decoder.decode(
                 [String: SwiftDocInfo].self,
                 from: docsData
             )
             return self.rewrite(rewriter: rewriter, docsInfo: docsInfo)
         } catch {
+            print("[DECODE Error]: \(error) \(docs)")
             return .failure(.failed(error))
         }
-        
     }
-    
+
     func rewrite(rewriter: Rewriter, docsInfo: [String: SwiftDocInfo]) -> Result<(), SourceKittenError> {
         return docsInfo.reduce(Result<(), SourceKittenError>.success(())) { (result: Result<(), SourceKittenError>, next: (path: String, doc: SwiftDocInfo)) -> Result<(), SourceKittenError> in
             if case .failure(_) = result { return result }
             do {
+                logger.add(event: .openFile(path: next.path))
                 let raw = try Data(contentsOf: URL(fileURLWithPath: next.path))
                 guard let data = rewriter.rewrite(description: next.doc, raw: raw).string else {
                     return .failure(.failed(TypeFillError.utf8))
                 }
-                print(data)
+//                print(data)
+                try data.write(toFile: next.path, atomically: true, encoding: .utf8)
                 return .success(())
             } catch {
+                print("[OPEN Error]: \(next.path)")
+                print("[OPEN Error]: \(error)")
                 return .failure(.failed(error))
             }
         }

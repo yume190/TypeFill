@@ -14,7 +14,7 @@ struct Attribute: Codable {
     let attribute: DeclarationAttributeKind
     let length: Int
     let offset: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case attribute = "key.attribute"
         case length = "key.length"

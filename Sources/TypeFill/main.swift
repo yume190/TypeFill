@@ -18,18 +18,6 @@ import Dispatch
 
 import Foundation
 
-extension String {
-    var utf8: Data? {
-        return self.data(using: .utf8)
-    }
-}
-
-extension Data {
-    var string: String? {
-        return String(data: self, encoding: .utf8)
-    }
-}
-
 // `sourcekitd_set_notification_handler()` sets the handler to be executed on main thread queue.
 // So, we vacate main thread to `dispatchMain()`.
 DispatchQueue.global(qos: .default).async {

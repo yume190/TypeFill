@@ -13,7 +13,7 @@ protocol Rewriter {
 }
 
 extension Rewriter {
-    static var typeFill: Rewriter { return AutoFillRewriter() }
+    static var typeFill: Rewriter { return TypeFillRewriter() }
     static func build(rewriters: [Rewriter]) -> Rewriter {
         let rewriters = Rewriters(rewriters: rewriters)
         return RecurrsiveRewriter(rewriters: rewriters)
@@ -21,7 +21,7 @@ extension Rewriter {
 }
 
 enum RewriterFactory {
-    static var typeFill: Rewriter { return AutoFillRewriter() }
+    static var typeFill: Rewriter { return TypeFillRewriter() }
     static func build(rewriters: [Rewriter]) -> Rewriter {
         let rewriters = Rewriters(rewriters: rewriters)
         return RecurrsiveRewriter(rewriters: rewriters)

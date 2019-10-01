@@ -13,7 +13,7 @@ struct RecurrsiveRewriter: Rewriter {
         guard let nexts = description.substructure?.reversed() else {
             return self.rewriters.rewrite(description: description, raw: raw)
         }
-        
+
         return nexts.reduce(raw) { (raw: Data, next: Description) -> Data in
             return self.rewrite(description: next, raw: raw)
         }
