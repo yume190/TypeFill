@@ -12,29 +12,26 @@ import SourceKittenFramework
 import Foundation
 
 struct DocCommand: CommandProtocol {
-    let verb = "doc"
-    let function = "Print Swift or Objective-C docs as JSON"
+    let verb: String = "doc"
+    let function: String = "Print Swift or Objective-C docs as JSON"
 
     struct Options: OptionsProtocol {
         let singleFile: Bool
         let moduleName: String
         let spm: Bool
-        let objc: Bool
         let arguments: [String]
 
         static func create(singleFile: Bool) ->
             (_ moduleName: String) ->
             (_ spm: Bool) ->
-            (_ objc: Bool) ->
             (_ spmModule: String) ->
             (_ arguments: [String]) -> Options {
-            return { moduleName in { spm in { objc in { spmModule in { arguments in
+            return { moduleName in { spm in { spmModule in { arguments in
                 self.init(singleFile: singleFile,
                           moduleName: moduleName.isEmpty ? spmModule : moduleName,
                           spm: spm || !spmModule.isEmpty,
-                          objc: objc,
                           arguments: arguments)
-                }}}}}
+                }}}}
         }
 
         static func evaluate(_ mode: CommandMode) -> Result<Options, CommandantError<SourceKittenError>> {
@@ -45,8 +42,6 @@ struct DocCommand: CommandProtocol {
                                    usage: "name of Swift module to document (can't be used with `--single-file`)")
                 <*> mode <| Option(key: "spm", defaultValue: false,
                                    usage: "document a Swift Package Manager module")
-                <*> mode <| Option(key: "objc", defaultValue: false,
-                                   usage: "document Objective-C headers instead of Swift code")
                 <*> mode <| Option(key: "spm-module", defaultValue: "",
                                    usage: "equivalent to --spm --module-name (string)")
                 <*> mode <| Argument(defaultValue: [],
@@ -55,13 +50,11 @@ struct DocCommand: CommandProtocol {
     }
 
     func run(_ options: Options) -> Result<(), SourceKittenError> {
-        let args = options.arguments
+        let args: [String] = options.arguments
         let moduleName: String? = options.moduleName.isEmpty ? nil : options.moduleName
-        let rewriter = RewriterFactory.build(rewriters: [RewriterFactory.typeFill])
+        let rewriter: Rewriter = RewriterFactory.build(rewriters: [RewriterFactory.typeFill])
         if options.spm {
             return runSPMModule(rewriter: rewriter, moduleName: moduleName, args: args)
-        } else if options.objc {
-            return runObjC(options: options, args: args)
         } else if options.singleFile {
             return runSwiftSingleFile(rewriter: rewriter, args: args)
         }
@@ -76,7 +69,7 @@ struct DocCommand: CommandProtocol {
     }
 
     func runSwiftModule(rewriter: Rewriter, moduleName: String?, args: [String]) -> Result<(), SourceKittenError> {
-        let module = Module(xcodeBuildArguments: args, name: moduleName)
+        let module: Module? = Module(xcodeBuildArguments: args, name: moduleName)
 
         if let docs = module?.docs {
             return self.rewrite(rewriter: rewriter, docsList: docs)
@@ -88,26 +81,13 @@ struct DocCommand: CommandProtocol {
         if args.isEmpty {
             return .failure(.invalidArgument(description: "at least 5 arguments are required when using `--single-file`"))
         }
-        let sourcekitdArguments = Array(args.dropFirst(1))
+        let sourcekitdArguments: [String] = Array(args.dropFirst(1))
         if let file = File(path: args[0]),
             let docs = SwiftDocs(file: file, arguments: sourcekitdArguments) {
             defer { logger.log() }
             return self.rewrite(rewriter: rewriter, docs: docs)
         }
         return .failure(.readFailed(path: args[0]))
-    }
-
-    func runObjC(options: Options, args: [String]) -> Result<(), SourceKittenError> {
-        #if os(Linux)
-        fatalError("unsupported")
-        #else
-        if args.isEmpty {
-            return .failure(.invalidArgument(description: "at least 5 arguments are required when using `--objc`"))
-        }
-        let translationUnit = ClangTranslationUnit(headerFiles: [args[0]], compilerArguments: Array(args.dropFirst(1)))
-        print(translationUnit)
-        return .success(())
-        #endif
     }
 }
 
