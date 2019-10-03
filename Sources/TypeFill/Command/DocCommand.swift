@@ -19,19 +19,26 @@ struct DocCommand: CommandProtocol {
         let singleFile: Bool
         let moduleName: String
         let spm: Bool
+        let isFixIBAction: Bool
+        let isFixIBOutlet: Bool
         let arguments: [String]
 
         static func create(singleFile: Bool) ->
             (_ moduleName: String) ->
             (_ spm: Bool) ->
             (_ spmModule: String) ->
+            (_ isFixIBAction: Bool) ->
+            (_ isFixIBOutlet: Bool) ->
             (_ arguments: [String]) -> Options {
-            return { moduleName in { spm in { spmModule in { arguments in
+                return { moduleName in { spm in { spmModule in { isFixIBAction in { isFixIBOutlet in { arguments in
                 self.init(singleFile: singleFile,
                           moduleName: moduleName.isEmpty ? spmModule : moduleName,
                           spm: spm || !spmModule.isEmpty,
-                          arguments: arguments)
-                }}}}
+                          isFixIBAction: isFixIBAction,
+                          isFixIBOutlet: isFixIBOutlet,
+                          arguments: arguments
+                )
+                }}}}}}
         }
 
         static func evaluate(_ mode: CommandMode) -> Result<Options, CommandantError<SourceKittenError>> {
@@ -44,6 +51,10 @@ struct DocCommand: CommandProtocol {
                                    usage: "document a Swift Package Manager module")
                 <*> mode <| Option(key: "spm-module", defaultValue: "",
                                    usage: "equivalent to --spm --module-name (string)")
+                <*> mode <| Option(key: "ibaction", defaultValue: false,
+                                   usage: "add private final attributes to IBAction")
+                <*> mode <| Option(key: "iboutlet", defaultValue: false,
+                                   usage: "add private final attributes to IBOutlet")
                 <*> mode <| Argument(defaultValue: [],
                                      usage: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
         }
@@ -52,7 +63,10 @@ struct DocCommand: CommandProtocol {
     func run(_ options: Options) -> Result<(), SourceKittenError> {
         let args: [String] = options.arguments
         let moduleName: String? = options.moduleName.isEmpty ? nil : options.moduleName
-        let rewriter: Rewriter = RewriterFactory.build(rewriters: [RewriterFactory.typeFill])
+        let builder = RewriterFactory.Builder.new.add(item: .typeFill)
+        if options.isFixIBAction { builder.add(item: .ibAction) }
+        if options.isFixIBOutlet { builder.add(item: .ibOutlet) }
+        let rewriter: Rewriter = builder.build()
         if options.spm {
             return runSPMModule(rewriter: rewriter, moduleName: moduleName, args: args)
         } else if options.singleFile {
@@ -105,8 +119,7 @@ extension DocCommand {
     func rewrite(rewriter: Rewriter, docs: SwiftDocs) -> Result<(), SourceKittenError> {
         do {
             guard let docsData = docs.description.utf8 else {
-                print("[UTF8 Error]: \(docs.description)")
-                return .failure(.docFailed)
+                return .failure(.utf8)
             }
             let decoder = JSONDecoder()
 
@@ -116,8 +129,7 @@ extension DocCommand {
             )
             return self.rewrite(rewriter: rewriter, docsInfo: docsInfo)
         } catch {
-            print("[DECODE Error]: \(error) \(docs)")
-            return .failure(.failed(error))
+            return .failure(.jsonDecode(error))
         }
     }
 
@@ -128,9 +140,8 @@ extension DocCommand {
                 logger.add(event: .openFile(path: next.path))
                 let raw = try Data(contentsOf: URL(fileURLWithPath: next.path))
                 guard let data = rewriter.rewrite(description: next.doc, raw: raw).string else {
-                    return .failure(.failed(TypeFillError.utf8))
+                    return .failure(.utf8)
                 }
-//                print(data)
                 try data.write(toFile: next.path, atomically: true, encoding: .utf8)
                 return .success(())
             } catch {

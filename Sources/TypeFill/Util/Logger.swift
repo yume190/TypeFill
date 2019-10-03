@@ -19,6 +19,8 @@ final class Logger {
     func log() {
         _ = self.events.map { print($0) }
         self.logImplictTypeCount()
+        self.logIBActionCount()
+        self.logIBOutletCount()
     }
     
     private func logImplictTypeCount() {
@@ -32,5 +34,31 @@ final class Logger {
         print("""
         \("[FIX IMPLICT TYPE]: \(implictTypeCount)".applyingColor(.green))
         """)
+    }
+    
+    private func logIBActionCount() {
+        let count = self.events.filter { (event: Event) -> Bool in
+            if case .ibAction = event {
+                return true
+            }
+            return false
+            }.count
+        
+        print("""
+            \("[FIX IBAction]: \(count)".applyingColor(.green))
+            """)
+    }
+    
+    private func logIBOutletCount() {
+        let count = self.events.filter { (event: Event) -> Bool in
+            if case .ibOutlet = event {
+                return true
+            }
+            return false
+            }.count
+        
+        print("""
+            \("[FIX IBOutlet]: \(count)".applyingColor(.green))
+            """)
     }
 }

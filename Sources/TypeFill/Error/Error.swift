@@ -19,6 +19,10 @@ enum SourceKittenError: Error, CustomStringConvertible {
 
     /// failed with Error
     case failed(Swift.Error)
+    
+    case utf8
+    
+    case jsonDecode(Swift.Error)
 
     /// An error message corresponding to this error.
     var description: String {
@@ -29,12 +33,13 @@ enum SourceKittenError: Error, CustomStringConvertible {
             return "Failed to read file at '\(path)'"
         case .docFailed:
             return "Failed to generate documentation"
+        case let .jsonDecode(error):
+            fallthrough
         case let .failed(error):
             return error.localizedDescription
+        case .utf8:
+            return "Failed to read/write data as utf8"
         }
     }
 }
 
-enum TypeFillError: Error {
-    case utf8
-}
