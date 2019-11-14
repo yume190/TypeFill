@@ -1,0 +1,49 @@
+(lldb) po Request.editorOpen(file: file)
+▿ {
+  key.request: source.request.editor.open,
+  key.name: "/Users/yume/git/maxwinbus/yume/type/yume.swift",
+  key.sourcefile: "/Users/yume/git/maxwinbus/yume/type/yume.swift"
+}
+  ▿ editorOpen : 1 element
+    ▿ file : <File: 0x100b77600>
+
+(lldb) 
+
+(lldb) po Request.cursorInfoRequest(filePath: file.path, arguments: arguments)
+▿ Optional<SourceKitObject>
+  ▿ some : {
+  key.request: source.request.cursorinfo,
+  key.name: "/Users/yume/git/maxwinbus/yume/type/yume.swift",
+  key.compilerargs: [
+    "-j4",
+    "/Users/yume/git/maxwinbus/yume/type/yume.swift"
+  ],
+  key.offset: 0,
+  key.sourcefile: "/Users/yume/git/maxwinbus/yume/type/yume.swift"
+}
+
+(lldb) 
+
+
+key.request: source.request.cursorinfo
+key.sourcefile: "/tmp/foo.swift"
+key.offset: 8
+key.compilerargs:
+  - "/tmp/foo.swift"
+
+{
+    <key.request>:            (UID)     <source.request.cursorinfo>,
+    [opt] <key.sourcetext>:   (string)  // Source contents.
+    [opt] <key.sourcefile>:   (string)  // Absolute path to the file.
+                                        // **Require**: key.sourcetext or key.sourcefile
+    [opt] <key.offset>:       (int64)   // Byte offset of code point inside the source contents.
+    [opt] <key.usr>:          (string)  // USR string for the entity.
+                                        // **Require**: key.offset or key.usr
+    [opt] <key.compilerargs>: [string*] // Array of zero or more strings for the compiler arguments,
+                                        // e.g ["-sdk", "/path/to/sdk"]. If key.sourcefile is provided,
+                                        // these must include the path to that file.
+    [opt] <key.cancel_on_subsequent_request>: (int64) // Whether this request should be canceled if a
+                                        // new cursor-info request is made that uses the same AST.
+                                        // This behavior is a workaround for not having first-class
+                                        // cancelation. For backwards compatibility, the default is 1.
+}
