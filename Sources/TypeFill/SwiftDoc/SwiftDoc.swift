@@ -75,19 +75,15 @@ extension SwiftDoc {
 
     /// 96 `
     public func isKeywordVar(raw: Data) -> Bool {
-        let before = raw[self.nameOffset]
-        let after = raw[self.nameOffset + nameLength + 1]
+        let before: UInt8 = raw[self.nameOffset]
+        let after: UInt8 = raw[self.nameOffset + nameLength + 1]
         return before == 96 && before == after
     }
 
-    func getNameType(raw: Data) -> String {
-        guard let type = self.typeName else {return self.name ?? ""}
-        let name = self.isKeywordVar(raw: raw) ? "`\(self.name ?? "")`" : self.name
+    func getNameType(raw: Data) -> String? {
+        let name: String? = self.isKeywordVar(raw: raw) ? "`\(self.name ?? "")`" : self.name
+        guard let type = self.typeName else {return name}
         return "\(name ?? ""): \(type)"
-    }
-
-    func getNameTypeData(raw: Data) -> Data {
-        return self.getNameType(raw: raw).utf8 ?? self.name?.utf8 ?? Data()
     }
 }
 
@@ -117,10 +113,10 @@ extension SwiftDoc {
     }
 
     private func isImplicitType(raw: Data) -> Bool {
-        let index = self.isKeywordVar(raw: raw) ?
+        let index: Int = self.isKeywordVar(raw: raw) ?
             self.nameLength + self.nameOffset + 2 :
             self.nameLength + self.nameOffset
-        let word = raw[index]
+        let word: UInt8 = raw[index]
         return self.checkIsImplicitType(word: word)
     }
 }

@@ -18,17 +18,21 @@ struct TypeFillRewriter: Rewriter {
 
     private func replace(description: Description, raw: Data) -> Data {
         guard let structure = description.structure else {return raw}
+        guard let nameType = structure.getNameType(raw: raw) else {
+            #warning("[TODO]: log fix fail")
+            return raw
+        }
         let keywordOffset: Int = structure.isKeywordVar(raw: raw) ? 2 : 0
         let offset: Int = structure.nameOffset
         let length: Int = structure.nameLength + keywordOffset
-        let range = offset..<(offset+length)
+        let range: Range<Int> = offset..<(offset+length)
 
-        var raw = raw
-        raw.replaceSubrange(range, with: structure.getNameTypeData(raw: raw))
+        var raw: Data = raw
+        raw.replaceSubrange(range, with: nameType.utf8 ?? Data())
         
         logger.add(event: .implictType(
             origin: structure.parsedDeclaration ?? "",
-            fixed: structure.getNameType(raw: raw)
+            fixed: nameType
         ))
 
         return raw

@@ -10,7 +10,7 @@ import Foundation
 struct RecurrsiveRewriter: Rewriter {
     let rewriter: Rewriter
     func rewrite(description: Description, raw: Data) -> Data {
-        let rawSub = self.rewriteSub(description: description, raw: raw)
+        let rawSub: Data = self.rewriteSub(description: description, raw: raw)
         return self.rewriteSelf(description: description, raw: rawSub)
     }
     

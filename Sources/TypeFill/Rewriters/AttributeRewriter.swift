@@ -41,10 +41,10 @@ struct AttributeRewriter: Rewriter {
         guard let ibAction = attributes.ibAction else { return raw }
 //        return self.replace(attribute: ibAction, attributes: attributes, raw: raw)
         
-        let fixItem = self.fixItem(attributes: attributes)
+        let fixItem: [AttributeRewriter.FixItem] = self.fixItem(attributes: attributes)
         
-        var raw = raw
-        let offset = ibAction.offset + ibAction.length
+        var raw: Data = raw
+        let offset: Int = ibAction.offset + ibAction.length
         raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
         
         logger.add(event: .ibAction(
@@ -61,10 +61,10 @@ struct AttributeRewriter: Rewriter {
         guard let ibOutlet = attributes.ibOutlet else { return raw }
 //        return self.replace(attribute: ibOutlet, attributes: attributes, raw: raw)
         
-        let fixItem = self.fixItem(attributes: attributes)
+        let fixItem: [AttributeRewriter.FixItem] = self.fixItem(attributes: attributes)
         
-        var raw = raw
-        let offset = ibOutlet.offset + ibOutlet.length
+        var raw: Data = raw
+        let offset: Int = ibOutlet.offset + ibOutlet.length
         raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
         
         logger.add(event: .ibOutlet(
@@ -89,10 +89,10 @@ struct AttributeRewriter: Rewriter {
     
     
     private func replace(attribute: Attribute, attributes: [Attribute], raw: Data) -> Data {
-        let fixItem = self.fixItem(attributes: attributes)
+        let fixItem: [AttributeRewriter.FixItem] = self.fixItem(attributes: attributes)
         
-        var raw = raw
-        let offset = attribute.offset + attribute.length
+        var raw: Data = raw
+        let offset: Int = attribute.offset + attribute.length
         raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
         //        logger.add(event: .implictType(
         //            origin: structure.parsedDeclaration ?? "",

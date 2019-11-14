@@ -63,7 +63,7 @@ struct DocCommand: CommandProtocol {
     func run(_ options: Options) -> Result<(), SourceKittenError> {
         let args: [String] = options.arguments
         let moduleName: String? = options.moduleName.isEmpty ? nil : options.moduleName
-        let builder = RewriterFactory.Builder.new.add(item: .typeFill)
+        let builder: RewriterFactory.Builder = RewriterFactory.Builder.new.add(item: .typeFill)
         if options.isFixIBAction { builder.add(item: .ibAction) }
         if options.isFixIBOutlet { builder.add(item: .ibOutlet) }
         let rewriter: Rewriter = builder.build()

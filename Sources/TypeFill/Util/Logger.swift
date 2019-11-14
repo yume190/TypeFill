@@ -8,7 +8,7 @@
 import Foundation
 import Rainbow
 
-let logger = Logger()
+let logger: Logger = Logger()
 final class Logger {
     private final var events: [Event] = []
     fileprivate init() {}
@@ -24,7 +24,7 @@ final class Logger {
     }
     
     private func logImplictTypeCount() {
-        let implictTypeCount = self.events.filter { (event: Event) -> Bool in
+        let implictTypeCount: Int = self.events.filter { (event: Event) -> Bool in
             if case .implictType = event {
                 return true
             }
@@ -37,7 +37,7 @@ final class Logger {
     }
     
     private func logIBActionCount() {
-        let count = self.events.filter { (event: Event) -> Bool in
+        let count: Int = self.events.filter { (event: Event) -> Bool in
             if case .ibAction = event {
                 return true
             }
@@ -50,7 +50,7 @@ final class Logger {
     }
     
     private func logIBOutletCount() {
-        let count = self.events.filter { (event: Event) -> Bool in
+        let count: Int = self.events.filter { (event: Event) -> Bool in
             if case .ibOutlet = event {
                 return true
             }
