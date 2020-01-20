@@ -10,9 +10,9 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.26.0")),
-        .package(url: "https://github.com/Carthage/Commandant.git", .upToNextMinor(from: "0.16.0")),
-        .package(url: "https://github.com/onevcat/Rainbow", from: "3.0.0")
+        .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.29.0")),
+        .package(url: "https://github.com/Carthage/Commandant.git", .upToNextMinor(from: "0.17.0")),
+        .package(url: "https://github.com/onevcat/Rainbow", from: "3.1.5")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
