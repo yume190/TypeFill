@@ -22,9 +22,11 @@ struct TypeFillRewriter: Rewriter {
             #warning("[TODO]: log fix fail")
             return raw
         }
+        guard let nameOffset = structure.nameOffset else { return raw }
+        guard let nameLength = structure.nameLength else { return raw }
         let keywordOffset: Int = structure.isKeywordVar(raw: raw) ? 2 : 0
-        let offset: Int = structure.nameOffset
-        let length: Int = structure.nameLength + keywordOffset
+        let offset: Int = nameOffset
+        let length: Int = nameLength + keywordOffset
         let range: Range<Int> = offset..<(offset+length)
 
         var raw: Data = raw

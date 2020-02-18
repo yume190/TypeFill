@@ -37,7 +37,7 @@ final class AutoFillTests: XCTestCase {
             return
         }
 
-        let fooBinary = productsDirectory.appendingPathComponent("AutoFill")
+        let fooBinary = productsDirectory.appendingPathComponent("typefill")
 
         let process = Process()
         process.executableURL = fooBinary

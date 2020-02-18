@@ -20,12 +20,25 @@ let package = Package(
         .target(
             name: "TypeFill",
             dependencies: [
+                "TypeFillKit"
+                ]),
+        .target(
+            name: "TypeFillKit",
+            dependencies: [
                 "Commandant",
                 "SourceKittenFramework",
                 "Rainbow",
-                ]),
+        ]),
+        .target(
+            name: "TestingData",
+            exclude: [
+                "cursor.yml",
+                "open.yml",
+                "requests.txt",
+            ]
+        ),
         .testTarget(
             name: "TypeFillTests",
-            dependencies: ["TypeFill"])
+            dependencies: ["TypeFillKit"])
     ]
 )

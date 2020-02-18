@@ -24,8 +24,8 @@ struct SwiftDoc: Codable, Doc {
     let kind: String // SyntaxKind
     let length: Int
     let name: String?
-    let nameLength: Int
-    let nameOffset: Int
+    let nameLength: Int?
+    let nameOffset: Int?
     let offset: Int
 
     let parsedDeclaration: String?
@@ -75,15 +75,18 @@ extension SwiftDoc {
 
     /// 96 `
     public func isKeywordVar(raw: Data) -> Bool {
-        let before: UInt8 = raw[self.nameOffset]
-        let after: UInt8 = raw[self.nameOffset + nameLength + 1]
+        guard let nameOffset = self.nameOffset else { return false }
+        guard let nameLength = self.nameLength else { return false }
+        let before: UInt8 = raw[nameOffset]
+        let after: UInt8 = raw[nameOffset + nameLength + 1]
         return before == 96 && before == after
     }
 
     func getNameType(raw: Data) -> String? {
-        let name: String? = self.isKeywordVar(raw: raw) ? "`\(self.name ?? "")`" : self.name
-        guard let type = self.typeName else {return name}
-        return "\(name ?? ""): \(type)"
+        guard let name = self.name else {return self.name}
+        guard let varType = self.typeName else {return name}
+        let varName = self.isKeywordVar(raw: raw) ? "`\(name)`" : name
+        return "\(varName): \(varType)"
     }
 }
 
@@ -113,9 +116,11 @@ extension SwiftDoc {
     }
 
     private func isImplicitType(raw: Data) -> Bool {
+        guard let nameOffset = self.nameOffset else { return false }
+        guard let nameLength = self.nameLength else { return false }
         let index: Int = self.isKeywordVar(raw: raw) ?
-            self.nameLength + self.nameOffset + 2 :
-            self.nameLength + self.nameOffset
+            nameLength + nameOffset + 2 :
+            nameLength + nameOffset
         let word: UInt8 = raw[index]
         return self.checkIsImplicitType(word: word)
     }

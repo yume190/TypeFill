@@ -7,7 +7,7 @@
 //
 
 /// Possible errors within SourceKitten.
-enum SourceKittenError: Error, CustomStringConvertible {
+public enum SourceKittenError: Error, CustomStringConvertible {
     /// One or more argument was invalid.
     case invalidArgument(description: String)
 
@@ -25,7 +25,7 @@ enum SourceKittenError: Error, CustomStringConvertible {
     case jsonDecode(Swift.Error)
 
     /// An error message corresponding to this error.
-    var description: String {
+    public var description: String {
         switch self {
         case let .invalidArgument(description):
             return description

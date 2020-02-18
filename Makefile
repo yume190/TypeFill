@@ -26,9 +26,18 @@ self:
 
 .PHONY: single
 single: 
-	typefill doc --single-file example/sample.swift --ibaction --iboutlet -- /Users/yume/git/TypeFill/example/sample.swift 
-# typefill doc --single-file /Users/yume/git/TypeFill/example/sample.swift --ibaction --iboutlet -- /Users/yume/git/TypeFill/example/sample.swift
-	
+	typefill doc --single-file example/sample.swift --ibaction --iboutlet -- ${PWD}/Sources/TestingData/sample.swift
+
+.PHONY: spm
+spm: 
+	sourcekitten doc --spm --spm-module TestingData
+	#  -- -Xswiftc -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
+	# swift -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk
+	#  -I. -L. -lOnlinePlayground -lCryptoSwift 
+
+.PHONY: kittenSingle
+kittenSingle:
+	sourcekitten doc --single-file example/sample.swift -- ${PWD}/Sources/TestingData/sample.swift
 
 .PHONY: open
 open:

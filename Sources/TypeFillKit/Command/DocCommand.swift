@@ -11,11 +11,13 @@ import Commandant
 import SourceKittenFramework
 import Foundation
 
-struct DocCommand: CommandProtocol {
-    let verb: String = "doc"
-    let function: String = "Print Swift or Objective-C docs as JSON"
+public struct DocCommand: CommandProtocol {
+    public let verb: String = "doc"
+    public let function: String = "Print Swift or Objective-C docs as JSON"
+    
+    public init() {}
 
-    struct Options: OptionsProtocol {
+    public struct Options: OptionsProtocol {
         let singleFile: Bool
         let moduleName: String
         let spm: Bool
@@ -41,7 +43,7 @@ struct DocCommand: CommandProtocol {
                 }}}}}}
         }
 
-        static func evaluate(_ mode: CommandMode) -> Result<Options, CommandantError<SourceKittenError>> {
+        public static func evaluate(_ mode: CommandMode) -> Result<Options, CommandantError<SourceKittenError>> {
             return create
                 <*> mode <| Option(key: "single-file", defaultValue: false,
                                    usage: "only document one file")
@@ -60,7 +62,7 @@ struct DocCommand: CommandProtocol {
         }
     }
 
-    func run(_ options: Options) -> Result<(), SourceKittenError> {
+    public func run(_ options: Options) -> Result<(), SourceKittenError> {
         let args: [String] = options.arguments
         let moduleName: String? = options.moduleName.isEmpty ? nil : options.moduleName
         let builder: RewriterFactory.Builder = RewriterFactory.Builder.new.add(item: .typeFill)
