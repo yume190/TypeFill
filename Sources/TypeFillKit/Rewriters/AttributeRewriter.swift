@@ -9,7 +9,7 @@ import Foundation
 
 struct AttributeRewriter: Rewriter {
     enum FindItem: String {
-        case ibAction, ibOutlet
+        case ibAction, ibOutlet, objc
     }
     
     fileprivate enum FixItem: String {
@@ -22,9 +22,17 @@ struct AttributeRewriter: Rewriter {
     func rewrite(description: Description, raw: Data) -> Data {
         switch self.find {
         case .ibAction:
-            return self.rewriteAction(description: description, raw: raw)
+            return self.rewrite(description: description, raw: raw, targetAttribute: \[Attribute].ibAction) { (origin, fixed) -> Event in
+                return .ibAction(origin: origin, fixed: fixed)
+            }
         case .ibOutlet:
-            return self.rewriteOutlet(description: description, raw: raw)
+            return self.rewrite(description: description, raw: raw, targetAttribute: \[Attribute].ibOutlet) { (origin, fixed) -> Event in
+                return .ibOutlet(origin: origin, fixed: fixed)
+            }
+        case .objc:
+            return self.rewrite(description: description, raw: raw, targetAttribute: \[Attribute].objc) { (origin, fixed) -> Event in
+                return .objc(origin: origin, fixed: fixed)
+            }
         }
     }
     
@@ -35,70 +43,20 @@ struct AttributeRewriter: Rewriter {
         return item
     }
     
-    private func rewriteAction(description: Description, raw: Data) -> Data {
+    private func rewrite(description: Description, raw: Data, targetAttribute: KeyPath<[Attribute], Attribute?>, logType: (String, String) -> Event) -> Data {
         guard let structure = description.structure else {return raw}
         guard let attributes = structure.attributes else {return raw}
-        guard let ibAction = attributes.ibAction else { return raw }
-//        return self.replace(attribute: ibAction, attributes: attributes, raw: raw)
+        guard let attribute = attributes[keyPath: targetAttribute] else {return raw}
         
-        let fixItem: [AttributeRewriter.FixItem] = self.fixItem(attributes: attributes)
-        
-        var raw: Data = raw
-        let offset: Int = ibAction.offset + ibAction.length
-        raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
-        
-        logger.add(event: .ibAction(
-            origin: structure.parsedDeclaration ?? "",
-            fixed: fixItem.attributeString
-            ))
-        
-        return raw
-    }
-    
-    private func rewriteOutlet(description: Description, raw: Data) -> Data {
-        guard let structure = description.structure else {return raw}
-        guard let attributes = structure.attributes else {return raw}
-        guard let ibOutlet = attributes.ibOutlet else { return raw }
-//        return self.replace(attribute: ibOutlet, attributes: attributes, raw: raw)
-        
-        let fixItem: [AttributeRewriter.FixItem] = self.fixItem(attributes: attributes)
-        
-        var raw: Data = raw
-        let offset: Int = ibOutlet.offset + ibOutlet.length
-        raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
-        
-        logger.add(event: .ibOutlet(
-            origin: structure.parsedDeclaration ?? "",
-            fixed: fixItem.attributeString
-            ))
-        
-        return raw
-    }
-    
-//    private func replace() -> ((_ attribute: Attribute, _ raw: Data) -> Data) {
-//        return { (attribute: Attribute, raw: Data) -> Data in
-//            let fixItem = self.fixItem(attributes: attributes)
-//
-//            var raw = raw
-//            let offset = attribute.offset + attribute.length
-//            raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
-//
-//            return raw
-//        }
-//    }
-    
-    
-    private func replace(attribute: Attribute, attributes: [Attribute], raw: Data) -> Data {
         let fixItem: [AttributeRewriter.FixItem] = self.fixItem(attributes: attributes)
         
         var raw: Data = raw
         let offset: Int = attribute.offset + attribute.length
         raw.replaceSubrange(offset..<offset, with: fixItem.attributeData)
-        //        logger.add(event: .implictType(
-        //            origin: structure.parsedDeclaration ?? "",
-        //            fixed: structure.getNameType(raw: raw)
-        //            ))
-        //
+        
+        
+        logger.add(event: logType(structure.parsedDeclaration ?? "", fixItem.attributeString))
+        
         return raw
     }
 }

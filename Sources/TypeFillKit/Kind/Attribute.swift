@@ -35,6 +35,10 @@ extension Array where Element == Attribute {
         return self.filter {$0.attribute == .iboutlet}.first
     }
     
+    var objc: Attribute? {
+        return self.filter {$0.attribute == .objc}.first
+    }
+    
     var isIBAction: Bool {
         return self._attributes.contains(.ibaction)
     }

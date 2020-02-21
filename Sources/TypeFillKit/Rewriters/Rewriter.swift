@@ -25,6 +25,7 @@ enum RewriterFactory {
         case typeFill
         case ibAction
         case ibOutlet
+        case objc
         
         var rewriter: Rewriter {
             switch self {
@@ -34,6 +35,8 @@ enum RewriterFactory {
                 return AttributeRewriter(find: .ibAction)
             case .ibOutlet:
                 return AttributeRewriter(find: .ibOutlet)
+            case .objc:
+                return AttributeRewriter(find: .objc)
             }
         }
     }

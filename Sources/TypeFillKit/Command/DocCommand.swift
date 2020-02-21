@@ -21,26 +21,32 @@ public struct DocCommand: CommandProtocol {
         let singleFile: Bool
         let moduleName: String
         let spm: Bool
+        let isTypeFill: Bool
         let isFixIBAction: Bool
         let isFixIBOutlet: Bool
+        let isFixObjc: Bool
         let arguments: [String]
 
         static func create(singleFile: Bool) ->
             (_ moduleName: String) ->
             (_ spm: Bool) ->
             (_ spmModule: String) ->
+            (_ isTypeFill: Bool) ->
             (_ isFixIBAction: Bool) ->
             (_ isFixIBOutlet: Bool) ->
+            (_ isFixObjc: Bool) ->
             (_ arguments: [String]) -> Options {
-                return { moduleName in { spm in { spmModule in { isFixIBAction in { isFixIBOutlet in { arguments in
+                return { moduleName in { spm in { spmModule in { isTypeFill in { isFixIBAction in { isFixIBOutlet in { isFixObjc in { arguments in
                 self.init(singleFile: singleFile,
                           moduleName: moduleName.isEmpty ? spmModule : moduleName,
                           spm: spm || !spmModule.isEmpty,
+                          isTypeFill: isTypeFill,
                           isFixIBAction: isFixIBAction,
                           isFixIBOutlet: isFixIBOutlet,
+                          isFixObjc: isFixObjc,
                           arguments: arguments
                 )
-                }}}}}}
+                }}}}}}}}
         }
 
         public static func evaluate(_ mode: CommandMode) -> Result<Options, CommandantError<SourceKittenError>> {
@@ -53,10 +59,14 @@ public struct DocCommand: CommandProtocol {
                                    usage: "document a Swift Package Manager module")
                 <*> mode <| Option(key: "spm-module", defaultValue: "",
                                    usage: "equivalent to --spm --module-name (string)")
+                <*> mode <| Option(key: "typefill", defaultValue: false,
+                                   usage: "add type to variable and constant")
                 <*> mode <| Option(key: "ibaction", defaultValue: false,
                                    usage: "add private final attributes to IBAction")
                 <*> mode <| Option(key: "iboutlet", defaultValue: false,
                                    usage: "add private final attributes to IBOutlet")
+                <*> mode <| Option(key: "objc", defaultValue: false,
+                                   usage: "add private final attributes to objc")
                 <*> mode <| Argument(defaultValue: [],
                                      usage: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
         }
@@ -65,9 +75,13 @@ public struct DocCommand: CommandProtocol {
     public func run(_ options: Options) -> Result<(), SourceKittenError> {
         let args: [String] = options.arguments
         let moduleName: String? = options.moduleName.isEmpty ? nil : options.moduleName
-        let builder: RewriterFactory.Builder = RewriterFactory.Builder.new.add(item: .typeFill)
+        
+        let builder: RewriterFactory.Builder = RewriterFactory.Builder.new
+        if options.isTypeFill { builder.add(item: .typeFill)}
         if options.isFixIBAction { builder.add(item: .ibAction) }
         if options.isFixIBOutlet { builder.add(item: .ibOutlet) }
+        if options.isFixObjc { builder.add(item: .objc) }
+        
         let rewriter: Rewriter = builder.build()
         if options.spm {
             return runSPMModule(rewriter: rewriter, moduleName: moduleName, args: args)
