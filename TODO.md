@@ -1,9 +1,9 @@
+## typefill
+ 
+ tuple
 
+## ibaction
 
+## iboutlet
 
-## class
-    
- [ ] static -> no final
-
-## protocol 
- [ ] dont add
+## objc

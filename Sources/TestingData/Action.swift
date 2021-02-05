@@ -8,13 +8,13 @@
 import Foundation
 
 class Action1: UIViewController {
-    @IBAction func numberKeyIn(_ sender: UIButton) {}
+    @IBAction  private final func numberKeyIn(_ sender: UIButton) {}
 }
 
-struct Action2 {
-    @IBAction func numberKeyIn(_ sender: UIButton) {}
-}
-
-enum Action3 {
-    @IBAction func numberKeyIn(_ sender: UIButton) {}
-}
+//struct Action2 {
+//    func numberKeyIn(_ sender: UIButton) {}
+//}
+//
+//enum Action3 {
+//    func numberKeyIn(_ sender: UIButton) {}
+//}

@@ -3,7 +3,7 @@ import Foundation
 class UIViewController: NSObject {}
 class UIButton: NSObject {}
 let a = 1
-class A: UIViewController {
+class AAAAAAAAAAA: UIViewController {
     @IBOutlet open weak var btn1: UIButton!
     @IBOutlet final public weak var btn2: UIButton!
     @IBOutlet final internal weak var btn3: UIButton!
@@ -17,25 +17,25 @@ class A: UIViewController {
         let aabb = aa + bb
         let ss: Int? = nil
 
-        let abcdef: () -> Void = { [weak abcdefP1 = self] in
-
+        let abcdef: (Int) -> Int = { [weak abcdefP1 = self, weak abcdefP2 = self] i in
+            return i
         }
 
-        let abcdefg: () -> Void = { [weak self] in
-
+        let abcdefg: (String, String, String) -> String = { [weak self] (str, _, str2: String) in
+            return str
         }
 
-        if let cc = ss {
-            print(cc)
+        if let ccccc = ss, let ccccc1 = ss {
+            print(ccccc)
         }
 
-        guard let dd = ss else {
+        guard let dd = ss, let dd2 = ss else {
             return
         }
 
         do {
             try self.error()
-            let a = A()
+            let a = AAAAAAAAAAA()
         } catch {
             print(error)
         }
