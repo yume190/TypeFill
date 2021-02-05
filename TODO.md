@@ -1,6 +1,7 @@
 ## typefill
  
  tuple
+ closure's output
 
 ## ibaction
 

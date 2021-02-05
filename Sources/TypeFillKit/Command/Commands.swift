@@ -9,8 +9,6 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 
-
-
 ///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
 struct WorkSpaceCommand: ParsableCommand, CommandBase {
     static var configuration = CommandConfiguration(
