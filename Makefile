@@ -26,8 +26,8 @@ self:
 
 .PHONY: single
 single: 
-	typefill doc --single-file Sources/TestingData/sample.swift --ibaction --iboutlet -- ${PWD}/Sources/TestingData/sample.swift
-	# typefill single --filePath "/Users/yume/git/yume/TypeFill/Sources/TestingData/sample.swift" -- -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk
+	# typefill doc --single-file Sources/TestingData/sample.swift --ibaction --iboutlet -- ${PWD}/Sources/TestingData/sample.swift
+	typefill single --filePath "/Users/yume/git/yume/TypeFill/Sources/TestingData/sample.swift" -- -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk
 	# /Users/yume/git/yume/TypeFill/Sources/TestingData/sample.swift
 
 .PHONY: spm
