@@ -84,13 +84,8 @@ struct SingleFile: ParsableCommand, CommandBase {
         }
 
         defer { logger.log() }
-        let url = URL(fileURLWithPath: filePath)
+        Swift.print("\(filePath)")
         let cursor: Cursor = .init(filePath: filePath, arguments: arguments)
-        
-        if self.print {
-            try Rewriter2.parse(source: file.contents, cursor: cursor)
-        } else {
-            try Rewriter2.parse(url: url, cursor: cursor)
-        }
+        try Rewrite(file: file, cursor: cursor, config: self)?.parse()
     }
 }

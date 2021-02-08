@@ -1,8 +1,8 @@
 //
-//  File.swift
-//  
+//  TypeFillRewriter.swift
+//  TypeFillKit
 //
-//  Created by Yume on 2021/2/4.
+//  Created by Yume on 2021/2/8.
 //
 
 import Foundation
@@ -10,42 +10,12 @@ import SourceKittenFramework
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-public struct Rewriter2 {
-    
-    public static func parse(source: String, cursor: Cursor) throws {
-        let sourceFile: SourceFileSyntax = try SyntaxParser.parse(source: source)
-        self.parse(file: sourceFile, cursor: cursor, fileHandle: .standardOutput)
-    }
-    
-    public static func parse(url: URL, cursor: Cursor) throws {
-        let sourceFile: SourceFileSyntax = try SyntaxParser.parse(url)
-        let fileHandle = try FileHandle(forWritingTo: url)
-        self.parse(file: sourceFile, cursor: cursor, fileHandle: fileHandle)
-    }
-    
-    private static func parse(file: SourceFileSyntax, cursor: Cursor, fileHandle: FileHandle) {
-        let rw = YRewriter(cursor)
-//        let rx = YRewriter2()
-        let r = rw.visit(file)
-        
-        var result = ""
-        r.write(to: &result)
-//        print(result)
-        fileHandle.write(result.data(using: .utf8)!)
-    }
-}
-
-
-//class YRewriter2: SyntaxAnyVisitor {
-//    override func visit(_ node: ClosureExprSyntax) -> SyntaxVisitorContinueKind {
-//        print(node)
-//        return .visitChildren
-//    }
-//}
-class YRewriter: SyntaxRewriter {
+class TypeFillRewriter: SyntaxRewriter {
     let cursor: Cursor
-    init(_ cursor: Cursor) {
+    let converter: SourceLocationConverter
+    init(_ cursor: Cursor, _ converter: SourceLocationConverter) {
         self.cursor = cursor
+        self.converter = converter
     }
     
     /// ClosureParamList
@@ -76,7 +46,7 @@ class YRewriter: SyntaxRewriter {
             
             let fParams: [FunctionParameterSyntax] = zip(types, params).map { (type, param) in
                 return FunctionParameterSyntax { (builder) in
-                    builder.useFirstName(param.name)
+                    builder.useFirstName(param.name.withTrailingTrivia(.zero))
                     builder.useColon(SyntaxFactory.makeColonToken())
                     builder.useType(type)
                 }
@@ -84,7 +54,15 @@ class YRewriter: SyntaxRewriter {
 
             let clause = ParameterClauseSyntax { (builder) in
                 builder.useLeftParen(SyntaxFactory.makeLeftParenToken())
-                fParams.forEach { builder.addParameter($0) }
+                fParams.enumerated().forEach { index, param in
+                    let _param: FunctionParameterSyntax
+                    if (fParams.count - 1) == index {
+                        _param = param
+                    } else {
+                        _param = param.withTrailingComma(SyntaxFactory.makeCommaToken().withTrailingTrivia(.spaces(1)))
+                    }
+                    builder.addParameter(_param)
+                }
                 builder.useRightParen(SyntaxFactory.makeRightParenToken())
             }.withTrailingTrivia(.spaces(1))
             let signature = node.signature?.withInput(.init(clause))

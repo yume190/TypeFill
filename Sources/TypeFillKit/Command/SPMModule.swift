@@ -8,6 +8,7 @@
 import Foundation
 import ArgumentParser
 import SourceKittenFramework
+import SwiftSyntax
 
 struct SPMModule: ParsableCommand, CommandBase {
     static var configuration = CommandConfiguration(
@@ -34,21 +35,13 @@ struct SPMModule: ParsableCommand, CommandBase {
     var args: [String] = []
     
     func run() throws {
-        let module: Module? = Module(spmArguments: args, spmName: moduleName)
-//        guard let docs = Module(spmArguments: args, spmName: moduleName)?.docs else {
-//            throw SourceKittenError.docFailed
-//        }
-//        try self.rewrite(rewriter: rewriter, docsList: docs)
-        try module?.sourceFiles.forEach{ (filePath: String) in
+        guard let module: Module = Module(xcodeBuildArguments: args, name: nil) else {return}
+        let all = module.sourceFiles.count
+        try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             guard let file = File(path: filePath) else {return}
-            let url = URL(fileURLWithPath: filePath)
-            let cursor: Cursor = .init(filePath: filePath, arguments: module?.compilerArguments ?? [])
-            
-            if self.print {
-                try Rewriter2.parse(source: file.contents, cursor: cursor)
-            } else {
-                try Rewriter2.parse(url: url, cursor: cursor)
-            }
+            Swift.print("[\(index)/\(all)] \(filePath)")
+            let cursor: Cursor = .init(filePath: filePath, arguments: module.compilerArguments)
+            try Rewrite(file: file, cursor: cursor, config: self)?.parse()
         }
     }
 }

@@ -46,38 +46,12 @@ struct WorkSpaceCommand: ParsableCommand, CommandBase {
         ]
         
         guard let module: Module = Module(xcodeBuildArguments: args + newArgs, name: nil) else {return}
-
-        try module.sourceFiles.forEach{ (filePath) in
+        let all = module.sourceFiles.count
+        try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             guard let file = File(path: filePath) else {return}
-            let url = URL(fileURLWithPath: filePath)
+            Swift.print("[\(index)/\(all)] \(filePath)")
             let cursor: Cursor = .init(filePath: filePath, arguments: module.compilerArguments)
-            
-            Swift.print("fill: \(filePath)")
-            if self.print {
-                try Rewriter2.parse(source: file.contents, cursor: cursor)
-            } else {
-                try Rewriter2.parse(url: url, cursor: cursor)
-            }
+            try Rewrite(file: file, cursor: cursor, config: self)?.parse()
         }
     }
 }
-
-
-//final class SwiftModuleCommand: CommandBase {
-//    static var configuration = CommandConfiguration(
-//        commandName: "single",
-//        abstract: "doc single file"
-//    )
-//
-//    @Argument(help: "")
-//    var moduleName: String
-//
-//    func run() throws {
-//        let module: Module? = Module(xcodeBuildArguments: args, name: moduleName)
-//        guard let docs = module?.docs else {
-//            throw SourceKittenError.docFailed
-//        }
-//
-//        try self.rewrite(rewriter: rewriter, docsList: docs)
-//    }
-//}

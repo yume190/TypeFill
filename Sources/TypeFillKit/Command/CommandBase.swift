@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Configable {
+public protocol Configable {
     var typeFill: Bool { get }
     var ibaction: Bool { get }
     var iboutlet: Bool { get }
