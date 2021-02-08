@@ -42,14 +42,14 @@ public struct Rewrite {
         self.cursor = cursor
         self.config = config
         
-        guard let path = file.path else { return nil }
+        guard let path: String = file.path else { return nil }
         self.path = path
         
         if config.print {
             self.sourceFile = try SyntaxParser.parse(source: file.contents)
             self.fileHandle = .standardOutput
         } else {
-            let url = URL(fileURLWithPath: path)
+            let url: URL = URL(fileURLWithPath: path)
             sourceFile = try SyntaxParser.parse(url)
             fileHandle = try FileHandle(forWritingTo: url)
         }
@@ -57,18 +57,18 @@ public struct Rewrite {
     }
     
     public func parse() throws {
-        let rewrite = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
+        let rewrite: Syntax = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
         
-        var result = ""
+        var result: String = ""
         rewrite.write(to: &result)
 
         self.fileHandle.write(result.data(using: .utf8)!)
     }
     
     public func dump() throws -> String {
-        let rewrite = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
+        let rewrite: Syntax = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
         
-        var result = ""
+        var result: String = ""
         rewrite.write(to: &result)
 
         return result

@@ -11,7 +11,7 @@ import SourceKittenFramework
 
 ///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
 struct WorkSpaceCommand: ParsableCommand, CommandBase {
-    static var configuration = CommandConfiguration(
+    static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "workspace",
         abstract: "doc single file"
     )
@@ -38,7 +38,7 @@ struct WorkSpaceCommand: ParsableCommand, CommandBase {
     var args: [String] = []
     
     func run() throws {
-        let newArgs = [
+        let newArgs: [String] = [
             "-workspace",
             workspace,
             "-scheme",
@@ -46,7 +46,8 @@ struct WorkSpaceCommand: ParsableCommand, CommandBase {
         ]
         
         guard let module: Module = Module(xcodeBuildArguments: args + newArgs, name: nil) else {return}
-        let all = module.sourceFiles.count
+        defer { logger.log() }
+        let all: Int = module.sourceFiles.count
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             guard let file = File(path: filePath) else {return}
             logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))

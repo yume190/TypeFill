@@ -28,7 +28,7 @@ struct FileHandleOutputStream: TextOutputStream {
     }
 
     mutating func write(_ string: String) {
-        if let data = string.data(using: encoding) {
+        if let data: Data = string.data(using: encoding) {
             fileHandle.write(data)
         }
     }

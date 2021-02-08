@@ -37,7 +37,7 @@ public enum ArrayBuilder<T> {
     }
     
     public static func buildExpression(_ item: T?) -> ArrayBox<T> {
-        guard let item = item else { return .nothing }
+        guard let item: T = item else { return .nothing }
         return .single(item)
     }
     
@@ -54,7 +54,7 @@ public enum ArrayBuilder<T> {
     }
     
     public static func buildIf(_ value: ArrayBox<T>?) -> ArrayBox<T> {
-        guard let v = value else { return .nothing }
+        guard let v: ArrayBox<T> = value else { return .nothing }
         return v
     }
     

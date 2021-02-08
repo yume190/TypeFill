@@ -19,12 +19,3 @@ public protocol Configable {
 protocol CommandBase: Configable {
     var args: [String] { get }
 }
-
-
-public struct Config: Configable {
-    public let typeFill: Bool
-    public let ibaction: Bool
-    public let iboutlet: Bool
-    public let objc: Bool
-    public let print: Bool
-}

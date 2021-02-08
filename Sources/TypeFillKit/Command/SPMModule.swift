@@ -11,7 +11,7 @@ import SourceKittenFramework
 import SwiftSyntax
 
 struct SPMModule: ParsableCommand, CommandBase {
-    static var configuration = CommandConfiguration(
+    static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "spm",
         abstract: "SPM Project"
     )
@@ -35,8 +35,11 @@ struct SPMModule: ParsableCommand, CommandBase {
     var args: [String] = []
     
     func run() throws {
-        guard let module: Module = Module(xcodeBuildArguments: args, name: nil) else {return}
-        let all = module.sourceFiles.count
+        guard let module: Module = Module(spmArguments: args, spmName: moduleName) else {return}
+        let all: Int = module.sourceFiles.count
+        
+        defer { logger.log() }
+        
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             guard let file = File(path: filePath) else {return}
             logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))

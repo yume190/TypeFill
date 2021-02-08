@@ -7,7 +7,7 @@ extension String {
 }
 
 extension Data {
-    var string: String? {
+    var utf8: String? {
         return String(data: self, encoding: .utf8)
     }
 }

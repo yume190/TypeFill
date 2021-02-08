@@ -18,9 +18,9 @@ enum SDK: String, ExpressibleByArgument, CaseIterable {
     case iphoneos
     case watchos
     func path() -> String {
-        let xcrun = URL(fileURLWithPath: "/usr/bin/xcrun")
+        let xcrun: URL = URL(fileURLWithPath: "/usr/bin/xcrun")
 
-        let process = Process()
+        let process: Process = Process()
         process.executableURL = xcrun
         process.arguments =  [
             "--sdk",
@@ -28,13 +28,13 @@ enum SDK: String, ExpressibleByArgument, CaseIterable {
             "--show-sdk-path",
         ]
         
-        let pipe = Pipe()
+        let pipe: Pipe = Pipe()
         process.standardOutput = pipe
 
         try? process.run()
         process.waitUntilExit()
 
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let data: Data = pipe.fileHandleForReading.readDataToEndOfFile()
         return String(data: data, encoding: .utf8)?.replacingOccurrences(of: "\n", with: "") ?? ""
     }
     
@@ -47,7 +47,7 @@ enum SDK: String, ExpressibleByArgument, CaseIterable {
 }
 
 struct SingleFile: ParsableCommand, CommandBase {
-    static var configuration = CommandConfiguration(
+    static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "single",
         abstract: "single file"
     )
@@ -74,10 +74,10 @@ struct SingleFile: ParsableCommand, CommandBase {
     var args: [String] = []
     
     func run() throws {
-        let arguments = args + [filePath] + ["-sdk", sdk.path()]
+        let arguments: [String] = args + [filePath] + ["-sdk", sdk.path()]
         
         guard
-            let file = File(path: filePath),
+            let file: File = File(path: filePath),
             let _ = SwiftDocs(file: file, arguments: [filePath])
         else {
             throw SourceKittenError.readFailed(path: filePath)

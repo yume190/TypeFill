@@ -75,6 +75,19 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
+    /// let a: () -> Void = {
+    ///     return
+    /// }
+    func testClosureEmpty() throws {
+        let override = try rewriter(file: "ClosureEmpty.swift")?.dump()
+        let result = """
+        let a: () -> Void = {
+            return
+        }
+        """
+        XCTAssertEqual(override, result)
+    }
+    
     /// let a: Int? = nil
     /// if let aa = a {}
     func testIf() throws {
