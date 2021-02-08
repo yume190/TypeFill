@@ -11,11 +11,20 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 
 class TypeFillRewriter: SyntaxRewriter {
+    let path: String
     let cursor: Cursor
     let converter: SourceLocationConverter
-    init(_ cursor: Cursor, _ converter: SourceLocationConverter) {
+    init(_ path: String, _ cursor: Cursor, _ converter: SourceLocationConverter) {
+        self.path = path
         self.cursor = cursor
         self.converter = converter
+    }
+    
+    fileprivate func found<Syntax: SyntaxProtocol>(syntax: Syntax) -> String {
+        return """
+        \(path):\(self.converter.location(for: syntax.position))
+        \(syntax.description)
+        """
     }
     
     /// ClosureParamList
@@ -67,6 +76,7 @@ class TypeFillRewriter: SyntaxRewriter {
             }.withTrailingTrivia(.spaces(1))
             let signature = node.signature?.withInput(.init(clause))
             let newNode = node.withSignature(signature)
+            logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
             return .init(newNode)
         } else if let params = node.signature?.input?.as(ParameterClauseSyntax.self) {
             let newParams = params.parameterList.map { (parameter) -> FunctionParameterSyntax in
@@ -81,6 +91,7 @@ class TypeFillRewriter: SyntaxRewriter {
             let clause = params.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))
             let signature = node.signature?.withInput(.init(clause))
             let newNode = node.withSignature(signature)
+            logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
             return .init(newNode)
         }
         return .init(node)
@@ -104,7 +115,7 @@ class TypeFillRewriter: SyntaxRewriter {
     ///         OptionalBindingConditionSyntax
     ///             Pattern
     override func visit(_ node: OptionalBindingConditionSyntax) -> Syntax {
-        return .init(node.fill(cursor: self.cursor))
+        return .init(node.fill(cursor: self.cursor, rewriter: self))
     }
     
     /// PatternBindingSyntax: a = 1
@@ -125,7 +136,7 @@ class TypeFillRewriter: SyntaxRewriter {
         let node = node.withBindings(SyntaxFactory.makePatternBindingList(newBindings))
         
         let bindings = node.bindings.map { (patternBindingSyntax: PatternBindingSyntax) -> PatternBindingSyntax in
-            patternBindingSyntax.fill(cursor: self.cursor)
+            patternBindingSyntax.fill(cursor: self.cursor, rewriter: self)
         }
         let bindingList = SyntaxFactory.makePatternBindingList(bindings)
         let result = node.withBindings(bindingList)
@@ -133,7 +144,7 @@ class TypeFillRewriter: SyntaxRewriter {
     }
 }
 
-protocol Binding {
+protocol Binding: SyntaxProtocol {
     var typeAnnotation: TypeAnnotationSyntax? {get}
     var pattern: PatternSyntax {get}
     func withPattern(_ newChild: PatternSyntax?) -> Self
@@ -145,7 +156,7 @@ extension PatternBindingSyntax: Binding {}
 
 
 extension Binding {
-    func fill(cursor: Cursor) -> Self {
+    func fill(cursor: Cursor, rewriter: TypeFillRewriter) -> Self {
         guard self.typeAnnotation == nil else { return self }
         
         if self.pattern.syntaxNodeType == IdentifierPatternSyntax.self {
@@ -158,9 +169,12 @@ extension Binding {
                     type.withTrailingTrivia(.spaces(1))
                 )
             }
-            return self
+            
+            let newNode = self
                 .withPattern(self.pattern.withTrailingTrivia(.zero))
                 .withTypeAnnotation(typeAnnotation)
+            logger.add(event: .implictType(origin: rewriter.found(syntax: self), fixed: newNode.description))
+            return newNode
                 
         } else if self.pattern.syntaxNodeType == TuplePatternSyntax.self {
             return self

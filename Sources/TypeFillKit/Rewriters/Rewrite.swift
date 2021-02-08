@@ -10,14 +10,14 @@ import SourceKittenFramework
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-extension Configable {
-    @ArrayBuilder<SyntaxRewriter>
-    func rewriters(cursor: Cursor, converter: SourceLocationConverter) -> [SyntaxRewriter] {
-        if typeFill {
-            TypeFillRewriter(cursor, converter)
-        }
-    }
-}
+//extension Configable {
+//    @ArrayBuilder<SyntaxRewriter>
+//    func rewriters(cursor: Cursor, converter: SourceLocationConverter) -> [SyntaxRewriter] {
+//        if typeFill {
+//            TypeFillRewriter(cursor, converter)
+//        }
+//    }
+//}
 
 
 public struct Rewrite {
@@ -25,16 +25,17 @@ public struct Rewrite {
     let cursor: Cursor
     let config: Configable
     
+    let path: String
     let sourceFile: SourceFileSyntax
     let fileHandle: FileHandle
     let converter: SourceLocationConverter
     
-    @ArrayBuilder<SyntaxRewriter>
-    var rewriters: [SyntaxRewriter] {
-        if config.typeFill {
-            TypeFillRewriter(cursor, converter)
-        }
-    }
+//    @ArrayBuilder<SyntaxRewriter>
+//    var rewriters: [SyntaxRewriter] {
+//        if config.typeFill {
+//            TypeFillRewriter(file.path!, cursor, converter)
+//        }
+//    }
     
     init?(file: File, cursor: Cursor, config: Configable) throws {
         self.file = file
@@ -42,6 +43,7 @@ public struct Rewrite {
         self.config = config
         
         guard let path = file.path else { return nil }
+        self.path = path
         
         if config.print {
             self.sourceFile = try SyntaxParser.parse(source: file.contents)
@@ -55,7 +57,7 @@ public struct Rewrite {
     }
     
     public func parse() throws {
-        let rewrite = TypeFillRewriter(cursor, converter).visit(sourceFile)
+        let rewrite = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
         
         var result = ""
         rewrite.write(to: &result)
@@ -64,7 +66,7 @@ public struct Rewrite {
     }
     
     public func dump() throws -> String {
-        let rewrite = TypeFillRewriter(cursor, converter).visit(sourceFile)
+        let rewrite = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
         
         var result = ""
         rewrite.write(to: &result)

@@ -14,25 +14,26 @@ final class Logger {
     fileprivate init() {}
     func add(event: Event) {
         self.events.append(event)
+        print(event)
     }
     
     func log() {
-        _ = self.events.map { print($0) }
         self.logImplictTypeCount()
         self.logIBActionCount()
         self.logIBOutletCount()
     }
     
     private func logImplictTypeCount() {
-        let implictTypeCount: Int = self.events.filter { (event: Event) -> Bool in
+        let count: Int = self.events.filter { (event: Event) -> Bool in
             if case .implictType = event {
                 return true
             }
             return false
             }.count
         
+        guard count > 0 else { return }
         print("""
-        \("[FIX IMPLICT TYPE]: \(implictTypeCount)".applyingColor(.green))
+        \("[FIX IMPLICT TYPE]: \(count)".applyingColor(.green))
         """)
     }
     
@@ -44,6 +45,7 @@ final class Logger {
             return false
             }.count
         
+        guard count > 0 else { return }
         print("""
             \("[FIX IBAction]: \(count)".applyingColor(.green))
             """)
@@ -57,8 +59,9 @@ final class Logger {
             return false
             }.count
         
+        guard count > 0 else { return }
         print("""
-            \("[FIX IBOutlet]: \(count)".applyingColor(.green))
-            """)
+        \("[FIX IBOutlet]: \(count)".applyingColor(.green))
+        """)
     }
 }

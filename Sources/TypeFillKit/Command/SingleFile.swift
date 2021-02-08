@@ -35,7 +35,7 @@ enum SDK: String, ExpressibleByArgument, CaseIterable {
         process.waitUntilExit()
 
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8) ?? ""
+        return String(data: data, encoding: .utf8)?.replacingOccurrences(of: "\n", with: "") ?? ""
     }
     
     static var all: String {
@@ -74,7 +74,7 @@ struct SingleFile: ParsableCommand, CommandBase {
     var args: [String] = []
     
     func run() throws {
-        let arguments = args + [filePath] + [sdk.path()]
+        let arguments = args + [filePath] + ["-sdk", sdk.path()]
         
         guard
             let file = File(path: filePath),
@@ -84,7 +84,7 @@ struct SingleFile: ParsableCommand, CommandBase {
         }
 
         defer { logger.log() }
-        Swift.print("\(filePath)")
+        logger.add(event: .openFile(path: "\(filePath)"))
         let cursor: Cursor = .init(filePath: filePath, arguments: arguments)
         try Rewrite(file: file, cursor: cursor, config: self)?.parse()
     }

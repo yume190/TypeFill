@@ -39,7 +39,7 @@ struct SPMModule: ParsableCommand, CommandBase {
         let all = module.sourceFiles.count
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             guard let file = File(path: filePath) else {return}
-            Swift.print("[\(index)/\(all)] \(filePath)")
+            logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
             let cursor: Cursor = .init(filePath: filePath, arguments: module.compilerArguments)
             try Rewrite(file: file, cursor: cursor, config: self)?.parse()
         }
