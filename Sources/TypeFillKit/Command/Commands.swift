@@ -12,7 +12,7 @@ import SourceKittenFramework
 ///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
 struct WorkSpaceCommand: ParsableCommand, CommandBase {
     static var configuration = CommandConfiguration(
-        commandName: "xcode",
+        commandName: "workspace",
         abstract: "doc single file"
     )
     
@@ -28,14 +28,14 @@ struct WorkSpaceCommand: ParsableCommand, CommandBase {
     @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code")
     var print: Bool = false
     
-    @Argument(help: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
-    var args: [String]
-    
-    @Argument(help: "")
+    @Option(name: [.customLong("workspace", withSingleDash: false)], help: "absolute path of workspace")
     var workspace: String
     
-    @Argument(help: "")
+    @Option(name: [.customLong("scheme", withSingleDash: false)], help: "scheme")
     var scheme: String
+    
+    @Argument(help: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
+    var args: [String] = []
     
     func run() throws {
         let newArgs = [
@@ -45,15 +45,14 @@ struct WorkSpaceCommand: ParsableCommand, CommandBase {
             scheme,
         ]
         
-        let module: Module? = Module(xcodeBuildArguments: args + newArgs, name: nil)
-//        guard let docs = module?.docs else {
-//            throw SourceKittenError.docFailed
-//        }
-        try module?.sourceFiles.forEach{ (filePath) in
+        guard let module: Module = Module(xcodeBuildArguments: args + newArgs, name: nil) else {return}
+
+        try module.sourceFiles.forEach{ (filePath) in
             guard let file = File(path: filePath) else {return}
             let url = URL(fileURLWithPath: filePath)
-            let cursor: Cursor = .init(filePath: filePath, arguments: module?.compilerArguments ?? [])
+            let cursor: Cursor = .init(filePath: filePath, arguments: module.compilerArguments)
             
+            Swift.print("fill: \(filePath)")
             if self.print {
                 try Rewriter2.parse(source: file.contents, cursor: cursor)
             } else {

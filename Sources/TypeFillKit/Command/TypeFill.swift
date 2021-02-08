@@ -22,7 +22,8 @@ import ArgumentParser
 public struct TypeFill: ParsableCommand {
     public init() {}
     public static var configuration = CommandConfiguration(
-        abstract: "A utility for performing maths.",
+        commandName: "typefill",
+        abstract: "A utility for fill swift types.",
         subcommands: [SingleFile.self, SPMModule.self, WorkSpaceCommand.self],
         defaultSubcommand: SPMModule.self
     )

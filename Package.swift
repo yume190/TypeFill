@@ -1,4 +1,4 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,19 +6,20 @@ import PackageDescription
 let package = Package(
     name: "TypeFill",
     platforms: [
-        .macOS(SupportedPlatform.MacOSVersion.v10_10)
+        .macOS(SupportedPlatform.MacOSVersion.v10_13)
     ],
     products: [
-        .executable(name: "typefill", targets: ["TypeFill"])
+        .executable(name: "typefill", targets: ["TypeFill"]),
+        .library(name: "TypeFillKit", targets: ["TypeFillKit"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.31.0")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "0.3.2")),
         
-        .package(url: "https://github.com/apple/swift-syntax.git", .exact("0.50300.0")),
-
-//        .package(url: "https://github.com/jpsim/Yams.git", from: "2.0.0"),
+        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50300.0")),
+        
+        //        .package(url: "https://github.com/jpsim/Yams.git", from: "2.0.0"),
         .package(url: "https://github.com/onevcat/Rainbow", from: "3.2.0")
     ],
     targets: [
@@ -28,28 +29,38 @@ let package = Package(
             name: "TypeFill",
             dependencies: [
                 "TypeFillKit"
-                ]
+            ]
         ),
         .target(
             name: "TypeFillKit",
             dependencies: [
+                
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                "SourceKittenFramework",
+                .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                
                 "Rainbow",
-                "SwiftSyntax",
-                "SwiftSyntaxBuilder"
-//                "Yams"
-        ]),
-//        .target(
-//            name: "TestingData",
-//            exclude: [
-//                "cursor.yml",
-//                "open.yml",
-//                "requests.txt",
-//            ]
-//        ),
+
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntaxBuilder", package: "SwiftSyntax"),
+                //                "Yams"
+            ]),
+        //        .target(
+        //            name: "TestingData",
+        //            exclude: [
+        //                "cursor.yml",
+        //                "open.yml",
+        //                "requests.txt",
+        //            ]
+        //        ),
         .testTarget(
             name: "TypeFillTests",
-            dependencies: ["TypeFillKit"])
+            dependencies: ["TypeFillKit"],
+            resources: [
+                .copy("Resource")
+            ]
+        )
     ]
 )
+
+
+//Target.testTarget(name: <#T##String#>, dependencies: <#T##[Target.Dependency]#>, path: <#T##String?#>, exclude: <#T##[String]#>, sources: <#T##[String]?#>, resources: <#T##[Resource]?#>, cSettings: <#T##[CSetting]?#>, cxxSettings: <#T##[CXXSetting]?#>, swiftSettings: <#T##[SwiftSetting]?#>, linkerSettings: <#T##[LinkerSetting]?#>)

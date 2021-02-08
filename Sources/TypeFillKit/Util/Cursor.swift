@@ -14,7 +14,8 @@ public struct Cursor {
     let arguments: [String]
     
     func callAsFunction(_ offset: Int) throws -> TypeSyntax? {
-        guard let type = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()["key.typename"] as? String else {return nil}
+        let request = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()
+        guard let type = request["key.typename"] as? String else {return nil}
         return SyntaxFactory.makeTypeIdentifier(type)
             .withLeadingTrivia(.spaces(1))
     }

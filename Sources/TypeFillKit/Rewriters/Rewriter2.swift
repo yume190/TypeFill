@@ -66,19 +66,25 @@ class YRewriter: SyntaxRewriter {
     override func visit(_ node: ClosureExprSyntax) -> ExprSyntax {
         if let params = node.signature?.input?.as(ClosureParamListSyntax.self) {
             
-            guard let postion = params.first?.position.utf8Offset else {return .init(node)}
-            guard let name = params.first?.name else {return .init(node)}
-            guard let type = try? cursor(postion) else {return .init(node)}
-
-            let clause = ParameterClauseSyntax { (builder) in
-                let parameter = FunctionParameterSyntax { (builder) in
-                    builder.useFirstName(name)
+            let types = params.compactMap { param -> TypeSyntax? in
+                let postion = param.position.utf8Offset
+                guard let type = try? cursor(postion) else {return nil}
+                return type
+            }
+            
+            guard types.count == params.count else { return .init(node) }
+            
+            let fParams: [FunctionParameterSyntax] = zip(types, params).map { (type, param) in
+                return FunctionParameterSyntax { (builder) in
+                    builder.useFirstName(param.name)
                     builder.useColon(SyntaxFactory.makeColonToken())
                     builder.useType(type)
                 }
+            }
 
+            let clause = ParameterClauseSyntax { (builder) in
                 builder.useLeftParen(SyntaxFactory.makeLeftParenToken())
-                builder.addParameter(parameter)
+                fParams.forEach { builder.addParameter($0) }
                 builder.useRightParen(SyntaxFactory.makeRightParenToken())
             }.withTrailingTrivia(.spaces(1))
             let signature = node.signature?.withInput(.init(clause))
