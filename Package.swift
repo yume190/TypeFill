@@ -28,20 +28,17 @@ let package = Package(
         .target(
             name: "TypeFill",
             dependencies: [
-                "TypeFillKit"
+                "TypeFillKit",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "SourceKittenFramework", package: "SourceKitten"),
             ]
         ),
         .target(
             name: "TypeFillKit",
             dependencies: [
-                
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "SourceKittenFramework", package: "SourceKitten"),
-                
                 "Rainbow",
-
+                .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                .product(name: "SwiftSyntaxBuilder", package: "SwiftSyntax"),
                 //                "Yams"
             ]),
         //        .target(

@@ -4,34 +4,31 @@ import SourceKittenFramework
 @testable import TypeFillKit
 
 struct Config: Configable {
-    var typeFill: Bool = true
-    var ibaction: Bool = false
-    var iboutlet: Bool = false
-    var objc: Bool = false
-    var print: Bool = true
+//    let typeFill: Bool = true
+//    let ibaction: Bool = false
+//    let iboutlet: Bool = false
+//    let objc: Bool = false
+    let print: Bool = true
+    let verbose: Bool = false
 }
 
 final class AutoFillTests: XCTestCase {
-    let bundle: Bundle = Bundle(for: AutoFillTests.self)
-    
-    let sourceFile = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("Resource")
-    
-    func resource(file: String) -> String {
+     
+    private final let sourceFile = URL(fileURLWithPath: #file)
+        .deletingLastPathComponent()
+        .appendingPathComponent("Resource")
+    private final func resource(file: String) -> String {
         return sourceFile.appendingPathComponent(file).path
     }
     
-    func rewriter(file: String) throws -> Rewrite? {
+    private final func rewriter(file: String) throws -> Rewrite {
         let path = resource(file: file)
-        return try Rewrite(
-            file: File(path: path)!,
-            cursor: .init(filePath: path, arguments: [path, "-sdk", sdkPath()]),
-            config: Config()
-        )
+        return try Rewrite(path: path, arguments: [path, "-sdk", sdkPath()], config: Config())
     }
     
     /// let a = 1
     /// var b = a
-    func testType() throws {
+    private final func testType() throws {
         print(sourceFile)
         let file = resource(file: "Decl.swift")
         let args = [file, "-sdk", sdkPath()]
@@ -42,8 +39,8 @@ final class AutoFillTests: XCTestCase {
     
     /// let a = 1
     /// var b = a
-    func testDecl() throws {
-        let override = try rewriter(file: "Decl.swift")?.dump()
+    private final func testDecl() throws {
+        let override = try rewriter(file: "Decl.swift").dump()
         let result = """
         let a: Int = 1
         var b: Int = a
@@ -54,8 +51,8 @@ final class AutoFillTests: XCTestCase {
     /// let a: (Int, Int) -> String = { a, b -> String in
     ///     return ""
     /// }
-    func testClosure1() throws {
-        let override = try rewriter(file: "Closure1.swift")?.dump()
+    private final func testClosure1() throws {
+        let override = try rewriter(file: "Closure1.swift").dump()
         let result = """
         let a: (Int, Int) -> String = { (a: Int, b: Int) -> String in
             return ""
@@ -67,8 +64,8 @@ final class AutoFillTests: XCTestCase {
     /// let a: (Int, Int) -> String = { (a, b) -> String in
     ///     return ""
     /// }
-    func testClosure2() throws {
-        let override = try rewriter(file: "Closure2.swift")?.dump()
+    private final func testClosure2() throws {
+        let override = try rewriter(file: "Closure2.swift").dump()
         let result = """
         let a: (Int, Int) -> String = { (a: Int, b: Int) -> String in
             return ""
@@ -80,8 +77,8 @@ final class AutoFillTests: XCTestCase {
     /// let a: () -> Void = {
     ///     return
     /// }
-    func testClosureEmpty() throws {
-        let override = try rewriter(file: "ClosureEmpty.swift")?.dump()
+    private final func testClosureEmpty() throws {
+        let override = try rewriter(file: "ClosureEmpty.swift").dump()
         let result = """
         let a: () -> Void = {
             return
@@ -92,8 +89,8 @@ final class AutoFillTests: XCTestCase {
     
     /// let a: Int? = nil
     /// if let aa = a {}
-    func testIf() throws {
-        let override = try rewriter(file: "If.swift")?.dump()
+    private final func testIf() throws {
+        let override = try rewriter(file: "If.swift").dump()
         let result = """
         let a: Int? = nil
         if let aa: Int = a {}
@@ -103,8 +100,8 @@ final class AutoFillTests: XCTestCase {
     
     /// let a: Int? = nil
     /// guard let aa = a else {return}
-    func testGuard() throws {
-        let override = try rewriter(file: "Guard.swift")?.dump()
+    private final func testGuard() throws {
+        let override = try rewriter(file: "Guard.swift").dump()
         let result = """
         let a: Int? = nil
         guard let aa: Int = a else {return}

@@ -1,19 +1,21 @@
 //
-//  Command.swift
-//  ArgumentParser
+//  Project.swift
+//  TypeFillKit
 //
-//  Created by Yume on 2020/3/10.
+//  Created by Yume on 2021/2/9.
 //
 
 import Foundation
 import ArgumentParser
 import SourceKittenFramework
+import TypeFillKit
 
+//sourcekitten doc --module-name Alamofire -- -project Alamofire.xcodeproj
 ///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
-struct WorkSpace: ParsableCommand, CommandBase {
+struct Project: ParsableCommand, CommandBase {
     static var configuration: CommandConfiguration = CommandConfiguration(
-        commandName: "workspace",
-        abstract: "Fill type to XCode workspace"
+        commandName: "project",
+        abstract: "Fill type to XCode project."
     )
     
     @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
@@ -22,8 +24,8 @@ struct WorkSpace: ParsableCommand, CommandBase {
     @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print fix item")
     var verbose: Bool = false
     
-    @Option(name: [.customLong("workspace", withSingleDash: false)], help: "absolute path of workspace")
-    var workspace: String
+    @Option(name: [.customLong("project", withSingleDash: false)], help: "absolute path of project")
+    var project: String
     
     @Option(name: [.customLong("scheme", withSingleDash: false)], help: "scheme")
     var scheme: String
@@ -33,8 +35,8 @@ struct WorkSpace: ParsableCommand, CommandBase {
     
     func run() throws {
         let newArgs: [String] = [
-            "-workspace",
-            workspace,
+            "-project",
+            project,
             "-scheme",
             scheme,
         ]

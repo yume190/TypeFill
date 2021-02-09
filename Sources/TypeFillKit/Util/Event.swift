@@ -8,7 +8,7 @@
 import Foundation
 import Rainbow
 
-enum Event: CustomStringConvertible {
+public enum Event: CustomStringConvertible {
     case openFile(path: String)
     case implictType(origin: String, fixed: String)
     case ibAction(origin: String, fixed: String)
@@ -25,7 +25,7 @@ enum Event: CustomStringConvertible {
         }
     }
     
-    var description: String {
+    public var description: String {
         switch self {
         case .openFile(let filePath):
             return """

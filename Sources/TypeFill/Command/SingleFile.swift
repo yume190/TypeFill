@@ -8,6 +8,7 @@
 import Foundation
 import ArgumentParser
 import SourceKittenFramework
+import TypeFillKit
 
 struct SingleFile: ParsableCommand, CommandBase {
     static var configuration: CommandConfiguration = CommandConfiguration(

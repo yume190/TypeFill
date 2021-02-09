@@ -11,17 +11,17 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 
 public struct Rewrite {
-    let path: String
-    // let arguments: [String]
-    let config: Configable
+    public let path: String
+    // public let arguments: [String]
+    public let config: Configable
     
-    let file: File
+    public let file: File
     let cursor: Cursor
-    let sourceFile: SourceFileSyntax
-    let fileHandle: FileHandle
-    let converter: SourceLocationConverter
+    public let sourceFile: SourceFileSyntax
+    public let fileHandle: FileHandle
+    public let converter: SourceLocationConverter
     
-    init(path: String, arguments: [String], config: Configable) throws {
+    public init(path: String, arguments: [String], config: Configable) throws {
         guard let file = File(path: path) else {
             throw SourceKittenError.readFailed(path: path)
         }

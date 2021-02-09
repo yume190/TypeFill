@@ -1,8 +1,8 @@
 //
-//  CommandBase.swift
+//  Configable.swift
 //  
 //
-//  Created by Yume on 2021/2/2.
+//  Created by Yume on 2021/2/9.
 //
 
 import Foundation
@@ -16,8 +16,4 @@ public protocol Configable {
     
     var print: Bool { get }
     var verbose: Bool { get }
-}
-
-protocol CommandBase: Configable {
-    var args: [String] { get }
 }

@@ -1,19 +1,20 @@
 //
-//  SPM.swift
-//  TypeFillKit
+//  Command.swift
+//  ArgumentParser
 //
-//  Created by Yume on 2021/2/5.
+//  Created by Yume on 2020/3/10.
 //
 
 import Foundation
 import ArgumentParser
 import SourceKittenFramework
-import SwiftSyntax
+import TypeFillKit
 
-struct SPMModule: ParsableCommand, CommandBase {
+///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
+struct WorkSpace: ParsableCommand, CommandBase {
     static var configuration: CommandConfiguration = CommandConfiguration(
-        commandName: "spm",
-        abstract: "Fill type to SPM Project."
+        commandName: "workspace",
+        abstract: "Fill type to XCode workspace"
     )
     
     @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
@@ -22,17 +23,25 @@ struct SPMModule: ParsableCommand, CommandBase {
     @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print fix item")
     var verbose: Bool = false
     
-    @Option(name: [.customLong("moduleName", withSingleDash: false)], help: "spm target name")
-    var moduleName: String
+    @Option(name: [.customLong("workspace", withSingleDash: false)], help: "absolute path of workspace")
+    var workspace: String
+    
+    @Option(name: [.customLong("scheme", withSingleDash: false)], help: "scheme")
+    var scheme: String
     
     @Argument(help: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
     var args: [String] = []
     
     func run() throws {
-        guard let module: Module = Module(spmArguments: args, spmName: moduleName) else {return}
+        let newArgs: [String] = [
+            "-workspace",
+            workspace,
+            "-scheme",
+            scheme,
+        ]
         
+        guard let module: Module = Module(xcodeBuildArguments: args + newArgs, name: nil) else {return}
         defer { logger.summery() }
-        
         let all: Int = module.sourceFiles.count
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
