@@ -14,9 +14,10 @@ struct Config: Configable {
 final class AutoFillTests: XCTestCase {
     let bundle: Bundle = Bundle(for: AutoFillTests.self)
     
-    let resoucePath = "/Users/yume/git/yume/TypeFill/Tests/TypeFillTests/Resource/"
+    let sourceFile = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("Resource")
+    
     func resource(file: String) -> String {
-        return resoucePath + file
+        return sourceFile.appendingPathComponent(file).path
     }
     
     func rewriter(file: String) throws -> Rewrite? {
@@ -31,6 +32,7 @@ final class AutoFillTests: XCTestCase {
     /// let a = 1
     /// var b = a
     func testType() throws {
+        print(sourceFile)
         let file = resource(file: "Decl.swift")
         let args = [file, "-sdk", sdkPath()]
         let cursor = Cursor(filePath: file, arguments: args)
@@ -110,7 +112,6 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
-    
 //    func testExample() throws {
 //        // This is an example of a functional test case.
 //        // Use XCTAssert and related functions to verify your tests produce the correct
@@ -151,6 +152,12 @@ final class AutoFillTests: XCTestCase {
     }
 
     static var allTests = [
-        ("testExample", testType),
+        ("testType", testType),
+        ("testDecl", testDecl),
+        ("testClosure1", testClosure1),
+        ("testClosure2", testClosure2),
+        ("testClosureEmpty", testClosureEmpty),
+        ("testIf", testIf),
+        ("testGuard", testGuard),
     ]
 }
