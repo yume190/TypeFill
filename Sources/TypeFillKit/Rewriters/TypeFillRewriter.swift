@@ -37,60 +37,62 @@ final class TypeFillRewriter: SyntaxRewriter {
     
     /// ClosureParamList
     ///     ClosureParam i
+    private func fillClosureParam(node: ClosureExprSyntax, params: ClosureParamListSyntax) -> ExprSyntax {
+        let types: [TypeSyntax] = params.compactMap { param -> TypeSyntax? in
+            let postion = param.position.utf8Offset
+            guard let type = try? cursor(postion) else {return nil}
+            return type
+        }
+        
+        guard types.count == params.count else { return .init(node) }
+        let fParams: [FunctionParameterSyntax] = zip(types, params).enumerated().map { (index, item) in
+            return FunctionParameterSyntax { (builder) in
+                builder.useFirstName(item.1.name.withTrailingTrivia(.zero))
+                builder.useColon(Symbols.colon)
+                builder.useType(item.0)
+                if index + 1 != params.count {
+                    builder.useTrailingComma(Symbols.comma)
+                }
+            }
+        }
 
+        let clause: ParameterClauseSyntax = ParameterClauseSyntax(fParams)
+        return self.replace(node: node, clause: clause)
+    }
+    
     /// ParameterClase
     ///     (
     ///     FunctionParameterList
-    ///         FunctionParameter
-    ///             str
-    ///             ,
-    ///         FunctionParameter
-    ///             a
-    ///             :
-    ///             SimpleTypeIndentifier
-    ///                 String
+    ///         FunctionParameter: str,
+    ///         FunctionParameter: a: String
     ///     )
+    private func fillParameterClause(node: ClosureExprSyntax, params: ParameterClauseSyntax) -> ExprSyntax {
+        let newParams: [FunctionParameterSyntax] = params.parameterList.map { (parameter) -> FunctionParameterSyntax in
+            guard parameter.colon == nil, parameter.type == nil else { return parameter }
+            guard let postion = parameter.firstName?.position.utf8Offset else { return parameter }
+            guard let type = try? cursor(postion) else { return parameter }
+            return parameter
+                .withColon(Symbols.colon)
+                .withType(type)
+        }
+        
+        let clause: ParameterClauseSyntax = params.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))
+        
+        return self.replace(node: node, clause: clause)
+    }
+    
+    private func replace(node: ClosureExprSyntax, clause: ParameterClauseSyntax) -> ExprSyntax{
+        let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
+        let newNode: ClosureExprSyntax = node.withSignature(signature)
+        logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
+        return .init(newNode)
+    }
+    
     override func visit(_ node: ClosureExprSyntax) -> ExprSyntax {
         if let params: ClosureParamListSyntax = node.signature?.input?.as(ClosureParamListSyntax.self) {
-            
-            let types: [TypeSyntax] = params.compactMap { param -> TypeSyntax? in
-                let postion = param.position.utf8Offset
-                guard let type = try? cursor(postion) else {return nil}
-                return type
-            }
-            
-            guard types.count == params.count else { return .init(node) }
-            let fParams: [FunctionParameterSyntax] = zip(types, params).enumerated().map { (index, item) in
-                return FunctionParameterSyntax { (builder) in
-                    builder.useFirstName(item.1.name.withTrailingTrivia(.zero))
-                    builder.useColon(Symbols.colon)
-                    builder.useType(item.0)
-                    if index + 1 != params.count {
-                        builder.useTrailingComma(Symbols.comma)
-                    }
-                }
-            }
-
-            let clause: ParameterClauseSyntax = ParameterClauseSyntax(fParams)
-            let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
-            let newNode: ClosureExprSyntax = node.withSignature(signature)
-            logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
-            return .init(newNode)
+            return self.fillClosureParam(node: node, params: params)
         } else if let params: ParameterClauseSyntax = node.signature?.input?.as(ParameterClauseSyntax.self) {
-            let newParams: [FunctionParameterSyntax] = params.parameterList.map { (parameter) -> FunctionParameterSyntax in
-                guard parameter.colon == nil, parameter.type == nil else { return parameter }
-                guard let postion = parameter.firstName?.position.utf8Offset else { return parameter }
-                guard let type = try? cursor(postion) else { return parameter }
-                return parameter
-                    .withColon(Symbols.colon)
-                    .withType(type)
-            }
-            
-            let clause: ParameterClauseSyntax = params.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))
-            let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
-            let newNode: ClosureExprSyntax = node.withSignature(signature)
-            logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
-            return .init(newNode)
+            return self.fillParameterClause(node: node, params: params)
         }
         return .init(node)
     }
