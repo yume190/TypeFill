@@ -17,6 +17,5 @@ struct Cursor {
         let request: [String : SourceKitRepresentable] = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()
         guard let type: String = request["key.typename"] as? String else {return nil}
         return SyntaxFactory.makeTypeIdentifier(type)
-            .withLeadingTrivia(.spaces(1))
     }
 }

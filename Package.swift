@@ -39,7 +39,7 @@ let package = Package(
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                //                "Yams"
+//                .product(name: "SwiftSyntaxBuilder", package: "SwiftSyntax"),
             ]),
         //        .target(
         //            name: "TestingData",
@@ -58,6 +58,3 @@ let package = Package(
         )
     ]
 )
-
-
-//Target.testTarget(name: <#T##String#>, dependencies: <#T##[Target.Dependency]#>, path: <#T##String?#>, exclude: <#T##[String]#>, sources: <#T##[String]?#>, resources: <#T##[Resource]?#>, cSettings: <#T##[CSetting]?#>, cxxSettings: <#T##[CXXSetting]?#>, swiftSettings: <#T##[SwiftSetting]?#>, linkerSettings: <#T##[LinkerSetting]?#>)

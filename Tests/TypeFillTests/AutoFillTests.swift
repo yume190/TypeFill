@@ -33,7 +33,7 @@ final class AutoFillTests: XCTestCase {
         let args = [file, "-sdk", sdkPath()]
         let cursor = Cursor(filePath: file, arguments: args)
         let type = try cursor(4)
-        XCTAssertEqual(type?.description, " Int")
+        XCTAssertEqual(type?.description, "Int")
     }
     
     /// let a = 1
@@ -43,6 +43,15 @@ final class AutoFillTests: XCTestCase {
         let result = """
         let a: Int = 1
         var b: Int = a
+        """
+        XCTAssertEqual(override, result)
+    }
+    
+    /// let (a, b) = (1, 2)
+    final func testTuple() throws {
+        let override = try rewriter(file: "Tuple.swift").dump()
+        let result = """
+        let (a, b): (Int, Int) = (1, 2)
         """
         XCTAssertEqual(override, result)
     }

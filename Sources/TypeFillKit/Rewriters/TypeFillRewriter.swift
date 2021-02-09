@@ -9,7 +9,16 @@ import Foundation
 import SourceKittenFramework
 import SwiftSyntax
 
-class TypeFillRewriter: SyntaxRewriter {
+extension TypeAnnotationSyntax {
+    init(_ type: TypeSyntax) {
+        self = TypeAnnotationSyntax { (builder) in
+            builder.useColon(Symbols.colon)
+            builder.useType(type)
+        }.withTrailingTrivia(.spaces(1))
+    }
+}
+
+final class TypeFillRewriter: SyntaxRewriter {
     let path: String
     let cursor: Cursor
     let converter: SourceLocationConverter
@@ -19,7 +28,7 @@ class TypeFillRewriter: SyntaxRewriter {
         self.converter = converter
     }
     
-    fileprivate func found<Syntax: SyntaxProtocol>(syntax: Syntax) -> String {
+    func found<Syntax: SyntaxProtocol>(syntax: Syntax) -> String {
         return """
         \(path):\(self.converter.location(for: syntax.position))
         \(syntax.description)
@@ -51,28 +60,18 @@ class TypeFillRewriter: SyntaxRewriter {
             }
             
             guard types.count == params.count else { return .init(node) }
-            
-            let fParams: [FunctionParameterSyntax] = zip(types, params).map { (type, param) in
+            let fParams: [FunctionParameterSyntax] = zip(types, params).enumerated().map { (index, item) in
                 return FunctionParameterSyntax { (builder) in
-                    builder.useFirstName(param.name.withTrailingTrivia(.zero))
-                    builder.useColon(SyntaxFactory.makeColonToken())
-                    builder.useType(type)
+                    builder.useFirstName(item.1.name.withTrailingTrivia(.zero))
+                    builder.useColon(Symbols.colon)
+                    builder.useType(item.0)
+                    if index + 1 != params.count {
+                        builder.useTrailingComma(Symbols.comma)
+                    }
                 }
             }
 
-            let clause: ParameterClauseSyntax = ParameterClauseSyntax { (builder) in
-                builder.useLeftParen(SyntaxFactory.makeLeftParenToken())
-                fParams.enumerated().forEach { index, param in
-                    let _param: FunctionParameterSyntax
-                    if (fParams.count - 1) == index {
-                        _param = param
-                    } else {
-                        _param = param.withTrailingComma(SyntaxFactory.makeCommaToken().withTrailingTrivia(.spaces(1)))
-                    }
-                    builder.addParameter(_param)
-                }
-                builder.useRightParen(SyntaxFactory.makeRightParenToken())
-            }.withTrailingTrivia(.spaces(1))
+            let clause: ParameterClauseSyntax = ParameterClauseSyntax(fParams)
             let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
             let newNode: ClosureExprSyntax = node.withSignature(signature)
             logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
@@ -83,7 +82,7 @@ class TypeFillRewriter: SyntaxRewriter {
                 guard let postion = parameter.firstName?.position.utf8Offset else { return parameter }
                 guard let type = try? cursor(postion) else { return parameter }
                 return parameter
-                    .withColon(SyntaxFactory.makeColonToken())
+                    .withColon(Symbols.colon)
                     .withType(type)
             }
             
@@ -114,7 +113,7 @@ class TypeFillRewriter: SyntaxRewriter {
     ///         OptionalBindingConditionSyntax
     ///             Pattern
     override func visit(_ node: OptionalBindingConditionSyntax) -> Syntax {
-        return .init(node.fill(cursor: self.cursor, rewriter: self))
+        return .init(node.fill(rewriter: self))
     }
     
     /// PatternBindingSyntax: a = 1
@@ -135,50 +134,10 @@ class TypeFillRewriter: SyntaxRewriter {
         let node: VariableDeclSyntax = node.withBindings(SyntaxFactory.makePatternBindingList(newBindings))
         
         let bindings: [PatternBindingSyntax] = node.bindings.map { (patternBindingSyntax: PatternBindingSyntax) -> PatternBindingSyntax in
-            patternBindingSyntax.fill(cursor: self.cursor, rewriter: self)
+            patternBindingSyntax.fill(rewriter: self)
         }
         let bindingList: PatternBindingListSyntax = SyntaxFactory.makePatternBindingList(bindings)
         let result: VariableDeclSyntax = node.withBindings(bindingList)
         return .init(result)
-    }
-}
-
-protocol Binding: SyntaxProtocol {
-    var typeAnnotation: TypeAnnotationSyntax? {get}
-    var pattern: PatternSyntax {get}
-    func withPattern(_ newChild: PatternSyntax?) -> Self
-    func withTypeAnnotation(_ newChild: TypeAnnotationSyntax?) -> Self
-}
-
-extension OptionalBindingConditionSyntax: Binding {}
-extension PatternBindingSyntax: Binding {}
-
-
-extension Binding {
-    func fill(cursor: Cursor, rewriter: TypeFillRewriter) -> Self {
-        guard self.typeAnnotation == nil else { return self }
-        
-        if self.pattern.syntaxNodeType == IdentifierPatternSyntax.self {
-            let offset: Int = self.pattern.position.utf8Offset
-            guard let type: TypeSyntax = try? cursor(offset) else { return self }
-            
-            let typeAnnotation: TypeAnnotationSyntax = TypeAnnotationSyntax { (builder) in
-                builder.useColon(SyntaxFactory.makeColonToken())
-                builder.useType(
-                    type.withTrailingTrivia(.spaces(1))
-                )
-            }
-            
-            let newNode: Self = self
-                .withPattern(self.pattern.withTrailingTrivia(.zero))
-                .withTypeAnnotation(typeAnnotation)
-            logger.add(event: .implictType(origin: rewriter.found(syntax: self), fixed: newNode.description))
-            return newNode
-                
-        } else if self.pattern.syntaxNodeType == TuplePatternSyntax.self {
-            return self
-        } else {
-            return self
-        }
     }
 }

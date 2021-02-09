@@ -1,3 +1,1 @@
-import TypeFillKit
-
 TypeFill.main()
