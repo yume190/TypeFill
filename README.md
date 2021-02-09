@@ -50,10 +50,11 @@ typefill workspace --workspace PATH/TO/YOUR.xcworkspace --scheme YOUR_SCHEME
 - [x] typefill variables like `let a = 1` or `var a = "1"`.
 - [x] typefill keyword like `let ``default`` = 1`.
 - [x] typefill `guard let` and `if let`.
-- [x] typefill some colsure input.
+- [x] typefill some closure input.
     - `{ a, b in }`
     - `{ (a, b) in }`
-- [ ] typefill binding tuple `let (aa, bb) = (1, 2)`
+- [x] typefill binding tuple `let (aa, bb) = (1, 2)`
+- [ ] typefill closure output.
 - [ ] ~~add `private final` attribute to `@IBAction/@IBOutlet/@objc` by using `--ibaction/--iboutlet/--objc`.(Rewriting)~~
 
 ## Ref
