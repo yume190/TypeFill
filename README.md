@@ -1,5 +1,7 @@
 # TypeFill
 
+![Swift](https://github.com/yume190/TypeFill/workflows/Swift/badge.svg)
+
 ----
 
 A little cli tool to help you fill your `variables type`.

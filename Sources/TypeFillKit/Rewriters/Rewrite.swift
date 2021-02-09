@@ -8,7 +8,6 @@
 import Foundation
 import SourceKittenFramework
 import SwiftSyntax
-import SwiftSyntaxBuilder
 
 public struct Rewrite {
     public let path: String

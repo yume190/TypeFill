@@ -8,7 +8,6 @@
 import Foundation
 import SourceKittenFramework
 import SwiftSyntax
-import SwiftSyntaxBuilder
 
 class TypeFillRewriter: SyntaxRewriter {
     let path: String
