@@ -11,13 +11,21 @@ import Rainbow
 let logger: Logger = Logger()
 final class Logger {
     private final var events: [Event] = []
+    private final var isPrintEvent = false
     fileprivate init() {}
+    
+    func set(logEvent enable: Bool) {
+        self.isPrintEvent = enable
+    }
+    
     func add(event: Event) {
         self.events.append(event)
+        
+        guard isPrintEvent else { return }
         print(event)
     }
     
-    func log() {
+    func summery() {
         self.logImplictTypeCount()
         self.logIBActionCount()
         self.logIBOutletCount()

@@ -4,7 +4,7 @@
 
 A little cli tool to help you fill your `variables type`.
 
-And add `private final` attribute to `@IBAction`, `@IBOutlet`, and `@objc`.(Rewriting ...)
+~~And add `private final` attribute to `@IBAction`, `@IBOutlet`, and `@objc`.(Rewriting ...)~~
 
 ## Installation
 
@@ -38,7 +38,9 @@ typefill single --filePath /ABSOLUTE/PATH/sample.swift --sdk macosx
 
 typefill spm --moduleName TypeFillKit
 
-typefill workspace -workspace PATH/TO/YOUR.xcworkspace -scheme YOUR_SCHEME
+typefill project --project PATH/TO/YOUR.xcodeproj --scheme YOUR_SCHEME
+
+typefill workspace --workspace PATH/TO/YOUR.xcworkspace --scheme YOUR_SCHEME
 ```
 
 ## The Support Part & Todolist
@@ -50,10 +52,11 @@ typefill workspace -workspace PATH/TO/YOUR.xcworkspace -scheme YOUR_SCHEME
     - `{ a, b in }`
     - `{ (a, b) in }`
 - [ ] typefill binding tuple `let (aa, bb) = (1, 2)`
-- [ ] add `private final` attribute to `@IBAction/@IBOutlet/@objc` by using `--ibaction/--iboutlet/--objc`.(Rewriting)
+- [ ] ~~add `private final` attribute to `@IBAction/@IBOutlet/@objc` by using `--ibaction/--iboutlet/--objc`.(Rewriting)~~
 
 ## Ref
 
+ * [AST Explorer](https://swift-ast-explorer.com/)
  * [SourceKitten](https://github.com/jpsim/SourceKitten/tree/swift-5.1)
  * [SwiftSupport](https://github.com/apple/swift/blob/master/tools/SourceKit/docs/SwiftSupport.txt)
  * [Protocol](https://github.com/apple/swift/blob/master/tools/SourceKit/docs/Protocol.md)

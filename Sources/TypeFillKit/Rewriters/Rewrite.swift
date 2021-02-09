@@ -10,62 +10,44 @@ import SourceKittenFramework
 import SwiftSyntax
 import SwiftSyntaxBuilder
 
-//extension Configable {
-//    @ArrayBuilder<SyntaxRewriter>
-//    func rewriters(cursor: Cursor, converter: SourceLocationConverter) -> [SyntaxRewriter] {
-//        if typeFill {
-//            TypeFillRewriter(cursor, converter)
-//        }
-//    }
-//}
-
-
 public struct Rewrite {
-    let file: File
-    let cursor: Cursor
+    let path: String
+    // let arguments: [String]
     let config: Configable
     
-    let path: String
+    let file: File
+    let cursor: Cursor
     let sourceFile: SourceFileSyntax
     let fileHandle: FileHandle
     let converter: SourceLocationConverter
     
-//    @ArrayBuilder<SyntaxRewriter>
-//    var rewriters: [SyntaxRewriter] {
-//        if config.typeFill {
-//            TypeFillRewriter(file.path!, cursor, converter)
-//        }
-//    }
-    
-    init?(file: File, cursor: Cursor, config: Configable) throws {
-        self.file = file
-        self.cursor = cursor
-        self.config = config
+    init(path: String, arguments: [String], config: Configable) throws {
+        guard let file = File(path: path) else {
+            throw SourceKittenError.readFailed(path: path)
+        }
         
-        guard let path: String = file.path else { return nil }
         self.path = path
+        self.config = config
+        self.file = file
         
+        self.cursor = Cursor.init(filePath: path, arguments: arguments)
         if config.print {
             self.sourceFile = try SyntaxParser.parse(source: file.contents)
             self.fileHandle = .standardOutput
         } else {
             let url: URL = URL(fileURLWithPath: path)
-            sourceFile = try SyntaxParser.parse(url)
-            fileHandle = try FileHandle(forWritingTo: url)
+            self.sourceFile = try SyntaxParser.parse(url)
+            self.fileHandle = try FileHandle(forWritingTo: url)
         }
-        self.converter = .init(file: path, tree: self.sourceFile)
-    }
-    
-    public func parse() throws {
-        let rewrite: Syntax = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
         
-        var result: String = ""
-        rewrite.write(to: &result)
-
-        self.fileHandle.write(result.data(using: .utf8)!)
+        self.converter = SourceLocationConverter(file: path, tree: self.sourceFile)
     }
     
-    public func dump() throws -> String {
+    public func parse() {
+        self.fileHandle.write(self.dump().utf8!)
+    }
+    
+    public func dump() -> String {
         let rewrite: Syntax = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
         
         var result: String = ""

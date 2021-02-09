@@ -9,7 +9,7 @@ import Foundation
 import SwiftSyntax
 import SourceKittenFramework
 
-public struct Cursor {
+struct Cursor {
     let filePath: String
     let arguments: [String]
     

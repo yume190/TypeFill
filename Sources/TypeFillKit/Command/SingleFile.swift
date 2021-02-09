@@ -9,60 +9,17 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 
-enum SDK: String, ExpressibleByArgument, CaseIterable {
-    case macosx
-    case appletvos
-    case watchsimulator
-    case iphonesimulator
-    case appletvsimulator
-    case iphoneos
-    case watchos
-    func path() -> String {
-        let xcrun: URL = URL(fileURLWithPath: "/usr/bin/xcrun")
-
-        let process: Process = Process()
-        process.executableURL = xcrun
-        process.arguments =  [
-            "--sdk",
-            "\(self.rawValue)",
-            "--show-sdk-path",
-        ]
-        
-        let pipe: Pipe = Pipe()
-        process.standardOutput = pipe
-
-        try? process.run()
-        process.waitUntilExit()
-
-        let data: Data = pipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8)?.replacingOccurrences(of: "\n", with: "") ?? ""
-    }
-    
-    static var all: String {
-        return SDK
-            .allCases
-            .map(\.rawValue)
-            .joined(separator: "|")
-    }
-}
-
 struct SingleFile: ParsableCommand, CommandBase {
     static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "single",
-        abstract: "single file"
+        abstract: "Fill type to single file"
     )
     
-    @Flag(name: [.customLong("typefill", withSingleDash: false)], help: "add type to variable and constant")
-    var typeFill: Bool = false
-    @Flag(name: [.customLong("ibaction", withSingleDash: false)], help: "add private final attributes to IBAction")
-    var ibaction: Bool = false
-    @Flag(name: [.customLong("iboutlet", withSingleDash: false)], help: "add private final attributes to IBOutlet")
-    var iboutlet: Bool = false
-    @Flag(name: [.customLong("objc", withSingleDash: false)], help: "add private final attributes to objc")
-    var objc: Bool = false
-    
-    @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code")
+    @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
     var print: Bool = false
+    
+    @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print fix item")
+    var verbose: Bool = false
     
     @Option(name: [.customLong("filePath", withSingleDash: false)], help: "absolute path")
     var filePath: String
@@ -75,17 +32,9 @@ struct SingleFile: ParsableCommand, CommandBase {
     
     func run() throws {
         let arguments: [String] = args + [filePath] + ["-sdk", sdk.path()]
-        
-        guard
-            let file: File = File(path: filePath),
-            let _ = SwiftDocs(file: file, arguments: [filePath])
-        else {
-            throw SourceKittenError.readFailed(path: filePath)
-        }
 
-        defer { logger.log() }
+        defer { logger.summery() }
         logger.add(event: .openFile(path: "\(filePath)"))
-        let cursor: Cursor = .init(filePath: filePath, arguments: arguments)
-        try Rewrite(file: file, cursor: cursor, config: self)?.parse()
+        try Rewrite(path: filePath, arguments: arguments, config: self).parse()
     }
 }

@@ -8,12 +8,14 @@
 import Foundation
 
 public protocol Configable {
-    var typeFill: Bool { get }
-    var ibaction: Bool { get }
-    var iboutlet: Bool { get }
-    var objc: Bool { get }
+    #warning("todo arguments")
+//    var typeFill: Bool { get }
+//    var ibaction: Bool { get }
+//    var iboutlet: Bool { get }
+//    var objc: Bool { get }
     
     var print: Bool { get }
+    var verbose: Bool { get }
 }
 
 protocol CommandBase: Configable {
