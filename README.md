@@ -54,8 +54,17 @@ typefill workspace --workspace PATH/TO/YOUR.xcworkspace --scheme YOUR_SCHEME
     - `{ a, b in }`
     - `{ (a, b) in }`
 - [x] typefill binding tuple `let (aa, bb) = (1, 2)`
+- [ ] typefill `inout` 
 - [ ] typefill closure output.
 - [ ] ~~add `private final` attribute to `@IBAction/@IBOutlet/@objc` by using `--ibaction/--iboutlet/--objc`.(Rewriting)~~
+
+``` swift
+private lazy var chartHeight: [CGFloat] = {
+    return self.status.sensorData?.compactMap { sensor -> CGFloat in
+        guard let _chartType = sensor.chart?.type else { return 0 }
+    }
+}()
+```
 
 ## Ref
 

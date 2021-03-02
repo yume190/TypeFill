@@ -42,10 +42,13 @@ struct Project: ParsableCommand, CommandBase {
         ]
         
         guard let module: Module = Module(xcodeBuildArguments: args + newArgs, name: nil) else {return}
-        defer { logger.summery() }
+        
+        defer { Logger.summery() }
+        Logger.set(logEvent: self.verbose)
+        
         let all: Int = module.sourceFiles.count
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-            logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
+            Logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
             try Rewrite(path: filePath, arguments: module.compilerArguments, config: self).parse()
         }
     }

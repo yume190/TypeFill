@@ -44,3 +44,10 @@ class AAAAAAAAAAA: UIViewController {
     func error() throws {
     }
 }
+
+func abc() {
+    try? AAAAAAAAAAA().error()
+}
+func abcd(i: Int) -> String {
+    return ""
+}

@@ -34,8 +34,10 @@ struct SingleFile: ParsableCommand, CommandBase {
     func run() throws {
         let arguments: [String] = args + [filePath] + ["-sdk", sdk.path()]
 
-        defer { logger.summery() }
-        logger.add(event: .openFile(path: "\(filePath)"))
+        defer { Logger.summery() }
+        Logger.set(logEvent: self.verbose)
+        
+        Logger.add(event: .openFile(path: "\(filePath)"))
         try Rewrite(path: filePath, arguments: arguments, config: self).parse()
     }
 }

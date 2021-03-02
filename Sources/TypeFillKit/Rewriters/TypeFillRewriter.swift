@@ -56,7 +56,7 @@ final class TypeFillRewriter: SyntaxRewriter {
             }
         }
 
-        let clause: ParameterClauseSyntax = ParameterClauseSyntax(fParams)
+        let clause: ParameterClauseSyntax = ParameterClauseSyntax.build { fParams }
         return self.replace(node: node, clause: clause)
     }
     
@@ -84,7 +84,7 @@ final class TypeFillRewriter: SyntaxRewriter {
     private func replace(node: ClosureExprSyntax, clause: ParameterClauseSyntax) -> ExprSyntax{
         let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
         let newNode: ClosureExprSyntax = node.withSignature(signature)
-        logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
+        Logger.shared.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
         return .init(newNode)
     }
     
@@ -126,7 +126,6 @@ final class TypeFillRewriter: SyntaxRewriter {
     /// trailingComma
     override func visit(_ node: VariableDeclSyntax) -> DeclSyntax {
 //        node.bindings.first?.initializer?.value.syntaxNodeType ClosureExprSyntax
-        
         let newBindings: [PatternBindingSyntax] = node.bindings.map { binding -> PatternBindingSyntax in
             guard let newBinding = binding.initializer?.value.as(ClosureExprSyntax.self) else {return binding}
             let initializer = binding.initializer?.withValue(self.visit(newBinding))

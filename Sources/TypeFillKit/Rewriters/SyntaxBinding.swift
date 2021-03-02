@@ -44,7 +44,9 @@ extension SyntaxBinding {
             }
         }
         
-        let type = TupleTypeSyntax(tupleTypeElements)
+        let type = TupleTypeSyntax.build {
+            tupleTypeElements
+        }
         let typeAnnotation: TypeAnnotationSyntax = TypeAnnotationSyntax(.init(type))
         return self.replace(typeAnnotation: typeAnnotation, rewriter: rewriter)
     }
@@ -53,7 +55,7 @@ extension SyntaxBinding {
         let newNode: Self = self
             .withPattern(self.pattern.withTrailingTrivia(.zero))
             .withTypeAnnotation(typeAnnotation)
-        logger.add(event: .implictType(origin: rewriter.found(syntax: self), fixed: newNode.description))
+        Logger.shared.add(event: .implictType(origin: rewriter.found(syntax: self), fixed: newNode.description))
         return newNode
     }
     

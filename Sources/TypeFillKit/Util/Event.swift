@@ -37,7 +37,8 @@ public enum Event: CustomStringConvertible {
              .objc(let origin, let fixed):
             return """
             \("[\(self.symbol)]: \(origin)".applyingColor(.red))
-            \("[FIX]: \(fixed)".applyingColor(.green))
+            \("[FIX]:".applyingColor(.green))
+            \(fixed.applyingColor(.green))
             """
         }
     }

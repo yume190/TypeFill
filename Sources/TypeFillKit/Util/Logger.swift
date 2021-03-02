@@ -8,13 +8,26 @@
 import Foundation
 import Rainbow
 
-public let logger: Logger = Logger()
 public final class Logger {
+    
     private final var events: [Event] = []
     private final var isPrintEvent = false
     fileprivate init() {}
     
-    public final func set(logEvent enable: Bool) {
+    static let shared: Logger = Logger()
+    public static func set(logEvent enable: Bool) {
+        shared.set(logEvent: enable)
+    }
+    
+    public static func summery() {
+        shared.summery()
+    }
+    
+    public static func add(event: Event) {
+        shared.add(event: event)
+    }
+    
+    final func set(logEvent enable: Bool) {
         self.isPrintEvent = enable
     }
     
@@ -25,7 +38,7 @@ public final class Logger {
         print(event)
     }
     
-    public final func summery() {
+    final func summery() {
         self.logImplictTypeCount()
         self.logIBActionCount()
         self.logIBOutletCount()
