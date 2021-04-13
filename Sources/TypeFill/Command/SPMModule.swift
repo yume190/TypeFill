@@ -10,6 +10,15 @@ import ArgumentParser
 import SourceKittenFramework
 import TypeFillKit
 
+//print(FileManager.default.currentDirectoryPath)
+//let path = URL(fileURLWithPath: "/Users/yume/git/yume/TypeFill")
+//let p2 = path
+//    .appendingPathComponent(".build")
+//    .appendingPathComponent("debug")
+//    .appendingPathComponent("index")
+//    .appendingPathComponent("store")
+//    .path
+
 struct SPMModule: ParsableCommand, CommandBase {
     static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "spm",
