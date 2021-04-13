@@ -4,16 +4,16 @@ import SourceKittenFramework
 @testable import TypeFillKit
 
 struct Config: Configable {
-//    let typeFill: Bool = true
-//    let ibaction: Bool = false
-//    let iboutlet: Bool = false
-//    let objc: Bool = false
+    //    let typeFill: Bool = true
+    //    let ibaction: Bool = false
+    //    let iboutlet: Bool = false
+    //    let objc: Bool = false
     let print: Bool = true
     let verbose: Bool = false
 }
 
 final class AutoFillTests: XCTestCase {
-     
+    
     private final let sourceFile = URL(fileURLWithPath: #file)
         .deletingLastPathComponent()
         .appendingPathComponent("Resource")
@@ -117,45 +117,34 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
-//    func testExample() throws {
-//        // This is an example of a functional test case.
-//        // Use XCTAssert and related functions to verify your tests produce the correct
-//        // results.
-//
-//        // Some of the APIs that we use below are available in macOS 10.13 and above.
-//        guard #available(macOS 10.13, *) else {
-//            return
-//        }
-//
-//        let fooBinary = productsDirectory.appendingPathComponent("typefill")
-//
-//        let process = Process()
-//        process.executableURL = fooBinary
-//
-//        let pipe = Pipe()
-//        process.standardOutput = pipe
-//
-//        try process.run()
-//        process.waitUntilExit()
-//
-//        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-//        let output = String(data: data, encoding: .utf8)
-//
-//        XCTAssertEqual(output, "Hello, world!\n")
-//    }
-
+    /// let a: (inout Int) -> Int = { i in
+    ///     return i
+    /// }
+    let a: (inout Int) -> Int = { (i: inout Int) in
+        return i
+    }
+    final func testInout() throws {
+        let override = try rewriter(file: "Inout.swift").dump()
+        let result = """
+        let a: (inout Int) -> Int = { (i: inout Int) in
+            return i
+        }
+        """
+        XCTAssertEqual(override, result)
+    }
+    
     /// Returns path to the built products directory.
     var productsDirectory: URL {
-      #if os(macOS)
+        #if os(macOS)
         for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
             return bundle.bundleURL.deletingLastPathComponent()
         }
         fatalError("couldn't find the products directory")
-      #else
+        #else
         return Bundle.main.bundleURL
-      #endif
+        #endif
     }
-
+    
     static var allTests = [
         ("testType", testType),
         ("testDecl", testDecl),

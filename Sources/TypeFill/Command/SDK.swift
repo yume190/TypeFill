@@ -7,6 +7,7 @@
 
 import Foundation
 import ArgumentParser
+import TypeFillKit
 
 enum SDK: String, ExpressibleByArgument, CaseIterable {
     case macosx
@@ -16,25 +17,12 @@ enum SDK: String, ExpressibleByArgument, CaseIterable {
     case appletvsimulator
     case iphoneos
     case watchos
+    
     func path() -> String {
-        let xcrun: URL = URL(fileURLWithPath: "/usr/bin/xcrun")
-
-        let process: Process = Process()
-        process.executableURL = xcrun
-        process.arguments =  [
-            "--sdk",
-            "\(self.rawValue)",
-            "--show-sdk-path",
-        ]
-        
-        let pipe: Pipe = Pipe()
-        process.standardOutput = pipe
-
-        try? process.run()
-        process.waitUntilExit()
-
-        let data: Data = pipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8)?.replacingOccurrences(of: "\n", with: "") ?? ""
+        return Exec.run(
+            "/usr/bin/xcrun",
+            "--sdk", "\(self.rawValue)", "--show-sdk-path"
+        ).string ?? ""
     }
     
     static var all: String {

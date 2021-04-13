@@ -1,7 +1,7 @@
-
+# https://forums.swift.org/t/indexstoredb-support-error/28253
 .PHONY: proj
 proj:
-	swift package generate-xcodeproj
+	swift package generate-xcodeproj --xcconfig-overrides overrides.xcconfig
 	open TypeFill.xcodeproj
 
 .PHONY: release
