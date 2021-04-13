@@ -17,12 +17,9 @@ let package = Package(
         .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.31.0")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "0.3.2")),
         .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch("release/5.3")),
-        
         .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50300.0")),
         
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift", .upToNextMinor(from: "1.3.8")),
-        
-        //        .package(url: "https://github.com/jpsim/Yams.git", from: "2.0.0"),
         .package(url: "https://github.com/onevcat/Rainbow", from: "3.2.0"),
     ],
     targets: [
@@ -36,6 +33,7 @@ let package = Package(
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
             ]
         ),
+        
         .target(
             name: "TypeFillKit",
             dependencies: [
@@ -43,20 +41,16 @@ let package = Package(
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 .product(name: "IndexStoreDB", package: "IndexStoreDB"),
-//                .product(name: "SwiftSyntaxBuilder", package: "SwiftSyntax"),
                 "CryptoSwift",
             ]),
-        //        .target(
-        //            name: "TestingData",
-        //            exclude: [
-        //                "cursor.yml",
-        //                "open.yml",
-        //                "requests.txt",
-        //            ]
-        //        ),
+        
         .testTarget(
             name: "TypeFillTests",
-            dependencies: ["TypeFillKit"],
+            dependencies: [
+                // "TypeFill",
+                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
+                "TypeFillKit",
+            ],
             resources: [
                 .copy("Resource")
             ]

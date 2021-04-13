@@ -40,8 +40,8 @@ final class TypeFillRewriter: SyntaxRewriter {
     private func fillClosureParam(node: ClosureExprSyntax, params: ClosureParamListSyntax) -> ExprSyntax {
         let types: [TypeSyntax] = params.compactMap { param -> TypeSyntax? in
             let postion = param.position.utf8Offset
-            guard let type = try? cursor(postion) else {return nil}
-            return type
+            guard let response = try? cursor(postion) else {return nil}
+            return response.typeSyntax
         }
         
         guard types.count == params.count else { return .init(node) }
@@ -73,7 +73,7 @@ final class TypeFillRewriter: SyntaxRewriter {
             guard let type = try? cursor(postion) else { return parameter }
             return parameter
                 .withColon(Symbols.colon)
-                .withType(type)
+                .withType(parameter.type ?? type.typeSyntax)
         }
         
         let clause: ParameterClauseSyntax = params.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))
@@ -90,6 +90,11 @@ final class TypeFillRewriter: SyntaxRewriter {
     
     override func visit(_ node: ClosureExprSyntax) -> ExprSyntax {
         if let params: ClosureParamListSyntax = node.signature?.input?.as(ClosureParamListSyntax.self) {
+            // MARK: skip inout
+            if let arg = params.first {
+                let isHaveInout = (try? self.cursor(arg.position.utf8Offset).isHaveInout) ?? false
+                if isHaveInout {return .init(node)}
+            }
             return self.fillClosureParam(node: node, params: params)
         } else if let params: ParameterClauseSyntax = node.signature?.input?.as(ParameterClauseSyntax.self) {
             return self.fillParameterClause(node: node, params: params)
