@@ -1,0 +1,4 @@
+struct Test {
+    let a, b: Int
+    let c = 1, d = 2
+}

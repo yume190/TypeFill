@@ -1,0 +1,3 @@
+typealias NewInt = Int
+let a: NewInt = 1
+let b = a
