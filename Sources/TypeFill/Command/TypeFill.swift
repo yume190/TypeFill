@@ -1,6 +1,6 @@
 //
 //  TypeFill.swift
-//  
+//
 //
 //  Created by Yume on 2021/2/4.
 //
@@ -19,6 +19,7 @@ public struct TypeFill: ParsableCommand {
     public static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "typefill",
         abstract: "A utility for fill swift types.",
+        version: "1.0.6",
         subcommands: [SingleFile.self, SPMModule.self, WorkSpace.self, Project.self],
         defaultSubcommand: SPMModule.self
     )
