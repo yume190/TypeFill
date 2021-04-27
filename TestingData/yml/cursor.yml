@@ -1,7 +1,7 @@
 key.request: source.request.cursorinfo
-key.sourcefile: "/Users/yume/git/yume/TypeFill/Sources/TestingData/sample.swift"
+key.sourcefile: "/Users/yume/git/yume/TypeFill/TestingData/sample.swift"
 key.offset: 690
 key.compilerargs:
   - "-sdk"
   - "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk"
-  - "/Users/yume/git/yume/TypeFill/Sources/TestingData/sample.swift"
+  - "/Users/yume/git/yume/TypeFill/TestingData/sample.swift"

@@ -3,4 +3,4 @@
 /Packages
 /*.xcodeproj
 .swiftpm/
-Sources/TestingData/Index/
+TestingData/Index/

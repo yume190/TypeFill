@@ -3,6 +3,9 @@ import Foundation
 class UIViewController: NSObject {}
 class UIButton: NSObject {}
 let a = 1
+let bbbb: (inout Int, Int) -> Int = { (a, b) in
+    return a
+}
 class AAAAAAAAAAA: UIViewController {
     @IBOutlet open weak var btn1: UIButton!
     @IBOutlet final public weak var btn2: UIButton!
