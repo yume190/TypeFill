@@ -1,4 +1,6 @@
 # https://forums.swift.org/t/indexstoredb-support-error/28253
+VERSION = 0.1.6
+
 .PHONY: proj
 proj:
 	swift package generate-xcodeproj --xcconfig-overrides overrides.xcconfig
@@ -72,3 +74,9 @@ open1:
 		key.name: ${PWD}/Sources/TestingData/sample.swift \
 		key.sourcefile: ${PWD}/Sources/TestingData/sample.swift \
 		"
+
+githubRelease:
+	sed -i '' 's|\(version: "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/TypeFill/Command/TypeFill.swift
+
+	git add .
+	git commit -m "Update to $(VERSION)"
