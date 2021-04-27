@@ -72,7 +72,7 @@ struct Cursor {
     let arguments: [String]
     
     func callAsFunction(_ offset: Int) throws -> SourceKitResponse {
-        let raw = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()
+        let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()
         return SourceKitResponse(raw)
     }
 }

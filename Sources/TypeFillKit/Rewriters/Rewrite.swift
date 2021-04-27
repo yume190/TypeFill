@@ -20,8 +20,8 @@ public struct Rewrite {
     public let fileHandle: FileHandle
     public let converter: SourceLocationConverter
     
-    public init(path: String, arguments: [String], config: Configable) throws {
-        guard let file = File(path: path) else {
+    public init(path: String, arguments: CompilerArgumentsGettable, config: Configable) throws {
+        guard let file: File = File(path: path) else {
             throw SourceKittenError.readFailed(path: path)
         }
         
@@ -29,7 +29,8 @@ public struct Rewrite {
         self.config = config
         self.file = file
         
-        self.cursor = Cursor.init(filePath: path, arguments: arguments)
+        let _arguments = arguments(path)
+        self.cursor = Cursor(filePath: path, arguments: _arguments)
         if config.print {
             self.sourceFile = try SyntaxParser.parse(source: file.contents)
             self.fileHandle = .standardOutput

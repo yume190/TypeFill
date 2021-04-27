@@ -57,10 +57,10 @@ public enum Exec {
                      _ arguments: [String] = [],
                      currentDirectory: String = FileManager.default.currentDirectoryPath,
                      stderr: Stderr = .inherit) -> Results {
-        let process = Process()
+        let process: Process = Process()
         process.arguments = arguments
 
-        let pipe = Pipe()
+        let pipe: Pipe = Pipe()
         process.standardOutput = pipe
 
         switch stderr {
@@ -94,8 +94,8 @@ public enum Exec {
             return Results(terminationStatus: -1, data: Data())
         }
 
-        let file = pipe.fileHandleForReading
-        let data = file.readDataToEndOfFile()
+        let file: FileHandle = pipe.fileHandleForReading
+        let data: Data = file.readDataToEndOfFile()
         process.waitUntilExit()
         return Results(terminationStatus: process.terminationStatus, data: data)
     }

@@ -11,3 +11,7 @@ import protocol TypeFillKit.Configable
 protocol CommandBase: Configable {
     var args: [String] { get }
 }
+
+protocol CommandBuild: CommandBase {
+    var skipBuild: Bool { get }
+}

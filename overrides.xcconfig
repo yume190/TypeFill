@@ -9,3 +9,5 @@ OTHER_LDFLAGS = $(inherited) -framework CoreServices -lncurses -lsqlite3
 
 // Required to trigger a workaround in llbuild headers (dependency of swiftpm).
 GCC_PREPROCESSOR_DEFINITIONS = SWIFT_PACKAGE=1
+
+SUPPORTED_PLATFORMS = macosx

@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol Configable {
-    #warning("todo arguments")
+    // TODO: arguments
 //    var typeFill: Bool { get }
 //    var ibaction: Bool { get }
 //    var iboutlet: Bool { get }

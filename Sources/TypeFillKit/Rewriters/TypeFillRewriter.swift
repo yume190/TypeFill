@@ -91,8 +91,8 @@ final class TypeFillRewriter: SyntaxRewriter {
     override func visit(_ node: ClosureExprSyntax) -> ExprSyntax {
         if let params: ClosureParamListSyntax = node.signature?.input?.as(ClosureParamListSyntax.self) {
             // MARK: skip inout
-            if let arg = params.first {
-                let isHaveInout = (try? self.cursor(arg.position.utf8Offset).isHaveInout) ?? false
+            if let arg: ClosureParamSyntax = params.first {
+                let isHaveInout: Bool = (try? self.cursor(arg.position.utf8Offset).isHaveInout) ?? false
                 if isHaveInout {return .init(node)}
             }
             return self.fillClosureParam(node: node, params: params)

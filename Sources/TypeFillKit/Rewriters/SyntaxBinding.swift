@@ -29,13 +29,13 @@ extension SyntaxBinding {
     }
     
     private func fillTuple(pattern: TuplePatternSyntax, rewriter: TypeFillRewriter) -> Self {
-        let types = pattern.elements.compactMap {
+        let types: [TypeSyntax] = pattern.elements.compactMap {
             return try? rewriter.cursor($0.position.utf8Offset).typeSyntax
         }
         
         guard types.count == pattern.elements.count else { return self }
         
-        let tupleTypeElements = types.enumerated().map { (index, type) -> TupleTypeElementSyntax in
+        let tupleTypeElements: [TupleTypeElementSyntax] = types.enumerated().map { (index, type) -> TupleTypeElementSyntax in
             return TupleTypeElementSyntax { (builder) in
                 builder.useType(type)
                 if (index + 1) != types.count {
@@ -44,7 +44,7 @@ extension SyntaxBinding {
             }
         }
         
-        let type = TupleTypeSyntax.build {
+        let type: TupleTypeSyntax = TupleTypeSyntax.build {
             tupleTypeElements
         }
         let typeAnnotation: TypeAnnotationSyntax = TypeAnnotationSyntax(.init(type))
@@ -64,7 +64,7 @@ extension SyntaxBinding {
         
         if self.pattern.syntaxNodeType == IdentifierPatternSyntax.self {
             return self.fillIdentifier(rewriter: rewriter)
-        } else if let pattern = self.pattern.as(TuplePatternSyntax.self) {
+        } else if let pattern: TuplePatternSyntax = self.pattern.as(TuplePatternSyntax.self) {
             return self.fillTuple(pattern: pattern, rewriter: rewriter)
         } else {
             return self

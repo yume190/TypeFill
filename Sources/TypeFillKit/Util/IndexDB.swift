@@ -8,19 +8,26 @@
 import Foundation
 import IndexStoreDB
 
+public protocol IndexStoreProvider {
+    var indexStorePath: String? {get}
+}
+
 /// xcrun --find sourcekit-lsp
 /// /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp
-
+/// libIndexStore:
 /// /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libIndexStore.dylib
-
 public struct IndexStore {
-    private static let defaultLibPath = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libIndexStore.dylib"
+    private static let defaultLibPath: String = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libIndexStore.dylib"
     
     public let db: IndexStoreDB
-    // /Users/yume/git/yume/TypeFill/Sources/TestingData/Index
+    
+    public init?(provider: IndexStoreProvider) {
+        guard let path: String = provider.indexStorePath else {return nil}
+        self.init(path: path)
+    }
     
     public init?(path: String) {
-        guard let lspPath = Exec.run(
+        guard let lspPath: String = Exec.run(
             "/usr/bin/xcrun",
             "--find", "sourcekit-lsp"
         ).string else {return nil}
@@ -28,10 +35,9 @@ public struct IndexStore {
         let indexStoreLibPath: URL = URL(fileURLWithPath: lspPath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-            .appendingPathComponent("lib")
-            .appendingPathComponent("libIndexStore.dylib")
+            .appendingPathComponent("lib/libIndexStore.dylib")
 
-        let libPath = indexStoreLibPath.path
+        let libPath: String = indexStoreLibPath.path
         
         do {
             try self.db = IndexStoreDB(
@@ -46,24 +52,3 @@ public struct IndexStore {
         }
     }
 }
-
-//private static let libIndexStore = "/Applications/Xcode-12.3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libIndexStore.dylib"
-//private static let lib = try? IndexStoreLibrary(dylibPath: Self.libIndexStore)
-//
-////    private static let path = "/Users/yume/Library/Developer/Xcode/DerivedData/Tangran-iOS-gwnoysptyaxistapkuhkxnfauehr/Index/DataStore"
-//private static let path = "/Users/yume/git/yume/TypeFill/Sources/TestingData/Index"
-//let db: IndexStoreDB = {
-//    let db = try! IndexStoreDB(
-//        storePath: Self.path,
-//        databasePath: NSTemporaryDirectory() + "index_\(getpid())",
-//        library: Self.lib
-//    )
-//    db.pollForUnitChangesAndWait()
-//    db.forEachCanonicalSymbolOccurrence(containing: "test", anchorStart: true, anchorEnd: true, subsequence: true, ignoreCase: true) { (so) -> Bool in
-//        print(so.symbol.usr)
-//        return true
-//    }
-//    return db
-//}()
-//
-//❯ xcrun --show-sdk-path

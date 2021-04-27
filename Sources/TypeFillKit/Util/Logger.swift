@@ -11,7 +11,7 @@ import Rainbow
 public final class Logger {
     
     private final var events: [Event] = []
-    private final var isPrintEvent = false
+    private final var isPrintEvent: Bool = false
     fileprivate init() {}
     
     static let shared: Logger = Logger()

@@ -22,8 +22,8 @@ protocol SyntaxListBuilder {
 
 extension SyntaxList {
     static func build(@ArrayBuilder<Parameter> builder: () -> [Parameter]) -> Self {
-        let parameters = builder()
-        return Self { (builder) in
+        let parameters: [Self.Parameter] = builder()
+        return Self { (builder: inout Self.Builder) in
             builder.useLeftParen(Symbols.leftParen)
             parameters.forEach { param in
                 builder.addParameter(param)

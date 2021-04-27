@@ -12,7 +12,7 @@ private func _stdlib_demangleImpl(_ mangledName: UnsafePointer<Int8>?, mangledNa
 
 
 func demangle(_ symbol: String) -> String? {
-    return symbol.withCString { cString -> String? in
+    return symbol.withCString { (cString: UnsafePointer<Int8>) -> String? in
         let std = _stdlib_demangleImpl(
             cString,
             mangledNameLength: UInt(strlen(cString)),
