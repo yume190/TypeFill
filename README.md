@@ -1,5 +1,6 @@
 # TypeFill
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=yume190_TypeFill)](https://sonarcloud.io/dashboard?id=yume190_TypeFill)
 ![Swift](https://github.com/yume190/TypeFill/workflows/Swift/badge.svg)
 
 ----
