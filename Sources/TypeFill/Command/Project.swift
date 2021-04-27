@@ -46,8 +46,11 @@ struct Project: ParsableCommand, CommandBuild {
     }
     
     func run() throws {
-        let (_module, _arguments) = self.moduleArguments
-        guard let module: Module = _module, let arguments = _arguments else {return}
+        let (_module, _arguments): (Module?, CompilerArgumentsGettable?) = self.moduleArguments
+        guard let module: Module = _module, let arguments: CompilerArgumentsGettable = _arguments else {
+            Swift.print("module or build setting not found, quit.")
+            return
+        }
 
         defer { Logger.summery() }
         Logger.set(logEvent: self.verbose)
@@ -79,7 +82,7 @@ struct Project: ParsableCommand, CommandBuild {
         }
         
         // skip build
-        let module = Module(name: self.scheme, compilerArguments: [])
+        let module = Module(name: self.scheme, compilerArguments: _compilerArguments.default)
         return (module, _compilerArguments)
     }
 }

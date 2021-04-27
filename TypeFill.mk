@@ -13,4 +13,4 @@ spm:
 	
 .PHONY: xcode
 xcode:
-	typefill project --project TypeFill.xcodeproj --scheme TypeFill -v --skipBuild
+	typefill project --project ${PWD}/TypeFill.xcodeproj --scheme TypeFill -v --skipBuild

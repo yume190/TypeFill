@@ -11,7 +11,7 @@ import SwiftSyntax
 
 extension TypeAnnotationSyntax {
     init(_ type: TypeSyntax) {
-        self = TypeAnnotationSyntax { (builder) in
+        self = TypeAnnotationSyntax { (builder: inout TypeAnnotationSyntaxBuilder) in
             builder.useColon(Symbols.colon)
             builder.useType(type)
         }.withTrailingTrivia(.spaces(1))

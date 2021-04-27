@@ -10,6 +10,7 @@ import SourceKittenFramework
 
 public protocol CompilerArgumentsGettable: AnyObject {
     func callAsFunction(_ path: String) -> [String]
+    var `default`: [String] { get }
 }
 
 public enum CompilerArguments {
@@ -21,6 +22,9 @@ public enum CompilerArguments {
         func callAsFunction(_ path: String) -> [String] {
             return arguments
         }
+        var `default`: [String] {
+            return arguments
+        }
     }
     
     final class ByFile: CompilerArgumentsGettable {
@@ -30,6 +34,9 @@ public enum CompilerArguments {
         }
         func callAsFunction(_ path: String) -> [String] {
             return self.arguments[path] ?? []
+        }
+        var `default`: [String] {
+            return arguments.first?.value ?? []
         }
         
         /// arguments: -project TypeFill.xcodeproj/ -scheme TypeFill -showBuildSettingsForIndex
