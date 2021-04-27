@@ -23,7 +23,8 @@ final class AutoFillTests: XCTestCase {
     
     private final func rewriter(file: String) throws -> Rewrite {
         let path = resource(file: file)
-        return try Rewrite(path: path, arguments: [path, "-sdk", sdkPath()], config: Config())
+        let arguments = CompilerArguments.ByModule([path, "-sdk", sdkPath()])
+        return try Rewrite(path: path, arguments: arguments, config: Config())
     }
     
     /// let a = 1

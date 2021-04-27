@@ -30,8 +30,15 @@ public indirect enum ArrayBox<T> {
     }
 }
 
+#if swift(>=5.4)
+@resultBuilder
+public enum ArrayBuilder<T> {}
+#else
 @_functionBuilder
-public enum ArrayBuilder<T> {
+public enum ArrayBuilder<T> {}
+#endif
+
+extension ArrayBuilder {
     public static func buildExpression(_ item: T) -> ArrayBox<T> {
         return .single(item)
     }
