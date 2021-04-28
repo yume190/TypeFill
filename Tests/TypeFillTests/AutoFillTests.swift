@@ -74,14 +74,14 @@ final class AutoFillTests: XCTestCase {
     }
     
     /// typealias NewInt = Int
-    /// let a: NewInt = 1
+    /// let a: NewInt! = 1
     /// let b = a
     final func testTypeAlias() throws {
         let override = try rewriter(file: "TypeAlias.swift.data").dump()
         let result = """
         typealias NewInt = Int
-        let a: NewInt = 1
-        let b: NewInt = a
+        let a: NewInt! = 1
+        let b: NewInt? = a
         """
         XCTAssertEqual(override, result)
     }

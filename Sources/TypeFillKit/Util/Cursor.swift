@@ -36,10 +36,37 @@ struct SourceKitResponse {
     var typename: String? {
         return self[#function] as? String
     }
-    
+
     var typeSyntax: TypeSyntax? {
-        guard let type: String = self.typename else {return nil}
+//        guard let type: String = self.typename else {return nil}
+        guard let type = self.decl else {return nil}
+        
         return SyntaxFactory.makeTypeIdentifier(type)
+    }
+    
+    var fully_annotated_decl: String? {
+        return self[#function] as? String
+    }
+    
+    var annotated_decl: String? {
+        return self[#function] as? String
+    }
+
+    // TODO:
+    // closure paremeter:
+    // <decl.var.parameter>
+    //     <decl.var.parameter.type><ref.struct usr="s:Si">Int</ref.struct></decl.var.parameter.type>
+    // </decl.var.parameter>
+    // <decl.var.global>
+    //     <decl.var.type><ref.typealias usr=\"s:4main6NewInta\">NewInt</ref.typealias>?</decl.var.type>
+    // </decl.var.global>
+    var decl: String? {
+        guard let xmlString = fully_annotated_decl else { return nil }
+        let xml = try? XMLDocument(xmlString: xmlString, options: .documentTidyXML)
+        let root = xml?.rootElement()
+        
+        return root?.elements(forName: "decl.var.type").first?.stringValue ??
+            root?.elements(forName: "decl.var.parameter.type").first?.stringValue
     }
 
     var name: String? {
