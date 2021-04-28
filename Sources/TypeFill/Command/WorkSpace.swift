@@ -52,7 +52,10 @@ struct WorkSpace: ParsableCommand, CommandBuild {
     
     func run() throws {
         let (_module, _arguments): (Module?, CompilerArgumentsGettable?) = self.moduleArguments
-        guard let module: Module = _module, let arguments: CompilerArgumentsGettable = _arguments else {return}
+        guard let module: Module = _module, let arguments: CompilerArgumentsGettable = _arguments else {
+            Swift.print("module or build setting not found, quit.")
+            return
+        }
         
         defer { Logger.summery() }
         Logger.set(logEvent: self.verbose)
@@ -71,7 +74,7 @@ struct WorkSpace: ParsableCommand, CommandBuild {
         
         guard let _compilerArguments = compilerArguments, self.skipBuild && isIndexStoreExist else {
             if !isIndexStoreExist {
-                Swift.print("can't find index bstore db, force build")
+                Swift.print("can't find index store db, force build")
             }
             
             if compilerArguments == nil {

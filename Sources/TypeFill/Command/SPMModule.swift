@@ -35,7 +35,10 @@ struct SPMModule: ParsableCommand, CommandBuild {
     var args: [String] = []
     
     func run() throws {
-        guard let module: Module = self.module else {return}
+        guard let module: Module = self.module else {
+            Swift.print("module or build setting not found, quit.")
+            return
+        }
         
         defer { Logger.summery() }
         Logger.set(logEvent: self.verbose)
@@ -51,6 +54,10 @@ struct SPMModule: ParsableCommand, CommandBuild {
         let isIndexStoreExist = DerivedPath.SPM(URL(fileURLWithPath: path).path)?.indexStorePath != nil
         
         guard self.skipBuild && isIndexStoreExist else {
+            if !isIndexStoreExist {
+                Swift.print("can't find index store db, force build")
+            }
+            
             // build
             return Module(spmArguments: args, spmName: moduleName, inPath: path)
         }

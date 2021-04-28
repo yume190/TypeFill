@@ -69,7 +69,7 @@ struct Project: ParsableCommand, CommandBuild {
         
         guard let _compilerArguments = compilerArguments, self.skipBuild && isIndexStoreExist else {
             if !isIndexStoreExist {
-                Swift.print("can't find index bstore db, force build")
+                Swift.print("can't find index store db, force build")
             }
             
             if compilerArguments == nil {
