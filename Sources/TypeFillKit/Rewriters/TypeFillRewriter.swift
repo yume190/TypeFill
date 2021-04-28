@@ -71,9 +71,10 @@ final class TypeFillRewriter: SyntaxRewriter {
             guard parameter.colon == nil, parameter.type == nil else { return parameter }
             guard let postion = parameter.firstName?.position.utf8Offset else { return parameter }
             guard let type = try? cursor(postion) else { return parameter }
+            guard let typeSyntax = type.typeSyntax else { return parameter }
             return parameter
                 .withColon(Symbols.colon)
-                .withType(parameter.type ?? type.typeSyntax)
+                .withType(parameter.type ?? typeSyntax)
         }
         
         let clause: ParameterClauseSyntax = params.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))

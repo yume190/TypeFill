@@ -112,6 +112,20 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
+    
+    /// let a: (Int, Int) -> String = { (_, _) -> String in
+    ///     return ""
+    /// }
+    final func testClosureUnderLine() throws {
+        let override = try rewriter(file: "ClosureUnderLine.swift.data").dump()
+        let result = """
+        let a: (Int, Int) -> String = { (_, _) -> String in
+            return ""
+        }
+        """
+        XCTAssertEqual(override, result)
+    }
+    
     /// let a: () -> Void = {
     ///     return
     /// }
