@@ -10,12 +10,21 @@ import SwiftSyntax
 protocol SyntaxBinding: SyntaxProtocol {
     var typeAnnotation: TypeAnnotationSyntax? {get}
     var pattern: PatternSyntax {get}
+    var _initializer: InitializerClauseSyntax? { get }
     func withPattern(_ newChild: PatternSyntax?) -> Self
     func withTypeAnnotation(_ newChild: TypeAnnotationSyntax?) -> Self
 }
 
-extension OptionalBindingConditionSyntax: SyntaxBinding {}
-extension PatternBindingSyntax: SyntaxBinding {}
+extension OptionalBindingConditionSyntax: SyntaxBinding {
+    var _initializer: InitializerClauseSyntax? {
+        initializer
+    }
+}
+extension PatternBindingSyntax: SyntaxBinding {
+    var _initializer: InitializerClauseSyntax? {
+        initializer
+    }
+}
 
 
 extension SyntaxBinding {
@@ -23,7 +32,12 @@ extension SyntaxBinding {
         let offset: Int = self.pattern.position.utf8Offset
         guard let type: TypeSyntax = try? rewriter.cursor(offset).typeSyntax else { return self }
         
-        let typeAnnotation: TypeAnnotationSyntax = TypeAnnotationSyntax(type)
+        let typeAnnotation: TypeAnnotationSyntax
+        if self._initializer == nil {
+            typeAnnotation = TypeAnnotationSyntax(type).withTrailingTrivia(.zero)
+        } else {
+            typeAnnotation = TypeAnnotationSyntax(type)
+        }
         
         return self.replace(typeAnnotation: typeAnnotation, rewriter: rewriter)
     }
