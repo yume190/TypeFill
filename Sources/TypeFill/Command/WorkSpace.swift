@@ -51,43 +51,24 @@ struct WorkSpace: ParsableCommand, CommandBuild {
     }
     
     func run() throws {
-        let (_module, _arguments): (Module?, CompilerArgumentsGettable?) = self.moduleArguments
-        guard let module: Module = _module, let arguments: CompilerArgumentsGettable = _arguments else {
-            Swift.print("module or build setting not found, quit.")
-            return
-        }
-        
-        defer { Logger.summery() }
-        Logger.set(logEvent: self.verbose)
-        
-        let all: Int = module.sourceFiles.count
-        try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-            Logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
-            try Rewrite(path: filePath, arguments: arguments, config: self).parse()
-        }
+        try self.scan()
     }
     
-    private var moduleArguments: (Module?, CompilerArgumentsGettable?) {
+    var isIndexStoreExist: Bool {
         let path = URL(fileURLWithPath: workspace).path
-        let isIndexStoreExist = DerivedPath(path)?.indexStorePath != nil
-        let compilerArguments = CompilerArguments.byFile(name: scheme, arguments: self.xcodeBuildArguments)
-        
-        guard let _compilerArguments = compilerArguments, self.skipBuild && isIndexStoreExist else {
-            if !isIndexStoreExist {
-                Swift.print("can't find index store db, force build")
-            }
-            
-            if compilerArguments == nil {
-                Swift.print("can't get build arguments, force build")
-            }
-            
-            // build
-            let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: nil)
-            return (module, module?.compilerArgumentsGettable)
-        }
-        
-        // skip build
-        let module = Module(name: self.scheme, compilerArguments: _compilerArguments.default)
-        return (module, _compilerArguments)
+        return DerivedPath(path)?.indexStorePath != nil
+    }
+    
+    var buildSetting: CompilerArgumentsGettable? {
+        return CompilerArguments.byFile(name: scheme, arguments: self.xcodeBuildArguments)
+    }
+    
+    var buildModule: Module? {
+        return Module(xcodeBuildArguments: xcodeBuildArguments, name: nil)
+    }
+    
+    var skipBuildModule: Module? {
+        guard let _compilerArguments = buildSetting else { return nil }
+        return Module(name: self.scheme, compilerArguments: _compilerArguments.default)
     }
 }

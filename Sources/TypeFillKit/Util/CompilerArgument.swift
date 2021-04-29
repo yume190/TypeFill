@@ -8,25 +8,21 @@
 import Foundation
 import SourceKittenFramework
 
-public protocol CompilerArgumentsGettable: AnyObject {
+public protocol CompilerArgumentsGettable {
     func callAsFunction(_ path: String) -> [String]
     var `default`: [String] { get }
 }
 
-public enum CompilerArguments {
-    final class ByModule: CompilerArgumentsGettable {
-        let arguments: [String]
-        init(_ arguments: [String]) {
-            self.arguments = arguments
-        }
-        func callAsFunction(_ path: String) -> [String] {
-            return arguments
-        }
-        var `default`: [String] {
-            return arguments
-        }
+extension Array: CompilerArgumentsGettable where Element == String {
+    public func callAsFunction(_ path: String) -> [String] {
+        return self
     }
-    
+    public var `default`: [String] {
+        return self
+    }
+}
+
+public enum CompilerArguments {
     final class ByFile: CompilerArgumentsGettable {
         let arguments: [String: [String]]
         init(_ arguments: [String: [String]]) {
@@ -67,9 +63,9 @@ public enum CompilerArguments {
 }
 
 extension CompilerArguments {
-    public static func byModule(compilerArguments: [String]) -> CompilerArgumentsGettable {
-        return CompilerArguments.ByModule(compilerArguments)
-    }
+//    public static func byModule(compilerArguments: [String]) -> CompilerArgumentsGettable {
+//        return CompilerArguments.ByModule(compilerArguments)
+//    }
     
     static func byFile(compilerArguments: [String: [String]]) -> CompilerArgumentsGettable {
         return CompilerArguments.ByFile(compilerArguments)
@@ -79,11 +75,5 @@ extension CompilerArguments {
         guard let settings = try? CompilerArguments.ByFile.buildSettings(name: name, arguments: arguments) else {return nil}
         guard !settings.isEmpty else {return nil}
         return self.byFile(compilerArguments: settings)
-    }
-}
-
-extension Module {
-    public var compilerArgumentsGettable: CompilerArgumentsGettable {
-        return CompilerArguments.ByModule(self.compilerArguments)
     }
 }

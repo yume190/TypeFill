@@ -35,34 +35,23 @@ struct SPMModule: ParsableCommand, CommandBuild {
     var args: [String] = []
     
     func run() throws {
-        guard let module: Module = self.module else {
-            Swift.print("module or build setting not found, quit.")
-            return
-        }
-        
-        defer { Logger.summery() }
-        Logger.set(logEvent: self.verbose)
-        
-        let all: Int = module.sourceFiles.count
-        try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-            Logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
-            try Rewrite(path: filePath, arguments: module.compilerArgumentsGettable, config: self).parse()
-        }
+        try self.scan()
     }
     
-    private var module: Module? {
-        let isIndexStoreExist = DerivedPath.SPM(URL(fileURLWithPath: path).path)?.indexStorePath != nil
-        
-        guard self.skipBuild && isIndexStoreExist else {
-            if !isIndexStoreExist {
-                Swift.print("can't find index store db, force build")
-            }
-            
-            // build
-            return Module(spmArguments: args, spmName: moduleName, inPath: path)
-        }
-        
-        // skip build
+    var isIndexStoreExist: Bool {
+        DerivedPath.SPM(URL(fileURLWithPath: path).path)?.indexStorePath != nil
+    }
+    
+    var buildSetting: CompilerArgumentsGettable? {
+        return []
+    }
+    
+    var buildModule: Module? {
+        return Module(spmArguments: args, spmName: moduleName, inPath: path)
+    }
+    
+    var skipBuildModule: Module? {
         return Module(spmName: moduleName, inPath: path)
     }
 }
+

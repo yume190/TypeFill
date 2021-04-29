@@ -38,10 +38,9 @@ struct SingleFile: ParsableCommand, CommandBase {
         Logger.set(logEvent: self.verbose)
         
         Logger.add(event: .openFile(path: "\(filePath)"))
-        let argumentsGettable: CompilerArgumentsGettable = CompilerArguments.byModule(compilerArguments: arguments)
         try Rewrite(
             path: filePath,
-            arguments: argumentsGettable,
+            arguments: arguments,
             config: self
         ).parse()
     }
