@@ -12,7 +12,7 @@ kittenOpen:
 	sourcekitten request --yaml ${CWD}/yml/open.yml
 
 .PHONY: kittencursor
-kittencursor:
+kittenCursor:
 	sourcekitten request --yaml ${CWD}/yml/cursor.yml
 
 .PHONY: kittenDoc
