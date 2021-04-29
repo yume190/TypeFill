@@ -85,7 +85,7 @@ final class TypeFillRewriter: SyntaxRewriter {
     private func replace(node: ClosureExprSyntax, clause: ParameterClauseSyntax) -> ExprSyntax{
         let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
         let newNode: ClosureExprSyntax = node.withSignature(signature)
-        Logger.shared.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
+        Logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
         return .init(newNode)
     }
     

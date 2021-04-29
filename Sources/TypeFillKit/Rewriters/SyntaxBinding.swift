@@ -69,7 +69,7 @@ extension SyntaxBinding {
         let newNode: Self = self
             .withPattern(self.pattern.withTrailingTrivia(.zero))
             .withTypeAnnotation(typeAnnotation)
-        Logger.shared.add(event: .implictType(origin: rewriter.found(syntax: self), fixed: newNode.description))
+        Logger.add(event: .implictType(origin: rewriter.found(syntax: self), fixed: newNode.description))
         return newNode
     }
     
