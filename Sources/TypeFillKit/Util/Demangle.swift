@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// SWIFT_RUNTIME_EXPORT
+/// https://github.com/apple/swift/blob/a4e71aa819cfaa25d512555c351377efa968aa68/include/swift/Demangling/Demangle.h#L668
 @_silgen_name("swift_demangle")
 private func _stdlib_demangleImpl(_ mangledName: UnsafePointer<Int8>?, mangledNameLength: UInt, outputBuffer: UnsafeMutablePointer<Int8>?, outputBufferSize: UnsafeMutablePointer<UInt>?, flags: UInt32) -> UnsafeMutablePointer<Int8>?
 

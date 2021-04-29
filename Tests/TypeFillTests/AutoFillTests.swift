@@ -23,7 +23,7 @@ final class AutoFillTests: XCTestCase {
     
     private final func rewriter(file: String) throws -> Rewrite {
         let path = resource(file: file)
-        let arguments = CompilerArguments.ByModule([path, "-sdk", sdkPath()])
+        let arguments = [path, "-sdk", sdkPath()]
         return try Rewrite(path: path, arguments: arguments, config: Config())
     }
     
@@ -164,9 +164,6 @@ final class AutoFillTests: XCTestCase {
     /// let a: (inout Int) -> Int = { i in
     ///     return i
     /// }
-    let a: (inout Int) -> Int = { (i: inout Int) in
-        return i
-    }
     // MARK: skip inout
     final func testInout() throws {
         let override = try rewriter(file: "Inout.swift.data").dump()

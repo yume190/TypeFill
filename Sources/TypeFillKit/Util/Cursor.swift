@@ -39,6 +39,7 @@ struct SourceKitResponse {
 
     var typeSyntax: TypeSyntax? {
 //        guard let type: String = self.typename else {return nil}
+        if self.name == "_" || self.name == nil { return nil }
         guard let type = self.decl else {return nil}
         
         return SyntaxFactory.makeTypeIdentifier(type)
