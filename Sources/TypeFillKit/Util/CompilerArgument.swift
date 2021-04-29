@@ -51,12 +51,12 @@ public enum CompilerArguments {
         }
         
         fileprivate static func buildSettings(name: String, arguments: [String]) throws -> [String: [String]] {
-            let newArguments = arguments + ["-showBuildSettingsForIndex", "-json"]
-            let data = Exec.run("/usr/bin/xcodebuild", newArguments).data
-            let decoder = JSONDecoder()
+            let newArguments: [String] = arguments + ["-showBuildSettingsForIndex", "-json"]
+            let data: Data = Exec.run("/usr/bin/xcodebuild", newArguments).data
+            let decoder: JSONDecoder = JSONDecoder()
             
             
-            let result = try decoder.decode([String: [String: BuildSettings]].self, from: data)
+            let result: [String: [String: CompilerArguments.ByFile.BuildSettings]] = try decoder.decode([String: [String: BuildSettings]].self, from: data)
             return result[name]?.compactMapValues(\.swiftASTCommandArguments) ?? [:]
         }
     }
@@ -72,7 +72,7 @@ extension CompilerArguments {
     }
     
     public static func byFile(name: String, arguments: [String]) -> CompilerArgumentsGettable? {
-        guard let settings = try? CompilerArguments.ByFile.buildSettings(name: name, arguments: arguments) else {return nil}
+        guard let settings: [String: [String]] = try? CompilerArguments.ByFile.buildSettings(name: name, arguments: arguments) else {return nil}
         guard !settings.isEmpty else {return nil}
         return self.byFile(compilerArguments: settings)
     }

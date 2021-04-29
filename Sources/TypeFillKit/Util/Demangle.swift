@@ -15,15 +15,15 @@ private func _stdlib_demangleImpl(_ mangledName: UnsafePointer<Int8>?, mangledNa
 
 func demangle(_ symbol: String) -> String? {
     return symbol.withCString { (cString: UnsafePointer<Int8>) -> String? in
-        let std = _stdlib_demangleImpl(
+        let std: UnsafeMutablePointer<Int8>? = _stdlib_demangleImpl(
             cString,
             mangledNameLength: UInt(strlen(cString)),
             outputBuffer: nil,
             outputBufferSize: nil,
             flags: 0
         )
-        if let demangled = std {
-            let out = String(cString: demangled)
+        if let demangled: UnsafeMutablePointer<Int8> = std {
+            let out: String = String(cString: demangled)
             free(demangled)
             return out
         }

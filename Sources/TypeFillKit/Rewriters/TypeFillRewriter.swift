@@ -45,18 +45,18 @@ final class TypeFillRewriter: SyntaxRewriter {
         let isHaveInout: Bool = (try? self.cursor(arg.position.utf8Offset).isHaveInout) ?? false
         guard !isHaveInout else {return .init(node)}
         
-        let types: [TypeSyntax?] = node.map { param -> TypeSyntax? in
-            let postion = param.position.utf8Offset
-            guard let response = try? cursor(postion) else {return nil}
+        let types: [TypeSyntax?] = node.map { (param: ClosureParamListSyntax.Element) -> TypeSyntax? in
+            let postion: Int = param.position.utf8Offset
+            guard let response: SourceKitResponse = try? cursor(postion) else {return nil}
             return response.typeSyntax
         }
         
-        let params: [FunctionParameterSyntax] = zip(types, node).enumerated().map { (index, item) in
-            let paramNode = item.1
-            let newParamNode = FunctionParameterSyntax { (builder) in
+        let params: [FunctionParameterSyntax] = zip(types, node).enumerated().map { (index: Int, item: (TypeSyntax?, ClosureParamListSyntax.Element)) in
+            let paramNode: ClosureParamListSyntax.Element = item.1
+            let newParamNode: FunctionParameterSyntax = FunctionParameterSyntax { builder in
                 builder.useFirstName(paramNode.name.withTrailingTrivia(.zero))
                 
-                if let type = item.0 {
+                if let type: TypeSyntax = item.0 {
                     builder.useColon(Symbols.colon)
                     builder.useType(type)
                 }
@@ -81,12 +81,12 @@ final class TypeFillRewriter: SyntaxRewriter {
     ///         FunctionParameter: a: String
     ///     )
     override func visit(_ node: ParameterClauseSyntax) -> Syntax {
-        let newParams: [FunctionParameterSyntax] = node.parameterList.map { (parameter) -> FunctionParameterSyntax in
+        let newParams: [FunctionParameterSyntax] = node.parameterList.map { (parameter: FunctionParameterListSyntax.Element) -> FunctionParameterSyntax in
             guard parameter.colon == nil, parameter.type == nil else { return parameter }
-            guard let postion = parameter.firstName?.position.utf8Offset else { return parameter }
-            guard let type = try? cursor(postion) else { return parameter }
-            guard let typeSyntax = type.typeSyntax else { return parameter }
-            let newNode = parameter
+            guard let postion: Int = parameter.firstName?.position.utf8Offset else { return parameter }
+            guard let type: SourceKitResponse = try? cursor(postion) else { return parameter }
+            guard let typeSyntax: TypeSyntax = type.typeSyntax else { return parameter }
+            let newNode: FunctionParameterSyntax = parameter
                 .withColon(Symbols.colon)
                 .withType(typeSyntax)
             Logger.add(event: .implicitType(origin: found(syntax: parameter), fixed: newNode.description))
@@ -118,8 +118,8 @@ final class TypeFillRewriter: SyntaxRewriter {
     ///     accessor
     ///     trailingComma
     override func visit(_ node: PatternBindingSyntax) -> Syntax {
-        let newNode = node.fill(rewriter: self)
-        guard let initializer = node.initializer else {
+        let newNode: PatternBindingSyntax = node.fill(rewriter: self)
+        guard let initializer: InitializerClauseSyntax = node.initializer else {
             return .init(newNode)
         }
         return .init(newNode.withInitializer(self.visit(initializer).as(InitializerClauseSyntax.self)))

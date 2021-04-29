@@ -29,7 +29,7 @@ public struct Rewrite {
         self.config = config
         self.file = file
         
-        let _arguments = arguments(path)
+        let _arguments: [String] = arguments(path)
         self.cursor = Cursor(filePath: path, arguments: _arguments)
         if config.print {
             self.sourceFile = try SyntaxParser.parse(source: file.contents)

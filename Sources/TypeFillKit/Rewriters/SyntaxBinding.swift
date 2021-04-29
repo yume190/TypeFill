@@ -49,8 +49,8 @@ extension SyntaxBinding {
         
         guard types.count == pattern.elements.count else { return self }
         
-        let tupleTypeElements: [TupleTypeElementSyntax] = types.enumerated().map { (index, type) -> TupleTypeElementSyntax in
-            return TupleTypeElementSyntax { (builder) in
+        let tupleTypeElements: [TupleTypeElementSyntax] = types.enumerated().map { (index: Int, type: TypeSyntax) -> TupleTypeElementSyntax in
+            return TupleTypeElementSyntax { builder in
                 builder.useType(type)
                 if (index + 1) != types.count {
                     builder.useTrailingComma(Symbols.comma)
