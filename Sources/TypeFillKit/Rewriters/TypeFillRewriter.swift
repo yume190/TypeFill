@@ -60,7 +60,7 @@ final class TypeFillRewriter: SyntaxRewriter {
         return self.replace(node: node, clause: clause)
     }
     
-    /// ParameterClase
+    /// ParameterClause
     ///     (
     ///     FunctionParameterList
     ///         FunctionParameter: str,
@@ -72,9 +72,11 @@ final class TypeFillRewriter: SyntaxRewriter {
             guard let postion = parameter.firstName?.position.utf8Offset else { return parameter }
             guard let type = try? cursor(postion) else { return parameter }
             guard let typeSyntax = type.typeSyntax else { return parameter }
-            return parameter
+            let newNode = parameter
                 .withColon(Symbols.colon)
-                .withType(parameter.type ?? typeSyntax)
+                .withType(typeSyntax)
+            Logger.add(event: .implicitType(origin: found(syntax: parameter), fixed: newNode.description))
+            return newNode
         }
         
         let clause: ParameterClauseSyntax = params.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))
@@ -82,10 +84,9 @@ final class TypeFillRewriter: SyntaxRewriter {
         return self.replace(node: node, clause: clause)
     }
     
-    private func replace(node: ClosureExprSyntax, clause: ParameterClauseSyntax) -> ExprSyntax{
+    private func replace(node: ClosureExprSyntax, clause: ParameterClauseSyntax) -> ExprSyntax {
         let signature: ClosureSignatureSyntax? = node.signature?.withInput(.init(clause))
         let newNode: ClosureExprSyntax = node.withSignature(signature)
-        Logger.add(event: .implictType(origin: found(syntax: node), fixed: newNode.description))
         return .init(newNode)
     }
     

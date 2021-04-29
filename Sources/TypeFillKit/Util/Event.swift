@@ -10,7 +10,7 @@ import Rainbow
 
 public enum Event: CustomStringConvertible {
     case openFile(path: String)
-    case implictType(origin: String, fixed: String)
+    case implicitType(origin: String, fixed: String)
     case ibAction(origin: String, fixed: String)
     case ibOutlet(origin: String, fixed: String)
     case objc(origin: String, fixed: String)
@@ -18,7 +18,7 @@ public enum Event: CustomStringConvertible {
     private var symbol: String {
         switch self {
         case .openFile(_): return "Open File"
-        case .implictType(_, _): return "Implict Type"
+        case .implicitType(_, _): return "Implicit Type"
         case .ibAction(_, _): return "@IBAction"
         case .ibOutlet(_, _): return "@IBOutlet"
         case .objc(_, _): return "@objc"
@@ -31,7 +31,7 @@ public enum Event: CustomStringConvertible {
             return """
             \("[OPEN FILE]".applyingCodes(Color.yellow, Style.bold)): \(filePath)
             """
-        case .implictType(let origin, let fixed),
+        case .implicitType(let origin, let fixed),
              .ibAction(let origin, let fixed),
              .ibOutlet(let origin, let fixed),
              .objc(let origin, let fixed):
