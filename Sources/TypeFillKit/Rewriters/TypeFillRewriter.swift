@@ -65,7 +65,9 @@ final class TypeFillRewriter: SyntaxRewriter {
                     builder.useTrailingComma(Symbols.comma)
                 }
             }
-            Logger.add(event: .implicitType(origin: found(syntax: paramNode), fixed: newParamNode.description))
+            if let _ = item.0 {
+                Logger.add(event: .implicitType(origin: found(syntax: paramNode), fixed: newParamNode.description))
+            }
             return newParamNode
         }
         
