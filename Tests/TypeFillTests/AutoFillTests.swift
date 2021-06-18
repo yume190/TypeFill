@@ -180,6 +180,70 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
+    /// protocol IInout {
+    ///     init(_ build: (inout Int) -> Void)
+    /// }
+    /// struct _IInout: IInout {
+    ///     init(_ build: (inout Int) -> Void) {
+    ///
+    ///     }
+    /// }
+    /// let aaa = _IInout { a in
+    ///     print(a)
+    /// }
+    // MARK: skip inout
+    final func testProtocolInout() throws {
+        let override: String = try rewriter(file: "ProtocolInout.swift.data").dump()
+        /// let trueResult = """
+        /// let a: (inout Int) -> Int = { (i: inout Int) in
+        ///     return i
+        /// }
+        /// """
+        let result: String = """
+        protocol IInout {
+            init(_ build: (inout Int) -> Void)
+        }
+        struct _IInout: IInout {
+            init(_ build: (inout Int) -> Void) {
+            }
+        }
+        let aaa: _IInout = _IInout { a in
+            print(a)
+        }
+        """
+        XCTAssertEqual(override, result)
+    }
+
+    /// protocol A {}
+    /// protocol B {}
+    /// extension Int: A, B {}
+    /// 
+    /// let a: A & B = 1
+    /// let b = a
+    final func testProtocolAnd() throws {
+        let override: String = try rewriter(file: "ProtocolAnd.swift.data").dump()
+        let result: String = """
+        protocol A {}
+        protocol B {}
+        extension Int: A, B {}
+
+        let a: A & B = 1
+        let b: A & B = a
+        """
+        XCTAssertEqual(override, result)
+    }
+        
+    /// let array: [Int] = [1]
+    /// let element = array.firstIndex(of: 2)
+    final func testArrayIndex() throws {
+        let override: String = try rewriter(file: "ArrayIndex.swift.data").dump()
+        let result: String = """
+        let array: [Int] = [1]
+        let element: Array<Int>.Index? = array.firstIndex(of: 2)
+        """
+        XCTAssertEqual(override, result)
+    }
+    
     /// Returns path to the built products directory.
     var productsDirectory: URL {
         #if os(macOS)

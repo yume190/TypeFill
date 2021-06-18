@@ -63,7 +63,7 @@ struct SourceKitResponse {
     // </decl.var.global>
     var decl: String? {
         guard let xmlString = fully_annotated_decl else { return nil }
-        let xml = try? XMLDocument(xmlString: xmlString, options: .documentTidyXML)
+        let xml = try? XMLDocument(xmlString: xmlString, options: .documentXInclude)
         let root = xml?.rootElement()
         
         return root?.elements(forName: "decl.var.type").first?.stringValue ??

@@ -67,6 +67,75 @@ private lazy var chartHeight: [CGFloat] = {
 }()
 ```
 
+## Support
+
+### let/var
+
+``` swift
+let a = 1
+var b = a
+let (c, d) = (1, 2)
+struct Test {
+    let a, b: Int
+    let c = 1, d = 2
+}
+```
+
+``` swift
+let a: Int = 1
+var b: Int = a
+let (c, d): (Int, Int) = (1, 2)
+struct Test {
+    let a: Int, b: Int
+    let c: Int = 1, d: Int = 2
+}
+```
+
+### Option bind(`if let`/`guard let`)
+
+``` swift
+let a: Int? = nil
+if let aa = a {}
+guard let aa = a else {return}
+```
+
+``` swift
+let a: Int? = nil
+if let aa: Int = a {}
+guard let aa: Int = a else {return}
+```
+
+### Closure
+
+``` swift
+let a: (Int, Int) -> String = { a, b -> String in
+    return ""
+}
+let b: (Int, Int) -> String = { (a, b) -> String in
+    return ""
+}
+```
+
+``` swift
+let a: (Int, Int) -> String = { (a: Int, b: Int) -> String in
+    return ""
+}
+let b: (Int, Int) -> String = { (a: Int, b: Int) -> String in
+    return ""
+}
+```
+
+
+## Not Support
+
+### Closure(`inout`)
+
+``` swift
+let a: (inout Int) -> Int = { i in
+    return i
+}
+```
+
 ## Ref
 
  * [AST Explorer](https://swift-ast-explorer.com/)

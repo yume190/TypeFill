@@ -1,0 +1,10 @@
+protocol IInout {
+    init(_ build: (inout Int) -> Void)
+}
+struct _IInout: IInout {
+    init(_ build: (inout Int) -> Void) {
+    }
+}
+let aaa = _IInout { a in
+    print(a)
+}

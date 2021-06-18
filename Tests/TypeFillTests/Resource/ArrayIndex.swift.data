@@ -1,0 +1,2 @@
+let array: [Int] = [1]
+let element = array.firstIndex(of: 2)

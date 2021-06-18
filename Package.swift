@@ -3,19 +3,19 @@
 
 import PackageDescription
 
-#if swift(>=5.4)
-/// swift-5.4-RELEASE
-let dep: [Package.Dependency] = [
-    .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .revision("bd2cf9468e5f81a65419c4b62da1663df83ebdb7")),
-    .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .revision("ce9020568227504e792d07839b91c5de18ed291a")),
-]
+//
+#if swift(>=5.5)
+let branch = "release/5.5"
+#elseif swift(>=5.4)
+let branch = "release/5.4"
 #else
-/// swift-5.3-RELEASE
-let dep: [Package.Dependency] = [
-    .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .revision("58b306e0274155911dd4957945fd7e630798fec5")),
-    .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50300.0")),
-]
+let branch = "release/5.3"
 #endif
+
+let appleDependencies: [Package.Dependency] = [
+    .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch(branch)),
+    .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git",.branch(branch)),
+]
 
 let package = Package(
     name: "TypeFill",
@@ -33,7 +33,7 @@ let package = Package(
         
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift", .upToNextMinor(from: "1.3.8")),
         .package(url: "https://github.com/onevcat/Rainbow", from: "3.2.0"),
-    ] + dep,
+    ] + appleDependencies,
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
@@ -59,9 +59,8 @@ let package = Package(
         .testTarget(
             name: "TypeFillTests",
             dependencies: [
-                // "TypeFill",
-                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "TypeFillKit",
+                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
             ],
             resources: [
                 .copy("Resource")

@@ -14,7 +14,7 @@
         "package": "IndexStoreDB",
         "repositoryURL": "https://github.com/apple/indexstore-db.git",
         "state": {
-          "branch": null,
+          "branch": "release/5.4",
           "revision": "bd2cf9468e5f81a65419c4b62da1663df83ebdb7",
           "version": null
         }
@@ -50,8 +50,8 @@
         "package": "SwiftSyntax",
         "repositoryURL": "https://github.com/apple/swift-syntax.git",
         "state": {
-          "branch": null,
-          "revision": "ce9020568227504e792d07839b91c5de18ed291a",
+          "branch": "release/5.4",
+          "revision": "d81b6a6dc2698a93dcc04304fb15a5446b5278a4",
           "version": null
         }
       },

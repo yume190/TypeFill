@@ -1,0 +1,6 @@
+protocol A {}
+protocol B {}
+extension Int: A, B {}
+
+let a: A & B = 1
+let b = a
