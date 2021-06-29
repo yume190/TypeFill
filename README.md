@@ -5,7 +5,7 @@
 
 ----
 
-![](gif/rxswift.gif)
+![](gif/rxswift2.gif)
 
 A little cli tool to help you fill your `variables type`.
 
