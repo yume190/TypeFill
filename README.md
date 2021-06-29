@@ -5,6 +5,8 @@
 
 ----
 
+![](gif/rxswift.gif)
+
 A little cli tool to help you fill your `variables type`.
 
 ~~And add `private final` attribute to `@IBAction`, `@IBOutlet`, and `@objc`.(Rewriting ...)~~
