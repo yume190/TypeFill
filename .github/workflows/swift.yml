@@ -1,29 +1,58 @@
 name: Swift
 
-on:
+on: 
   push:
-    branches: [ master ]
+    branches: 
+      - master
+      - hotfix
+    paths:
+      - 'Source/**'
+      - 'Tests/**'
+      - '.github/workflows/**'
+      - 'Package.swift'
   pull_request:
-    branches: [ master ]
+    paths:
+      - 'Source/**'
+      - 'Tests/**'
+      - '.github/workflows/**'
+      - 'Package.swift'
+
+concurrency: 
+  group: ci
+  cancel-in-progress: true
 
 jobs:
   build:
 
     runs-on: macos-latest
-
+    
+    strategy:
+      matrix:
+        swift: [5.3, 5.4]
+        
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Setup Swift ${{ matrix.swift }}
+      # You may pin to the exact commit or the version.
+      # uses: fwal/setup-swift@d43a564349d1341cd990cfbd70d94d63b8899475
+      uses: fwal/setup-swift@v1.7.0
+      with:
+        # Swift version to configure
+        # default is 5.4
+        swift-version: ${{ matrix.swift }}
 
-    - name: spm cache
+    - name: SPM cache ${{ matrix.swift }}
       uses: actions/cache@v2
       with:
         path: .build
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        key: ${{ runner.os }}-${{ matrix.swift }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
-          ${{ runner.os }}-spm-
+          ${{ runner.os }}-${{ matrix.swift }}-spm-
       
-    - name: Build
+    - name: Build ${{ matrix.swift }}
       run: swift build -v
       
-    - name: Run tests
+    - name: Run tests ${{ matrix.swift }}
       run: swift test -v 2>&1 | xcpretty
+      
