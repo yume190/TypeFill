@@ -24,12 +24,16 @@ concurrency:
 jobs:
   build:
 
-    runs-on: macos-latest
-    
+    # https://github.com/actions/virtual-environments
+    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md
+    # /Applications/Xcode_12.5.1.app 5.4.2
+    # /Applications/Xcode_12.4.app   5.3.2
+    runs-on: macos-11
+
     strategy:
       matrix:
-        swift: [5.3, 5.4]
-        
+        swift: ["5.3.2", "5.4.2"]
+                
     steps:
     - uses: actions/checkout@v2
     
@@ -41,8 +45,11 @@ jobs:
         # Swift version to configure
         # default is 5.4
         swift-version: ${{ matrix.swift }}
+        
+    - name: Get swift version
+      run: swift --version # Swift 5.3.3
 
-    - name: SPM cache ${{ matrix.swift }}
+    - name: SPM Cache ${{ matrix.swift }}
       uses: actions/cache@v2
       with:
         path: .build
