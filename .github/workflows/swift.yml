@@ -25,10 +25,10 @@ jobs:
   build:
 
     # https://github.com/actions/virtual-environments
-    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md
+    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
     # /Applications/Xcode_12.5.1.app 5.4.2
     # /Applications/Xcode_12.4.app   5.3.2
-    runs-on: macos-11
+    runs-on: macos-latest
 
     strategy:
       matrix:
