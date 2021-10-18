@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import SourceKittenFramework
 import SwiftSyntax
+import Cursor
 
 extension TypeAnnotationSyntax {
     init(_ type: TypeSyntax) {
@@ -21,16 +21,14 @@ extension TypeAnnotationSyntax {
 final class TypeFillRewriter: SyntaxRewriter {
     let path: String
     let cursor: Cursor
-    let converter: SourceLocationConverter
-    init(_ path: String, _ cursor: Cursor, _ converter: SourceLocationConverter) {
+    init(_ path: String, _ cursor: Cursor) {
         self.path = path
         self.cursor = cursor
-        self.converter = converter
     }
     
     final func found<Syntax: SyntaxProtocol>(syntax: Syntax) -> String {
         return """
-        \(path):\(self.converter.location(for: syntax.position))
+        \(path):\(self.cursor(syntax))
         \(syntax.description)
         """
     }

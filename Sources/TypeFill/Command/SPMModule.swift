@@ -9,6 +9,7 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 import TypeFillKit
+import Derived
 
 struct SPMModule: ParsableCommand, CommandBuild {
     static var configuration: CommandConfiguration = CommandConfiguration(

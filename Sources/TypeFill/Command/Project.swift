@@ -9,6 +9,7 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 import TypeFillKit
+import Derived
 
 ///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
 struct Project: ParsableCommand, CommandBuild {

@@ -3,7 +3,6 @@
 
 import PackageDescription
 
-//
 #if swift(>=5.5)
 let branch = "release/5.5"
 #elseif swift(>=5.4)
@@ -24,7 +23,8 @@ let package = Package(
     ],
     products: [
         .executable(name: "typefill", targets: ["TypeFill"]),
-        .library(name: "TypeFillKit", targets: ["TypeFillKit"])
+        .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
+        .library(name: "SwiftLeakCheck", targets: ["SwiftLeakCheck"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -50,11 +50,33 @@ let package = Package(
             name: "TypeFillKit",
             dependencies: [
                 "Rainbow",
-                .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                // .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
+                "Derived",
+                "Cursor",
+            ]),
+        .target(
+            name: "Derived",
+            dependencies: [
                 "CryptoSwift",
             ]),
+        
+        .target(
+            name: "Cursor",
+            dependencies: [
+                .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+            ]),
+        
+        .target(
+            name: "SwiftLeakCheck",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                "Cursor",
+            ]),
+        
+        
         
         .testTarget(
             name: "TypeFillTests",

@@ -19,9 +19,9 @@ import SourceKittenFramework
 /// "key.filepath" : "...",
 /// "key.fully_annotated_decl" : "<decl.var.global><syntaxtype.keyword>let<\/syntaxtype.keyword> <decl.name>a<\/decl.name>: <decl.var.type><ref.struct usr=\"s:Si\">Int<\/ref.struct><\/decl.var.type><\/decl.var.global>",
 /// "key.kind" : "source.lang.swift.decl.var.global",
-struct SourceKitResponse {
+public struct SourceKitResponse {
     private let raw: [String : SourceKitRepresentable]
-    init(_ raw: [String : SourceKitRepresentable]) {
+    public init(_ raw: [String : SourceKitRepresentable]) {
         self.raw = raw
     }
     
@@ -33,11 +33,11 @@ struct SourceKitResponse {
         return self.raw[self.addPrefix(key)]
     }
     
-    var typename: String? {
+    public var typename: String? {
         return self[#function] as? String
     }
 
-    var typeSyntax: TypeSyntax? {
+    public var typeSyntax: TypeSyntax? {
 //        guard let type: String = self.typename else {return nil}
         if self.name == "_" || self.name == nil { return nil }
         guard let type = self.decl else {return nil}
@@ -45,11 +45,11 @@ struct SourceKitResponse {
         return SyntaxFactory.makeTypeIdentifier(type)
     }
     
-    var fully_annotated_decl: String? {
+    public var fully_annotated_decl: String? {
         return self[#function] as? String
     }
     
-    var annotated_decl: String? {
+    public var annotated_decl: String? {
         return self[#function] as? String
     }
 
@@ -61,7 +61,7 @@ struct SourceKitResponse {
     // <decl.var.global>
     //     <decl.var.type><ref.typealias usr=\"s:4main6NewInta\">NewInt</ref.typealias>?</decl.var.type>
     // </decl.var.global>
-    var decl: String? {
+    public var decl: String? {
         guard let xmlString = fully_annotated_decl else { return nil }
         let xml = try? XMLDocument(xmlString: xmlString, options: .documentXInclude)
         let root = xml?.rootElement()
@@ -70,36 +70,49 @@ struct SourceKitResponse {
             root?.elements(forName: "decl.var.parameter.type").first?.stringValue
     }
 
-    var name: String? {
+    public var name: String? {
         return self[#function] as? String
     }
-    var typeusr: String? {
+    public var typeusr: String? {
         return self[#function] as? String
     }
-    var usr: String? {
+    public var usr: String? {
         return self[#function] as? String
     }
     
-    var length: Int64? {
+    public var length: Int64? {
         return self[#function] as? Int64
     }
     
-    var offset: Int64? {
+    public var offset: Int64? {
         return self[#function] as? Int64
     }
     
-    var isHaveInout: Bool {
+    public var isHaveInout: Bool {
         guard let demangled = USR(self.usr)?.demangle() else { return false }
         return demangled.contains("(inout ")
     }
 }
 
-struct Cursor {
+public struct Cursor {
     let filePath: String
     let arguments: [String]
+    let sourceFile: SourceFileSyntax
+    let converter: SourceLocationConverter
     
-    func callAsFunction(_ offset: Int) throws -> SourceKitResponse {
+    public init(filePath: String, sourceFile: SourceFileSyntax, arguments: [String]) {
+        self.filePath = filePath
+        self.sourceFile = sourceFile
+        self.converter = SourceLocationConverter(file: filePath, tree: sourceFile)
+        self.arguments = arguments
+    }
+    
+    public func callAsFunction(_ offset: Int) throws -> SourceKitResponse {
         let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()
         return SourceKitResponse(raw)
+    }
+    
+    public func callAsFunction<Syntax: SyntaxProtocol>(_ syntax: Syntax) -> SwiftSyntax.SourceLocation {
+        return self.converter.location(for: syntax.position)
     }
 }

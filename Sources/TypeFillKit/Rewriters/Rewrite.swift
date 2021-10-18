@@ -1,36 +1,25 @@
 //
-//  File.swift
+//  Rewrite.swift
 //  
 //
 //  Created by Yume on 2021/2/4.
 //
 
 import Foundation
-import SourceKittenFramework
 import SwiftSyntax
+import Cursor
 
 public struct Rewrite {
     public let path: String
-    // public let arguments: [String]
-    public let config: Configable
-    
-    public let file: File
-    let cursor: Cursor
     public let sourceFile: SourceFileSyntax
     public let fileHandle: FileHandle
-    public let converter: SourceLocationConverter
+    private let cursor: Cursor
     
     public init(path: String, arguments: CompilerArgumentsGettable, config: Configable) throws {
-        guard let file: File = File(path: path) else {
-            throw SourceKittenError.readFailed(path: path)
-        }
-        
+        let file = try File(path: path)
         self.path = path
-        self.config = config
-        self.file = file
         
         let _arguments: [String] = arguments(path)
-        self.cursor = Cursor(filePath: path, arguments: _arguments)
         if config.print {
             self.sourceFile = try SyntaxParser.parse(source: file.contents)
             self.fileHandle = .standardOutput
@@ -40,7 +29,7 @@ public struct Rewrite {
             self.fileHandle = try FileHandle(forWritingTo: url)
         }
         
-        self.converter = SourceLocationConverter(file: path, tree: self.sourceFile)
+        self.cursor = Cursor(filePath: path, sourceFile: self.sourceFile, arguments: _arguments)
     }
     
     public func parse() {
@@ -48,7 +37,7 @@ public struct Rewrite {
     }
     
     public func dump() -> String {
-        let rewrite: Syntax = TypeFillRewriter(path, cursor, converter).visit(sourceFile)
+        let rewrite: Syntax = TypeFillRewriter(path, cursor).visit(sourceFile)
         
         var result: String = ""
         rewrite.write(to: &result)
