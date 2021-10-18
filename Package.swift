@@ -13,8 +13,8 @@ let branch = "release/5.3"
 #endif
 
 let appleDependencies: [Package.Dependency] = [
-    .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch(branch)),
-    .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git",.branch(branch)),
+    // .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch(branch)),
+    .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch(branch)),
 ]
 
 let package = Package(
@@ -31,8 +31,8 @@ let package = Package(
         .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.31.0")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "0.3.2")),
         
-        .package(url: "https://github.com/krzyzanowskim/CryptoSwift", .upToNextMinor(from: "1.3.8")),
-        .package(url: "https://github.com/onevcat/Rainbow", from: "3.2.0"),
+        .package(url: "https://github.com/krzyzanowskim/CryptoSwift", .upToNextMinor(from: "1.4.2")),
+        .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.1"),
     ] + appleDependencies,
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -52,7 +52,7 @@ let package = Package(
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
+                // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "CryptoSwift",
             ]),
         
@@ -60,7 +60,7 @@ let package = Package(
             name: "TypeFillTests",
             dependencies: [
                 "TypeFillKit",
-                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
+                // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
             ],
             resources: [
                 .copy("Resource")

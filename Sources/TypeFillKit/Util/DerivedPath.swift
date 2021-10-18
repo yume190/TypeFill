@@ -9,7 +9,8 @@ import Foundation
 import CryptoSwift
 //import CryptoKit
 
-public struct DerivedPath: IndexStoreProvider {
+// TODO IndexStore
+public struct DerivedPath {
     public static let `default`: String = "\(NSHomeDirectory())/Library/Developer/Xcode/DerivedData"
     let name: String
     
@@ -57,7 +58,8 @@ public struct DerivedPath: IndexStoreProvider {
 }
 
 extension DerivedPath {
-    public struct SPM: IndexStoreProvider {
+    // TODO IndexStore
+    public struct SPM {
         private let root: String
         public init?(_ root: String) {
             guard FileManager.default.fileExists(atPath: root + "/.build") else {return nil}

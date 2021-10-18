@@ -6,17 +6,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift",
         "state": {
           "branch": null,
-          "revision": "5669f222e46c8134fb1f399c745fa6882b43532e",
-          "version": "1.3.8"
-        }
-      },
-      {
-        "package": "IndexStoreDB",
-        "repositoryURL": "https://github.com/apple/indexstore-db.git",
-        "state": {
-          "branch": "release/5.4",
-          "revision": "bd2cf9468e5f81a65419c4b62da1663df83ebdb7",
-          "version": null
+          "revision": "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
+          "version": "1.4.2"
         }
       },
       {
@@ -24,8 +15,8 @@
         "repositoryURL": "https://github.com/onevcat/Rainbow",
         "state": {
           "branch": null,
-          "revision": "626c3d4b6b55354b4af3aa309f998fae9b31a3d9",
-          "version": "3.2.0"
+          "revision": "e0dada9cd44e3fa7ec3b867e49a8ddbf543e3df3",
+          "version": "4.0.1"
         }
       },
       {
@@ -50,8 +41,8 @@
         "package": "SwiftSyntax",
         "repositoryURL": "https://github.com/apple/swift-syntax.git",
         "state": {
-          "branch": "release/5.4",
-          "revision": "d81b6a6dc2698a93dcc04304fb15a5446b5278a4",
+          "branch": "release/5.5",
+          "revision": "2ca29758ed04c0a209221db59f922d4faf539f03",
           "version": null
         }
       },
