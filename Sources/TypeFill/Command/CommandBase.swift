@@ -12,9 +12,7 @@ import struct TypeFillKit.Rewrite
 import protocol TypeFillKit.Configable
 import protocol TypeFillKit.CompilerArgumentsGettable
 
-protocol CommandBase: Configable {
-    var args: [String] { get }
-}
+protocol CommandBase: Configable {}
 
 protocol CommandBuild: CommandBase {
     var skipBuild: Bool { get }
@@ -28,13 +26,14 @@ protocol CommandBuild: CommandBase {
 
 extension CommandBuild {
     var module: Module? {
-        guard buildSetting != nil, self.skipBuild && isIndexStoreExist else {
+        let _buildSetting = self.buildSetting
+        guard _buildSetting != nil, self.skipBuild && isIndexStoreExist else {
             if !isIndexStoreExist {
                 Swift.print("can't find index store db, force build")
                 return self.buildModule
             }
             
-            if buildSetting == nil {
+            if _buildSetting == nil {
                 Swift.print("can't get build arguments, force build")
             }
             

@@ -20,7 +20,7 @@ public struct TypeFill: ParsableCommand {
         commandName: "typefill",
         abstract: "A utility for fill swift types.",
         version: "0.1.9",
-        subcommands: [SingleFile.self, SPMModule.self, WorkSpace.self, Project.self],
-        defaultSubcommand: SPMModule.self
+        subcommands: [XCode.self, SingleFile.self, SPMModule.self, WorkSpace.self, Project.self],
+        defaultSubcommand: XCode.self
     )
 }

@@ -89,8 +89,7 @@ struct SourceKitResponse {
     }
     
     var isHaveInout: Bool {
-        guard let usr = self.usr else { return false }
-        guard let demangled = demangle(USR.toDemagle(usr)) else { return false }
+        guard let demangled = USR(self.usr)?.demangle() else { return false }
         return demangled.contains("(inout ")
     }
 }
