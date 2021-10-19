@@ -48,6 +48,9 @@ index:
 index2:
 	index-dump-tool print-record --index-store-path TestingData/Index > dump.txt
 
+graph:
+	swift package show-dependencies --format dot | dot -Tsvg -o graph.svg
+
 # project --project /Users/yume/git/yume/TypeFill/TypeFill.xcodeproj --scheme TypeFill -v --skipBuild
 
 # spm --moduleName TypeFill --path /Users/yume/git/yume/TypeFill -v --print --skipBuild
