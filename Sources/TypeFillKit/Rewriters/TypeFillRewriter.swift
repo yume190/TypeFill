@@ -19,16 +19,14 @@ extension TypeAnnotationSyntax {
 }
 
 final class TypeFillRewriter: SyntaxRewriter {
-    let path: String
     let cursor: Cursor
-    init(_ path: String, _ cursor: Cursor) {
-        self.path = path
+    init(_ cursor: Cursor) {
         self.cursor = cursor
     }
     
     final func found<Syntax: SyntaxProtocol>(syntax: Syntax) -> String {
         return """
-        \(path):\(self.cursor(syntax))
+        \(cursor.path):\(self.cursor(syntax))
         \(syntax.description)
         """
     }

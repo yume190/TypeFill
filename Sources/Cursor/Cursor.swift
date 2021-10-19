@@ -95,24 +95,25 @@ public struct SourceKitResponse {
 }
 
 public struct Cursor {
-    let filePath: String
-    let arguments: [String]
-    let sourceFile: SourceFileSyntax
-    let converter: SourceLocationConverter
+    public let path: String
+    public let arguments: [String]
+    public let sourceFile: SourceFileSyntax
+    public let converter: SourceLocationConverter
     
-    public init(filePath: String, sourceFile: SourceFileSyntax, arguments: [String]) {
-        self.filePath = filePath
-        self.sourceFile = sourceFile
-        self.converter = SourceLocationConverter(file: filePath, tree: sourceFile)
+    public init(path: String, arguments: [String]) throws {
+        self.path = path
         self.arguments = arguments
+        let url: URL = URL(fileURLWithPath: path)
+        self.sourceFile = try SyntaxParser.parse(url)
+        self.converter = SourceLocationConverter(file: path, tree: sourceFile)
     }
     
     public func callAsFunction(_ offset: Int) throws -> SourceKitResponse {
-        let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: filePath, offset: ByteCount(offset), arguments: arguments).send()
+        let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: path, offset: ByteCount(offset), arguments: arguments).send()
         return SourceKitResponse(raw)
     }
     
     public func callAsFunction<Syntax: SyntaxProtocol>(_ syntax: Syntax) -> SwiftSyntax.SourceLocation {
-        return self.converter.location(for: syntax.position)
+        return self.converter.location(for: syntax.positionAfterSkippingLeadingTrivia)
     }
 }

@@ -12,7 +12,6 @@ import Foundation
 @_silgen_name("swift_demangle")
 private func _stdlib_demangleImpl(_ mangledName: UnsafePointer<Int8>?, mangledNameLength: UInt, outputBuffer: UnsafeMutablePointer<Int8>?, outputBufferSize: UnsafeMutablePointer<UInt>?, flags: UInt32) -> UnsafeMutablePointer<Int8>?
 
-
 enum _Swift {
     static func demangle(_ symbol: String) -> String? {
         return symbol.withCString { (cString: UnsafePointer<Int8>) -> String? in

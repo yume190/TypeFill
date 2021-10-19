@@ -82,6 +82,7 @@ let package = Package(
             name: "TypeFillTests",
             dependencies: [
                 "TypeFillKit",
+                "Cursor",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
             ],
             resources: [
