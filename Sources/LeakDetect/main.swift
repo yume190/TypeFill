@@ -41,7 +41,7 @@ struct Command: ParsableCommand {
         `PROJECT_TEMP_ROOT`="/PATH_TO/DerivedData/TypeFill-abpidkqveyuylveyttvzvsspldln/Build/Intermediates.noindex"
         `TARGET_NAME`="Typefill"
         """,
-        version: "0.2.0"
+        version: "0.2.1"
     )
     
     func run() throws {

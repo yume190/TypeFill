@@ -1,4 +1,4 @@
-VERSION = 0.2.0
+VERSION = 0.2.1
 
 include SourceKitten.mk
 include TypeFill.mk
@@ -28,8 +28,10 @@ clearAll: clear
 .PHONY: githubRelease
 githubRelease:
 	sed -i '' 's|\(version: "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/TypeFill/Command/TypeFill.swift
+	sed -i '' 's|\(version: "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/LeakDetect/main.swift
 
 	git add Sources/TypeFill/Command/TypeFill.swift
+	git add Sources/LeakDetect/main.swift
 	git add Makefile
 
 	git commit -m "Update to $(VERSION)"
