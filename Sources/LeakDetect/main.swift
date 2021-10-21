@@ -31,7 +31,7 @@ fileprivate enum Env: String {
 struct Command: ParsableCommand {
     static var configuration: CommandConfiguration = CommandConfiguration(
         // commandName: "xcode",
-        abstract: "Fill type to XCode",
+        abstract: "A Tool to Detect Potential Leaks",
         discussion: """
         Needed Environment Variable:
          * `PROJECT_TEMP_ROOT`
