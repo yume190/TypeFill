@@ -14,4 +14,10 @@ public struct CodeLocation: CustomStringConvertible, Equatable {
     public var description: String {
         return "\(path):\(location)"
     }
+    
+    public static func == (lhs: CodeLocation, rhs: CodeLocation) -> Bool {
+        return
+            lhs.path == rhs.path &&
+            lhs.location.offset == rhs.location.offset
+    }
 }

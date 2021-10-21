@@ -155,10 +155,10 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
-    final func testOnly() throws {
-        let override: String = try rewriter(file: "Test.swift.data").dump()
+    // final func testOnly() throws {
+    //     let override: String = try rewriter(file: "Test.swift.data").dump()
 
-    }
+    // }
 
     /// typealias Closure = (@escaping Closure2) -> Void
     /// typealias Closure2 = (Int) -> Void
