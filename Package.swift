@@ -23,8 +23,9 @@ let package = Package(
     ],
     products: [
         .executable(name: "typefill", targets: ["TypeFill"]),
+        .executable(name: "leakDetect", targets: ["LeakDetect"]),
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
-        .library(name: "SwiftLeakCheck", targets: ["SwiftLeakCheck"]),
+//        .library(name: "SwiftLeakCheck", targets: ["SwiftLeakCheck"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -37,12 +38,25 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
+        
+        .target(
+            name: "LeakDetect",
+            dependencies: [
+//                "SwiftLeakCheck",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                "Cursor",
+            ]
+        ),
+        
         .target(
             name: "TypeFill",
             dependencies: [
                 "TypeFillKit",
+//                "SwiftLeakCheck",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                "Cursor",
             ]
         ),
         
@@ -81,6 +95,7 @@ let package = Package(
         .testTarget(
             name: "TypeFillTests",
             dependencies: [
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 "TypeFillKit",
                 "Cursor",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),

@@ -2,6 +2,7 @@ import XCTest
 import class Foundation.Bundle
 import SourceKittenFramework
 @testable import TypeFillKit
+@testable import Cursor
 
 struct Config: Configable {
     //    let typeFill: Bool = true
@@ -14,13 +15,6 @@ struct Config: Configable {
 
 final class AutoFillTests: XCTestCase {
     
-    private final let sourceFile: URL = URL(fileURLWithPath: #file)
-        .deletingLastPathComponent()
-        .appendingPathComponent("Resource")
-    private final func resource(file: String) -> String {
-        return sourceFile.appendingPathComponent(file).path
-    }
-    
     private final func rewriter(file: String) throws -> Rewrite {
         let path: String = resource(file: file)
         let arguments: [String] = [path, "-sdk", sdkPath()]
@@ -32,7 +26,7 @@ final class AutoFillTests: XCTestCase {
     final func testType() throws {
         let file: String = resource(file: "Decl.swift.data")
         let args: [String] = [file, "-sdk", sdkPath()]
-        let cursor: Cursor = Cursor(filePath: file, arguments: args)
+        let cursor: Cursor = try Cursor(path: file, arguments: args)
         let type: SourceKitResponse = try cursor(4)
         XCTAssertEqual(type.typeSyntax?.description, "Int")
     }
@@ -161,54 +155,96 @@ final class AutoFillTests: XCTestCase {
         XCTAssertEqual(override, result)
     }
     
-    /// let a: (inout Int) -> Int = { i in
-    ///     return i
+    final func testOnly() throws {
+        let override: String = try rewriter(file: "Test.swift.data").dump()
+
+    }
+
+    /// typealias Closure = (@escaping Closure2) -> Void
+    /// typealias Closure2 = (Int) -> Void
+    /// var closure: Closure?
+    /// func doSomething1(block: @escaping Closure) {
+    ///     closure = block
     /// }
-    // MARK: skip inout
-    final func testInout() throws {
-        let override: String = try rewriter(file: "Inout.swift.data").dump()
-        /// let trueResult = """
-        /// let a: (inout Int) -> Int = { (i: inout Int) in
-        ///     return i
-        /// }
-        /// """
+    /// doSomething1 { block in
+    ///     block(111)
+    /// }
+    // MARK: skip Escaping
+    final func _testEscaping1() throws {
+        let override: String = try rewriter(file: "ClousureEscaping1.swift.data").dump()
         let result: String = """
-        let a: (inout Int) -> Int = { i in
-            return i
+        typealias Closure = (@escaping Closure2) -> Void
+        typealias Closure2 = (Int) -> Void
+        var closure: Closure?
+        func doSomething1(block: @escaping Closure) {
+            closure = block
+        }
+        doSomething1 { (block: @escaping Closure2) in
+            block(111)
         }
         """
         XCTAssertEqual(override, result)
     }
     
-    /// protocol IInout {
-    ///     init(_ build: (inout Int) -> Void)
+    /// typealias Closure = (@escaping Closure2) -> Void
+    /// typealias Closure2 = (Int) -> Void
+    /// var closure: Closure?
+    /// func doSomething2(block: (Closure)) {
+    ///     closure = block
     /// }
-    /// struct _IInout: IInout {
-    ///     init(_ build: (inout Int) -> Void) {
-    ///
-    ///     }
+    /// doSomething2 { block in
+    ///     block(111)
     /// }
-    /// let aaa = _IInout { a in
-    ///     print(a)
+    final func _testEscaping2() throws {
+        let override: String = try rewriter(file: "ClousureEscaping2.swift.data").dump()
+        let result: String = """
+        typealias Closure = (@escaping Closure2) -> Void
+        typealias Closure2 = (Int) -> Void
+        var closure: Closure?
+        func doSomething1(block: (Closure)) {
+            closure = block
+        }
+        doSomething1 { (block: @escaping Closure2) in
+            block(111)
+        }
+        """
+        XCTAssertEqual(override, result)
+    }
+    
+    
+    /// let a: (Int, inout Int) -> Int = { i, ii in
+    ///     return i + ii
     /// }
     // MARK: skip inout
-    final func testProtocolInout() throws {
-        let override: String = try rewriter(file: "ProtocolInout.swift.data").dump()
+    final func _testInout() throws {
+        let override: String = try rewriter(file: "Inout.swift.data").dump()
         /// let trueResult = """
-        /// let a: (inout Int) -> Int = { (i: inout Int) in
-        ///     return i
+        /// let a: (Int, inout Int) -> Int = { (i: Int, ii: inout Int) in
+        ///     return i + ii
         /// }
         /// """
         let result: String = """
-        protocol IInout {
-            init(_ build: (inout Int) -> Void)
+        let a: (Int, inout Int) -> Int = { i, ii in
+            return i + ii
         }
-        struct _IInout: IInout {
-            init(_ build: (inout Int) -> Void) {
-            }
-        }
-        let aaa: _IInout = _IInout { a in
-            print(a)
+        """
+        XCTAssertEqual(override, result)
+    }
+    
+    /// let a: (inout Int, Int) -> Int = { i, ii in
+    ///     return i + ii
+    /// }
+    // MARK: skip inout
+    final func _testProtocolInout() throws {
+        let override: String = try rewriter(file: "ClousureInout.swift.data").dump()
+        /// let trueResult = """
+        /// let a: (inout Int, Int) -> Int = { (i: inout Int, ii: Int) in
+        ///     return i + ii
+        /// }
+        /// """
+        let result: String = """
+        let a: (inout Int, Int) -> Int = { i, ii in
+            return i + ii
         }
         """
         XCTAssertEqual(override, result)

@@ -1,3 +1,3 @@
-let a: (inout Int) -> Int = { i in
-    return i
+let a: (Int, Int, Int, inout Int) -> String = { i, ii, iii, iiii in
+    return ""
 }

@@ -6,10 +6,8 @@
 //
 
 import Foundation
-import ArgumentParser
-import TypeFillKit
 
-enum SDK: String, ExpressibleByArgument, CaseIterable {
+public enum SDK: String, CaseIterable {
     case macosx
     case appletvos
     case watchsimulator
@@ -18,14 +16,22 @@ enum SDK: String, ExpressibleByArgument, CaseIterable {
     case iphoneos
     case watchos
     
-    func path() -> String {
+    public var path: String? {
         return Exec.run(
             "/usr/bin/xcrun",
             "--sdk", "\(self.rawValue)", "--show-sdk-path"
-        ).string ?? ""
+        ).string
     }
     
-    static var all: String {
+    public var pathArgs: [String] {
+        if let sdkPath = self.path {
+            return ["-sdk", sdkPath]
+        } else {
+            return []
+        }
+    }
+    
+    public static var all: String {
         return SDK
             .allCases
             .map(\.rawValue)

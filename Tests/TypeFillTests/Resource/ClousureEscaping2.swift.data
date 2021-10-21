@@ -1,0 +1,9 @@
+typealias Closure = (@escaping Closure2) -> Void
+typealias Closure2 = (Int) -> Void
+var closure: Closure?
+func doSomething2(block: (Closure)) {
+    closure = block
+}
+doSomething2 { block in
+    block(111)
+}

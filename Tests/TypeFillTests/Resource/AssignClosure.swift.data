@@ -1,0 +1,13 @@
+class A {
+  typealias Closure = () -> Void
+  var a: Closure?
+  func def(_ block: Closure?) {
+
+  }
+  func abc() {
+      self.a = self.abc
+      a = abc
+      self.def(self.abc)
+      def(abc)
+  }
+}

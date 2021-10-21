@@ -9,6 +9,9 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 import TypeFillKit
+import Cursor
+
+extension SDK: ExpressibleByArgument {}
 
 struct SingleFile: ParsableCommand, CommandBase {
     static var configuration: CommandConfiguration = CommandConfiguration(
@@ -32,7 +35,7 @@ struct SingleFile: ParsableCommand, CommandBase {
     var args: [String] = []
     
     func run() throws {
-        let arguments: [String] = args + [filePath] + ["-sdk", sdk.path()]
+        let arguments: [String] = args + [filePath] + sdk.pathArgs
 
         defer { Logger.summery() }
         Logger.set(logEvent: self.verbose)

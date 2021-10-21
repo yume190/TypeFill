@@ -1,0 +1,7 @@
+struct Inout {
+    init(_ build: (inout Int) -> Void) {
+    }
+}
+let _inout = Inout { a in
+    print(a)
+}

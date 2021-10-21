@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Cursor
 
 public protocol CompilerArgumentsGettable {
     func callAsFunction(_ path: String) -> [String]

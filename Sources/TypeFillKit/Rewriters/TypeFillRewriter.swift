@@ -26,7 +26,7 @@ final class TypeFillRewriter: SyntaxRewriter {
     
     final func found<Syntax: SyntaxProtocol>(syntax: Syntax) -> String {
         return """
-        \(cursor.path):\(self.cursor(syntax))
+        \(self.cursor(location: syntax))
         \(syntax.description)
         """
     }
