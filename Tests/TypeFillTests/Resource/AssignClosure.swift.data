@@ -1,13 +1,34 @@
+import UIKit
+
 class A {
   typealias Closure = () -> Void
-  var a: Closure?
-  func def(_ block: Closure?) {
-
-  }
+  var closure: Closure?
+  var sel: Selector?
+  weak var a: A?
+  
+  @objc
   func abc() {
-      self.a = self.abc
-      a = abc
+      self.closure = self.abc
+      closure = abc
+
       self.def(self.abc)
       def(abc)
+
+      self.sel = #selector(self.abc)
+      self.sel = #selector(abc)
+
+      self.def(#selector(self.abc))
+      self.def(#selector(abc))
+
+      self.def(a: self)
+      self.def(any: self)
+
+      let tf = UITextField()
+      tf.addTarget(self, action: #selector(self.abc), for: .editingChanged)
   }
+
+  func def(_ block: Closure?) {}
+  func def(_ sel: Selector) {}
+  func def(a: A) {}
+  func def(any: Any?) {}
 }

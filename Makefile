@@ -13,6 +13,10 @@ proj:
 release: 
 	@swift build -c release
 
+.PHONY: test
+test:
+	@swift test -v 2>&1 | xcpretty
+
 .PHONY: install
 install: release
 	@cp .build/release/typefill /usr/local/bin

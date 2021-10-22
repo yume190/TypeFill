@@ -1,0 +1,53 @@
+class X {
+  func main() {
+    doSmth1 {
+      self.x // Leak
+    }
+
+    doSmth2 {
+      self.x // Leak
+    }
+
+    doSmth3 {
+      self.x
+    }
+
+    escape {
+      self.x
+    }
+
+    nonescape {
+      self.x
+    }
+
+    nonescape {
+      nonescape {
+        self.x
+      }
+    }
+
+    escape {
+      escape { [weak self] in
+        self.x
+      }
+    }
+
+    build {
+      self.x
+    }
+  }
+  
+  func doSmth1(block: @escaping () -> Void) {
+    // someObject.callBlock1(block)
+  }
+
+  func doSmth2(block: (() -> Void)?) {
+    // someObject.callBlock2(block)
+  }
+
+  func doSmth3(block: () -> Void) {
+    // someObject.callBlock3(block)
+  }
+
+  var x = 1
+}

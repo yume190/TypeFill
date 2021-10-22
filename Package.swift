@@ -98,6 +98,7 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 "TypeFillKit",
                 "Cursor",
+                "SwiftLeakCheck",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
             ],
             resources: [

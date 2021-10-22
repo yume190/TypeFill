@@ -17,12 +17,13 @@ final class AssignClosureTests: XCTestCase {
         let results = AssignClosureVisitor(cursor).detect()
         
         let espect = [
-            CodeLocation(path: path, location: SourceLocation(offset: 133, converter: cursor.converter)),
-            CodeLocation(path: path, location: SourceLocation(offset: 147, converter: cursor.converter)),
             CodeLocation(path: path, location: SourceLocation(offset: 171, converter: cursor.converter)),
-            CodeLocation(path: path, location: SourceLocation(offset: 186, converter: cursor.converter)),
+            CodeLocation(path: path, location: SourceLocation(offset: 191, converter: cursor.converter)),
+            CodeLocation(path: path, location: SourceLocation(offset: 216, converter: cursor.converter)),
+            CodeLocation(path: path, location: SourceLocation(offset: 231, converter: cursor.converter)),
         ]
         
+        XCTAssertEqual(results.count, espect.count)
         XCTAssertEqual(results, espect)
     }
 }

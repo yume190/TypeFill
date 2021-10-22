@@ -1,0 +1,5 @@
+func escape(block: @escaping () -> Void) {
+}
+
+func nonescape(block: () -> Void) {
+}

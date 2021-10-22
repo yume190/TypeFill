@@ -54,8 +54,10 @@ public final class AssignClosureVisitor: SyntaxVisitor {
         guard node.count == 3 else {return}
         let exprs = node.map {$0}
         
-        guard exprs[1].is(AssignmentExprSyntax.self) else {return}
         guard let _ = exprs[0].tokenSyntax else {return}
+        guard exprs[1].is(AssignmentExprSyntax.self) else {return}
+        
+        guard !exprs[2].is(FunctionCallExprSyntax.self) else {return}
         guard let identifier = exprs[2].tokenSyntax else {return}
 
         do {

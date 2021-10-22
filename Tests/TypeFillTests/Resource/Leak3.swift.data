@@ -1,0 +1,17 @@
+#if swift(>=5.4)
+@resultBuilder
+public enum Builder<T> {}
+#else
+@_functionBuilder
+public enum Builder<T> {}
+#endif
+
+extension Builder {
+    public static func buildBlock(_ item: T) -> T {
+        return item
+    }
+}
+
+func build<T>(@Builder<T> builder: () -> T) -> T {
+    return builder()
+}
