@@ -9,6 +9,7 @@
 //
 
 import SwiftSyntax
+import Cursor
 
 public protocol Graph {
   var sourceFileScope: SourceFileScope { get }
@@ -71,8 +72,10 @@ final class GraphImpl: Graph {
   private var cachedFunCallExprType = [FunctionCallExprSyntax: TypeResolve]()
   private var cachedClosureEscapeCheck = [ClosureExprSyntax: Bool]()
   
+  private let cursor: Cursor
   let sourceFileScope: SourceFileScope
-  init(sourceFileScope: SourceFileScope) {
+  init(cursor: Cursor, sourceFileScope: SourceFileScope) {
+    self.cursor = cursor
     self.sourceFileScope = sourceFileScope
     buildScopeNodeToScopeMapping(root: sourceFileScope)
   }
@@ -200,12 +203,17 @@ extension GraphImpl {
       }
       
       if options.contains(.function) {
-        for function in scope.getFunctionWithSymbol(symbol) {
-          let result: SymbolResolve = .function(function)
-          if onResult(result) {
-            return result
+          if let functionDecl = try? cursor(symbol.node).annotated_decl_xml_value,
+             let source = try? SyntaxParser.parse(source: functionDecl) {
+              let visitor = FunctionDeclVisitor()
+              visitor.walk(source)
+              if let decl = visitor.decl {
+                  let result: SymbolResolve = .function(decl)
+                  if onResult(result) {
+                      return result
+                  }
+              }
           }
-        }
       }
       
       if options.contains(.typeDecl) {
@@ -276,11 +284,7 @@ extension GraphImpl {
     
     if let memberAccessExpr = funcCallExpr.calledExpression.as(MemberAccessExprSyntax.self) { // a.doSmth(...) or .doSmth(...)
       if let base = memberAccessExpr.base {
-        if couldReferenceSelf(base) {
-          return _findFunction(symbol: .token(memberAccessExpr.name), funcCallExpr: funcCallExpr)
-        }
-        let typeDecls = getAllRelatedTypeDecls(from: resolveExprType(base))
-        return _findFunction(from: typeDecls, symbol: .token(memberAccessExpr.name), funcCallExpr: funcCallExpr)
+        return _findFunction(symbol: .token(memberAccessExpr.name), funcCallExpr: funcCallExpr)
       } else {
         // Base is omitted when the type can be inferred.
         // For eg, we can say: let s: String = .init(...)
@@ -307,7 +311,7 @@ extension GraphImpl {
       case .variable, .typeDecl: // This could be due to cache
         return false
       case .function(let function):
-        let mustStop = enclosingScope(for: function._syntaxNode).type.isTypeDecl
+          let mustStop = true
         
         switch function.match(funcCallExpr) {
         case .argumentMismatch,
@@ -754,34 +758,26 @@ extension GraphImpl {
           // If the param is marked as `@escaping`, we still need to check with the non-escaping rules
           // If the param is not marked as `@escaping`, and it's optional, we don't know anything about it
           // If the param is not marked as `@escaping`, and it's not optional, we know it's non-escaping for sure
-          if !param.isEscaping && param.type?.isOptional != true {
-            return false
-          }
-          
-          // get the `.function` scope where we define this func
-          let scope = self.scope(for: function._syntaxNode)
-          assert(scope.type.isFunction)
-          
-          guard let variableForParam = scope.variables.first(where: { $0.raw.token == (param.secondName ?? param.firstName) }) else {
-            fatalError("Can't find the Variable that wrap the param")
-          }
-          let references = getVariableReferences(variable: variableForParam)
-          for referennce in references {
-            if _isClosureEscape(ExprSyntax(referennce), isFuncParam: true) == true {
-              return true
-            }
-          }
-          return false
-        } else {
-          // Can't resolve the function
-          // Use custom rules
-            #warning("nonEscapeRules")
-//          for rule in nonEscapeRules {
-//            if rule.isNonEscape(closureNode: expr, graph: self) {
-//              return false
+          return TypeEscapeVisitor.detect(code: param?.type?.description ?? "") //&& param!.type?.isOptional == false
+//          if !param.isEscaping && param.type?.isOptional != true {
+//            return false
+//          }
+//
+//          // get the `.function` scope where we define this func
+//          let scope = self.scope(for: function._syntaxNode)
+//          assert(scope.type.isFunction)
+//
+//          guard let variableForParam = scope.variables.first(where: { $0.raw.token == (param.secondName ?? param.firstName) }) else {
+//            fatalError("Can't find the Variable that wrap the param")
+//          }
+//          let references = getVariableReferences(variable: variableForParam)
+//          for referennce in references {
+//            if _isClosureEscape(ExprSyntax(referennce), isFuncParam: true) == true {
+//              return true
 //            }
 //          }
-          
+//          return false
+        } else {
           // Still can't figure out using custom rules, assume closure is escaping
           return true
         }
@@ -855,4 +851,16 @@ private extension TypeResolve {
     default: return self
     }
   }
+}
+
+
+public final class FunctionDeclVisitor: SyntaxVisitor {
+
+    private(set) var decl: FunctionDeclSyntax?
+
+    public override func visit(_ node: FunctionDeclSyntax) -> SyntaxVisitorContinueKind {
+        self.decl = node
+        return .skipChildren
+    }
+    
 }

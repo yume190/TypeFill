@@ -9,16 +9,12 @@
 //
 
 import SwiftSyntax
+import Cursor
 
-open class BaseSyntaxTreeLeakDetector: LeakDetector {
+open class BaseSyntaxTreeLeakDetector {
   public init() {}
   
-  public func detect(content: String) throws -> [Leak] {
-    let node = try SyntaxRetrieval.request(content: content)
-    return detect(node)
-  }
-  
-  open func detect(_ sourceFileNode: SourceFileSyntax) -> [Leak] {
+  open func detect(_ cursor: Cursor) -> [Leak] {
     fatalError("Implemented by subclass")
   }
 }

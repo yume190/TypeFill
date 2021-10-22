@@ -9,17 +9,18 @@
 //
 
 import SwiftSyntax
+import Cursor
 
 final class GraphBuilder {
-  static func buildGraph(node: SourceFileSyntax) -> GraphImpl {
+  static func buildGraph(cursor: Cursor) -> GraphImpl {
     // First round: build the graph
     let visitor = GraphBuilderVistor()
-    visitor.walk(node)
+    visitor.walk(cursor.sourceFile)
     
-    let graph = GraphImpl(sourceFileScope: visitor.sourceFileScope)
+    let graph = GraphImpl(cursor: cursor, sourceFileScope: visitor.sourceFileScope)
     
     // Second round: resolve the references
-    ReferenceBuilderVisitor(graph: graph).walk(node)
+    ReferenceBuilderVisitor(graph: graph).walk(cursor.sourceFile)
     
     return graph
   }

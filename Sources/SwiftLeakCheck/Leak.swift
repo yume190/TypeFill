@@ -10,26 +10,27 @@
 
 import Foundation
 import SwiftSyntax
+import Cursor
 
 open class Leak: CustomStringConvertible, Encodable {
   public let node: IdentifierExprSyntax
   public let capturedNode: ExprSyntax?
-  public let sourceLocationConverter: SourceLocationConverter
+  public let cursor: Cursor
   
   public private(set) lazy var line: Int = {
-    return sourceLocationConverter.location(for: node.positionAfterSkippingLeadingTrivia).line ?? -1
+    return cursor.converter.location(for: node.positionAfterSkippingLeadingTrivia).line ?? -1
   }()
   
   public private(set) lazy var column: Int = {
-    return sourceLocationConverter.location(for: node.positionAfterSkippingLeadingTrivia).column ?? -1
+    return cursor.converter.location(for: node.positionAfterSkippingLeadingTrivia).column ?? -1
   }()
   
   public init(node: IdentifierExprSyntax,
               capturedNode: ExprSyntax?,
-              sourceLocationConverter: SourceLocationConverter) {
+              cursor: Cursor) {
     self.node = node
     self.capturedNode = capturedNode
-    self.sourceLocationConverter = sourceLocationConverter
+    self.cursor = cursor
   }
   
   private enum CodingKeys: CodingKey {
@@ -51,8 +52,7 @@ open class Leak: CustomStringConvertible, Encodable {
   
   open var description: String {
     return """
-      `self` is strongly captured at (line: \(line), column: \(column))"),
-      from a potentially escaped closure.
+    \(cursor.path):\(line):\(column)
     """
   }
 }

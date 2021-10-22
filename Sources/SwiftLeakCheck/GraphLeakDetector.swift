@@ -9,31 +9,32 @@
 //
 
 import SwiftSyntax
+import Cursor
 
 public final class GraphLeakDetector: BaseSyntaxTreeLeakDetector {
   
-  override public func detect(_ sourceFileNode: SourceFileSyntax) -> [Leak] {
+  override public func detect(_ cursor: Cursor) -> [Leak] {
     var res: [Leak] = []
-    let graph = GraphBuilder.buildGraph(node: sourceFileNode)
-    let sourceLocationConverter = SourceLocationConverter(file: "", tree: sourceFileNode)
-    let visitor = LeakSyntaxVisitor(graph: graph, sourceLocationConverter: sourceLocationConverter) { leak in
+    let graph = GraphBuilder.buildGraph(cursor: cursor)
+    let visitor = LeakSyntaxVisitor(graph: graph, cursor: cursor) { leak in
         res.append(leak)
-      }
-    visitor.walk(sourceFileNode)
+    }
+    visitor.walk(cursor.sourceFile)
     return res
   }
 }
 
 private final class LeakSyntaxVisitor: BaseGraphVistor {
   private let graph: GraphImpl
-  private let sourceLocationConverter: SourceLocationConverter
+  private let cursor: Cursor
+  
   private let onLeakDetected: (Leak) -> Void
   
   init(graph: GraphImpl,
-       sourceLocationConverter: SourceLocationConverter,
+       cursor: Cursor,
        onLeakDetected: @escaping (Leak) -> Void) {
     self.graph = graph
-    self.sourceLocationConverter = sourceLocationConverter
+    self.cursor = cursor
     self.onLeakDetected = onLeakDetected
   }
   
@@ -73,12 +74,12 @@ private final class LeakSyntaxVisitor: BaseGraphVistor {
           fatalError("Can't happen since a param cannot reference `self`")
         case let .capture(capturedNode):
           if variable.isStrong && isEscape {
-            leak = Leak(node: node, capturedNode: ExprSyntax(capturedNode), sourceLocationConverter: sourceLocationConverter)
+            leak = Leak(node: node, capturedNode: ExprSyntax(capturedNode), cursor: cursor)
           }
         case let .binding(_, valueNode):
           if let referenceNode = valueNode?.as(IdentifierExprSyntax.self) {
             if variable.isStrong && isEscape {
-              leak = Leak(node: node, capturedNode: ExprSyntax(referenceNode), sourceLocationConverter: sourceLocationConverter)
+              leak = Leak(node: node, capturedNode: ExprSyntax(referenceNode), cursor: cursor)
             }
           } else {
             fatalError("Can't reference `self`")
@@ -88,9 +89,7 @@ private final class LeakSyntaxVisitor: BaseGraphVistor {
         return
       }
 
-        #warning("nonEscapeRules")
       if case let .closureNode(closureNode) = currentScope.scopeNode {
-//      nonEscapeRules: nonEscapeRules
         isEscape = graph.isClosureEscape(closureNode)
       }
 
@@ -98,7 +97,7 @@ private final class LeakSyntaxVisitor: BaseGraphVistor {
     }
 
     if isEscape {
-      leak = Leak(node: node, capturedNode: nil, sourceLocationConverter: sourceLocationConverter)
+      leak = Leak(node: node, capturedNode: nil, cursor: cursor)
       return
     }
   }
