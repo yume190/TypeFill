@@ -29,8 +29,7 @@ extension PatternBindingSyntax: SyntaxBinding {
 
 extension SyntaxBinding {
     private func fillIdentifier(rewriter: TypeFillRewriter) -> Self {
-        let offset: Int = self.pattern.position.utf8Offset
-        guard let type: TypeSyntax = try? rewriter.cursor(offset).typeSyntax else { return self }
+        guard let type: TypeSyntax = try? rewriter.cursor(pattern).typeSyntax else { return self }
         
         let typeAnnotation: TypeAnnotationSyntax
         if self._initializer == nil {
@@ -44,7 +43,7 @@ extension SyntaxBinding {
     
     private func fillTuple(pattern: TuplePatternSyntax, rewriter: TypeFillRewriter) -> Self {
         let types: [TypeSyntax] = pattern.elements.compactMap {
-            return try? rewriter.cursor($0.position.utf8Offset).typeSyntax
+            return try? rewriter.cursor($0).typeSyntax
         }
         
         guard types.count == pattern.elements.count else { return self }

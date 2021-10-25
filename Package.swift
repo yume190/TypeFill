@@ -25,7 +25,6 @@ let package = Package(
         .executable(name: "typefill", targets: ["TypeFill"]),
         .executable(name: "leakDetect", targets: ["LeakDetect"]),
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
-//        .library(name: "SwiftLeakCheck", targets: ["SwiftLeakCheck"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -42,20 +41,20 @@ let package = Package(
         .target(
             name: "LeakDetect",
             dependencies: [
-//                "SwiftLeakCheck",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                "SwiftLeakCheck",
                 "Cursor",
+                "Derived"
             ]
         ),
         
         .target(
             name: "TypeFill",
             dependencies: [
-                "TypeFillKit",
-//                "SwiftLeakCheck",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                "TypeFillKit",
                 "Cursor",
             ]
         ),
@@ -64,10 +63,8 @@ let package = Package(
             name: "TypeFillKit",
             dependencies: [
                 "Rainbow",
-                // .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
-                "Derived",
                 "Cursor",
             ]),
         .target(
@@ -79,13 +76,16 @@ let package = Package(
         .target(
             name: "Cursor",
             dependencies: [
+                "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                "Derived",
             ]),
         
         .target(
             name: "SwiftLeakCheck",
             dependencies: [
+                "Rainbow",
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 "Cursor",
             ]),

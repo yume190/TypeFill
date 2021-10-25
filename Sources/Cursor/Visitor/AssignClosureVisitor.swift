@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftSyntax
+import Rainbow
 
 extension ExprSyntax {
     var tokenSyntax: TokenSyntax? {
@@ -32,8 +33,10 @@ public final class AssignClosureVisitor: SyntaxVisitor {
     
     private(set) var results: [CodeLocation] = []
     private let cursor: Cursor
-    public init(_ cursor: Cursor) {
+    private let verbose: Bool
+    public init(_ cursor: Cursor, _ verbose: Bool = false) {
         self.cursor = cursor
+        self.verbose = verbose
     }
     
     /// self.a = self.abc
@@ -61,8 +64,10 @@ public final class AssignClosureVisitor: SyntaxVisitor {
         guard let identifier = exprs[2].tokenSyntax else {return}
 
         do {
-            guard try cursor(identifier).isRefInstanceFunction else {return}
-            self.results.append(cursor(location: identifier))
+            try Duration.logger("\("[INSPECT]".applyingColor(.green)) assign\t\(cursor(location: identifier)) \(identifier)", verbose: verbose) {
+                guard try cursor(identifier).isRefInstanceFunction else {return}
+                self.results.append(cursor(location: identifier))
+            }
         } catch {
             
         }
@@ -86,8 +91,10 @@ public final class AssignClosureVisitor: SyntaxVisitor {
         for param in node.argumentList {
             do {
                 guard let identifier = param.expression.tokenSyntax else {continue}
-                guard try cursor(identifier).isRefInstanceFunction else {continue}
-                self.results.append(cursor(location: identifier))
+                try Duration.logger("\("[INSPECT]".applyingColor(.green)) parameter\t\(cursor(location: identifier)) \(identifier)", verbose: verbose) {
+                    guard try cursor(identifier).isRefInstanceFunction else {return}
+                    self.results.append(cursor(location: identifier))
+                }
             } catch {
                 
             }

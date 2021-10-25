@@ -25,10 +25,10 @@ final class GraphLeakTests: XCTestCase {
         let leaks = GraphLeakDetector().detect(cursor)
         
         let postions = [
-            "4:7",
-            "8:7",
-            "16:7",
-            "30:22",
+            "\(path):4:7",
+            "\(path):8:7",
+            "\(path):16:7",
+            "\(path):30:22",
         ]
         
         XCTAssertEqual(leaks.map(\.description), postions)

@@ -38,12 +38,11 @@ final class TypeFillRewriter: SyntaxRewriter {
     override func visit(_ node: ClosureParamListSyntax) -> Syntax {
         // MARK: skip inout
         guard let arg: ClosureParamSyntax = node.first else {return .init(node)}
-        let isHaveInout: Bool = (try? self.cursor(arg.position.utf8Offset).isHaveInout) ?? false
+        let isHaveInout: Bool = (try? self.cursor(arg).isHaveInout) ?? false
         guard !isHaveInout else {return .init(node)}
         
         let types: [TypeSyntax?] = node.map { (param: ClosureParamListSyntax.Element) -> TypeSyntax? in
-            let postion: Int = param.position.utf8Offset
-            guard let response: SourceKitResponse = try? cursor(postion) else {return nil}
+            guard let response: SourceKitResponse = try? cursor(param) else {return nil}
             return response.typeSyntax
         }
         
@@ -81,8 +80,8 @@ final class TypeFillRewriter: SyntaxRewriter {
     override func visit(_ node: ParameterClauseSyntax) -> Syntax {
         let newParams: [FunctionParameterSyntax] = node.parameterList.map { (parameter: FunctionParameterListSyntax.Element) -> FunctionParameterSyntax in
             guard parameter.colon == nil, parameter.type == nil else { return parameter }
-            guard let postion: Int = parameter.firstName?.position.utf8Offset else { return parameter }
-            guard let type: SourceKitResponse = try? cursor(postion) else { return parameter }
+            guard let firstName = parameter.firstName else { return parameter }
+            guard let type: SourceKitResponse = try? cursor(firstName) else { return parameter }
             guard let typeSyntax: TypeSyntax = type.typeSyntax else { return parameter }
             let newNode: FunctionParameterSyntax = parameter
                 .withColon(Symbols.colon)

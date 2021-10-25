@@ -8,75 +8,69 @@
 import Foundation
 import ArgumentParser
 import SourceKittenFramework
-//import SwiftLeakCheck
+import SwiftLeakCheck
 import Cursor
-
-/// PRODUCT_NAME=TypeFillKit
-/// TARGET_NAME=TypeFillKit
-/// TARGETNAME=TypeFillKit
-/// PRODUCT_BUNDLE_IDENTIFIER=TypeFillKit
-/// EXECUTABLE_NAME=TypeFillKit
-/// PRODUCT_MODULE_NAME=TypeFillKit
-fileprivate enum Env: String {
-    case projectTempRoot = "PROJECT_TEMP_ROOT"
-    case targetName = "TARGET_NAME"
+import Derived
+import Rainbow
     
-    private static let processInfo: ProcessInfo = ProcessInfo()
-    
-    var value: String? {
-        return Self.processInfo.environment[self.rawValue]
-    }
-}
-
 struct Command: ParsableCommand {
     static var configuration: CommandConfiguration = CommandConfiguration(
         // commandName: "xcode",
         abstract: "A Tool to Detect Potential Leaks",
         discussion: """
-        Needed Environment Variable:
-         * `PROJECT_TEMP_ROOT`
-         * `TARGET_NAME`
+        \(Env.discussion)
         
-        Example:
-        `PROJECT_TEMP_ROOT`="/PATH_TO/DerivedData/TypeFill-abpidkqveyuylveyttvzvsspldln/Build/Intermediates.noindex"
-        `TARGET_NAME`="Typefill"
+        Mode:
+         * assign: detect assign instance function `x = self.func` or `y(self.func)`.
+         * capture: detect `self` capture in closure.
         """,
         version: "0.2.1"
     )
     
+    @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print inpect time")
+    var verbose: Bool = false
+    
+    @Option(name: [.customLong("mode", withSingleDash: false)], help: "[\(Mode.all)]")
+    var mode: Mode = .assign
+    
     func run() throws {
-        guard let projectTempRoot: String = Env.projectTempRoot.value else {
-            Swift.print("Env `PROJECT_TEMP_ROOT` not found, quit.");return
-        }
-
-        guard let moduleName: String = Env.targetName.value else {
-            Swift.print("Env `TARGET_NAME` not found, quit.");return
-        }
-        
-        guard let args: [String] = XCodeSetting.checkNewBuildSystem(in: projectTempRoot, moduleName: moduleName) else {
-            Swift.print("Build Setting not found, quit.");return
-        }
-        
-        let module: Module = Module(name: moduleName, compilerArguments: args)
-        
-        let all: Int = module.sourceFiles.count
-        try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-            Swift.print("scan file[\(index + 1)/\(all)]: \(filePath)")
+        try Env.prepare { projectRoot, moduleName, args in
+            let module: Module = Module(name: moduleName, compilerArguments: args)
             
-            let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
-            let visitor = AssignClosureVisitor(cursor)
-            
-            visitor.detect().forEach { location in
-                Swift.print(location)
+            let all: Int = module.sourceFiles.count
+            try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
+                print("scan file[\(index + 1)/\(all)]: \(filePath)")
+                
+                switch mode {
+                case .assign:
+                    let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+                    let visitor = AssignClosureVisitor(cursor, verbose)
+                    
+                    visitor.detect().forEach { location in
+                        print("\("[LEAK]:".applyingColor(.red)) \(location)")
+                    }
+                case .capture:
+                    let detector = GraphLeakDetector()
+                    let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+                    let leaks = detector.detect(cursor)
+                    leaks.forEach { leak in
+                        print("\("[LEAK]:".applyingColor(.red)) \(leak.description)")
+                    }
+                }
             }
-            
-//            let detector = GraphLeakDetector()
-//            let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
-//            let leaks = detector.detect(cursor)
-//            leaks.forEach { leak in
-//                Swift.print("\(filePath):\(leak.description)")
-//            }
         }
+    }
+}
+
+extension Command {
+    enum Mode: String, CaseIterable, ExpressibleByArgument {
+        case assign
+        case capture
+        
+        static let all = Mode
+            .allCases
+            .map(\.rawValue)
+            .joined(separator: "|")
     }
 }
 

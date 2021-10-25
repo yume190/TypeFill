@@ -12,9 +12,9 @@ import CryptoSwift
 // TODO IndexStore
 public struct DerivedPath {
     public static let `default`: String = "\(NSHomeDirectory())/Library/Developer/Xcode/DerivedData"
-    let name: String
+    private let name: String
     
-    public init?(_ path: String) {        
+    public init?(_ path: String) {
         guard let url: URL = URL(string: path) else { return nil }
         let fileName: String = url.deletingPathExtension().lastPathComponent
         
@@ -45,8 +45,12 @@ public struct DerivedPath {
         self.name = "\(fileName)-\(derived)"
     }
 
-    public var isExist: Bool {
-        FileManager.default.fileExists(atPath: DerivedPath.default + "\(name)")
+    public func isExist(derivedPath: String = DerivedPath.default) -> Bool {
+        FileManager.default.fileExists(atPath: self.path(derivedPath: derivedPath))
+    }
+    
+    public func path(derivedPath: String = DerivedPath.default) -> String {
+        return DerivedPath.default + "/\(name)"
     }
     
     /// .../Index/DataStore
