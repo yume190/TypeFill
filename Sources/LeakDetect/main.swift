@@ -24,7 +24,7 @@ struct Command: ParsableCommand {
          * assign: detect assign instance function `x = self.func` or `y(self.func)`.
          * capture: detect `self` capture in closure.
         """,
-        version: "0.2.1"
+        version: "0.2.2"
     )
     
     @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print inpect time")
@@ -39,7 +39,7 @@ struct Command: ParsableCommand {
             
             let all: Int = module.sourceFiles.count
             try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-                print("scan file[\(index + 1)/\(all)]: \(filePath)")
+                print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
                 
                 switch mode {
                 case .assign:
@@ -47,14 +47,14 @@ struct Command: ParsableCommand {
                     let visitor = AssignClosureVisitor(cursor, verbose)
                     
                     visitor.detect().forEach { location in
-                        print("\("[LEAK]:".applyingColor(.red)) \(location)")
+                        print("[LEAK]: \(location)".applyingColor(.red))
                     }
                 case .capture:
                     let detector = GraphLeakDetector()
                     let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let leaks = detector.detect(cursor)
                     leaks.forEach { leak in
-                        print("\("[LEAK]:".applyingColor(.red)) \(leak.description)")
+                        print("[LEAK]: \(leak.description)".applyingColor(.red))
                     }
                 }
             }
