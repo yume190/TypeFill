@@ -20,6 +20,7 @@ test:
 .PHONY: install
 install: release
 	@cp .build/release/typefill /usr/local/bin
+	@cp .build/release/LeakDetect /usr/local/bin
 
 .PHONY: clear
 clear: 
