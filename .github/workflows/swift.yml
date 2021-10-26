@@ -40,10 +40,10 @@ jobs:
         - "13.0"
         - "12.5.1"
         - "12.4"
-                
+
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Xcode Select ${{ matrix.xcode }}
       # You may pin to the exact commit or the version.
       # uses: devbotsxyz/xcode-select@05f94658217eb8575f0aabd3b95e702a47995d21
@@ -53,21 +53,20 @@ jobs:
         version: ${{ matrix.xcode }} # optional, default is latest
         # Whether to select a beta release or not. Beta releases may not always be available.
         beta: false # optional, default is false
-        
+
     - name: Get swift version
       run: swift --version # Swift 5.3.3
 
-    - name: SPM Cache ${{ matrix.swift }}
+    - name: SPM Cache ${{ matrix.xcode }}
       uses: actions/cache@v2
       with:
         path: .build
-        key: ${{ runner.os }}-${{ matrix.swift }}-spm-${{ hashFiles('**/Package.resolved') }}
+        key: ${{ runner.os }}-${{ matrix.xcode }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.swift }}-spm-
+          ${{ runner.os }}-${{ matrix.xcode }}-spm-
       
-    - name: Build ${{ matrix.swift }}
+    - name: Build ${{ matrix.xcode }}
       run: swift build -v
       
-    - name: Run tests ${{ matrix.swift }}
+    - name: Run tests ${{ matrix.xcode }}
       run: swift test -v 2>&1 | xcpretty
-      
