@@ -25,26 +25,34 @@ jobs:
   build:
 
     # https://github.com/actions/virtual-environments
-    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-10.15-Readme.md
-    # /Applications/Xcode_12.5.1.app 5.4.2
-    # /Applications/Xcode_12.4.app   5.3.2
-    runs-on: macos-latest
+    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md
+    # 13.1    5.5.1
+    # 13.0    5.5
+    # 12.5.1  5.4.2
+    # 12.4    5.3.2
+    # 11.7    5.2.4
+    runs-on: macos-11
 
     strategy:
       matrix:
-        swift: ["5.3.2", "5.4"]
+        xcode: 
+        - "13.1"
+        - "13.0"
+        - "12.5.1"
+        - "12.4"
                 
     steps:
     - uses: actions/checkout@v2
     
-    - name: Setup Swift ${{ matrix.swift }}
+    - name: Xcode Select ${{ matrix.xcode }}
       # You may pin to the exact commit or the version.
-      # uses: fwal/setup-swift@d43a564349d1341cd990cfbd70d94d63b8899475
-      uses: fwal/setup-swift@v1.7.0
+      # uses: devbotsxyz/xcode-select@05f94658217eb8575f0aabd3b95e702a47995d21
+      uses: devbotsxyz/xcode-select@v1.1.0
       with:
-        # Swift version to configure
-        # default is 5.4
-        swift-version: ${{ matrix.swift }}
+        # Version to use (like '11.7', '12' or simply 'latest')
+        version: ${{ matrix.xcode }} # optional, default is latest
+        # Whether to select a beta release or not. Beta releases may not always be available.
+        beta: false # optional, default is false
         
     - name: Get swift version
       run: swift --version # Swift 5.3.3
