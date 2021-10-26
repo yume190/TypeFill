@@ -24,7 +24,7 @@ struct Command: ParsableCommand {
          * assign: detect assign instance function `x = self.func` or `y(self.func)`.
          * capture: detect `self` capture in closure.
         """,
-        version: "0.2.2"
+        version: "0.2.3"
     )
     
     @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print inpect time")
