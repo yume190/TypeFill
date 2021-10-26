@@ -37,6 +37,15 @@ struct Command: ParsableCommand {
         try Env.prepare { projectRoot, moduleName, args in
             let module: Module = Module(name: moduleName, compilerArguments: args)
             
+            var leakCount = 0
+            defer {
+                if leakCount == 0 {
+                    print("Congratulation no leak found".green)
+                } else {
+                    print("Found \(leakCount) leaks".red)
+                }
+            }
+            
             let all: Int = module.sourceFiles.count
             try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
                 print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
@@ -45,17 +54,19 @@ struct Command: ParsableCommand {
                 case .assign:
                     let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let visitor = AssignClosureVisitor(cursor, verbose)
-                    
-                    visitor.detect().forEach { location in
-                        print("[LEAK]: \(location)".applyingColor(.red))
+                    let leaks = visitor.detect()
+                    leaks.forEach { location in
+                        print("[LEAK]: \(location)".red)
                     }
+                    leakCount += leaks.count
                 case .capture:
                     let detector = GraphLeakDetector()
                     let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let leaks = detector.detect(cursor)
                     leaks.forEach { leak in
-                        print("[LEAK]: \(leak.description)".applyingColor(.red))
+                        print("[LEAK]: \(leak.description)".red)
                     }
+                    leakCount += leaks.count
                 }
             }
         }
