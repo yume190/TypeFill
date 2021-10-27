@@ -27,7 +27,8 @@ USAGE: command [--verbose] [--mode <mode>]
  * `PROJECT_PATH`="/PATH_TO/xxx.xcodeproj" or "/PATH_TO/Tangran-xxx.xcworkspace"
  * `TARGET_NAME`="Typefill"
 
-> PROJECT_PATH 相對路徑，雖然叫做 PROJECT_PATH 但是請填入以妳主要開啟的檔案為主
+> PROJECT_PATH 相對路徑，雖然叫做 PROJECT_PATH 但是請填入以妳主要開啟的檔案為主\
+
 > PROJECT_TEMP_ROOT 絕對路徑
 
 ### 模式(mode)
@@ -55,5 +56,7 @@ USAGE: command [--verbose] [--mode <mode>]
 ## 目前已知問題
 
 > TARGET_NAME 請不要含有 `-` 或 `_`
+
 > assign mode 會誤判 `button.addTarget(self, ...)` 的 self
+
 > capture mode 會誤判 在 ResultBuilder 的 non escaping closure
