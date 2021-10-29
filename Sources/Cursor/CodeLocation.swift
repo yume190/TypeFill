@@ -21,3 +21,20 @@ public struct CodeLocation: CustomStringConvertible, Equatable {
             lhs.location.offset == rhs.location.offset
     }
 }
+
+extension CodeLocation: Reportable {
+    public var reportXCode: String {
+        if let column = location.column {
+            return "col: \(column)"
+        }
+        return ""
+    }
+    
+    public var reportXCodeLocation: SourceLocation? {
+        return location
+    }
+    
+    public var reportVSCode: String {
+        return self.description.red
+    }
+}

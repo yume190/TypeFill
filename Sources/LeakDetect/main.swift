@@ -33,6 +33,9 @@ struct Command: ParsableCommand {
     @Option(name: [.customLong("mode", withSingleDash: false)], help: "[\(Mode.all)]")
     var mode: Mode = .assign
     
+    @Option(name: [.customLong("reporter", withSingleDash: false)], help: "[\(Mode.all)]")
+    var reporter: Reporter = .vscode
+    
     func run() throws {
         try Env.prepare { projectRoot, moduleName, args in
             let module: Module = Module(name: moduleName, compilerArguments: args)
@@ -55,17 +58,13 @@ struct Command: ParsableCommand {
                     let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let visitor = AssignClosureVisitor(cursor, verbose)
                     let leaks = visitor.detect()
-                    leaks.forEach { location in
-                        print("[LEAK]: \(location)".red)
-                    }
+                    leaks.forEach(reporter.report)
                     leakCount += leaks.count
                 case .capture:
                     let detector = GraphLeakDetector()
                     let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let leaks = detector.detect(cursor)
-                    leaks.forEach { leak in
-                        print("[LEAK]: \(leak.description)".red)
-                    }
+                    leaks.forEach(reporter.report)
                     leakCount += leaks.count
                 }
             }
@@ -83,6 +82,13 @@ extension Command {
             .map(\.rawValue)
             .joined(separator: "|")
     }
+}
+
+extension Reporter:  ExpressibleByArgument {
+    static let all = Reporter
+        .allCases
+        .map(\.rawValue)
+        .joined(separator: "|")
 }
 
 Command.main()

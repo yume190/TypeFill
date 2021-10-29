@@ -15,10 +15,10 @@ public struct DerivedPath {
     private let name: String
     
     public init?(_ path: String) {
-        guard let url: URL = URL(string: path) else { return nil }
+        let url = URL(fileURLWithPath: path)
         let fileName: String = url.deletingPathExtension().lastPathComponent
-        
-        guard let data: Data = path.data(using: .utf8) else { return nil }
+        let absolutePath = url.path
+        let data = Data(absolutePath.utf8)
         
         let digestBytes: [UInt8] = [UInt8](data.md5())
     //    let digest: Insecure.MD5.Digest = Insecure.MD5.hash(data: data)
@@ -46,7 +46,7 @@ public struct DerivedPath {
     }
 
     public func isExist(derivedPath: String = DerivedPath.default) -> Bool {
-        FileManager.default.fileExists(atPath: self.path(derivedPath: derivedPath))
+        return FileManager.default.fileExists(atPath: self.path(derivedPath: derivedPath))
     }
     
     public func path(derivedPath: String = DerivedPath.default) -> String {

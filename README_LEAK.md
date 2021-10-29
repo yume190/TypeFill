@@ -27,7 +27,7 @@ USAGE: command [--verbose] [--mode <mode>]
  * `PROJECT_PATH`="/PATH_TO/xxx.xcodeproj" or "/PATH_TO/Tangran-xxx.xcworkspace"
  * `TARGET_NAME`="Typefill"
 
-> PROJECT_PATH 相對路徑，雖然叫做 PROJECT_PATH 但是請填入以妳主要開啟的檔案為主\
+> PROJECT_PATH 相對路徑，雖然叫做 PROJECT_PATH 但是請填入以妳主要開啟的檔案為主
 
 > PROJECT_TEMP_ROOT 絕對路徑
 

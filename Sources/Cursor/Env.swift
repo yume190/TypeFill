@@ -30,9 +30,13 @@ public enum Env: String {
         if let projectTempRoot: String = Env.projectTempRoot.value {
             projectRoot = projectTempRoot
         } else if let path: String = Env.projectPath.value {
-            guard let derived = DerivedPath(path), derived.isExist() else {
+            guard let derived = DerivedPath(path) else {
                 Swift.print("Env `\(Env.projectPath.rawValue)` not found, quit.");exit(0)
             }
+            guard derived.isExist() else {
+                Swift.print("\(derived.path()) not found, quit.");exit(0)
+            }
+            
             projectRoot = derived.path() + "/Build/Intermediates.noindex"
         } else {
             Swift.print("Env `\(Env.projectTempRoot.rawValue)` not found, quit.");exit(0)
