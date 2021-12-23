@@ -23,7 +23,7 @@ jobs:
         run: mint install unsignedapps/swift-create-xcframework
         
       - name: Install Create xcframework
-        run: swift create-xcframework --stack-evolution
+        run: /Users/runner/.mint/bin/swift-create-xcframework --stack-evolution
         
       - name: Upload release
         uses: yakuhzi/action-release@v1
