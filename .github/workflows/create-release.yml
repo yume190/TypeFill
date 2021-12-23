@@ -12,9 +12,6 @@ jobs:
     steps:
 
       - uses: actions/checkout@v2
-
-#       - name: Create XCFramework
-#         uses: unsignedapps/swift-create-xcframework@v2
       
       - name: Install mint
         run: brew install mint
@@ -22,14 +19,15 @@ jobs:
       - name: Install Create xcframework
         run: mint install unsignedapps/swift-create-xcframework
         
-      - name: Install Create xcframework
+      - name: Create xcframework
         run: /Users/runner/.mint/bin/swift-create-xcframework --stack-evolution
-        
+
       - name: Upload release
-        uses: yakuhzi/action-release@v1
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          file: TypeFillKit.xcframework
-          # changelog: /path/to/CHANGELOG.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Release Build"
+          files: |
+            TypeFillKit.xcframework
