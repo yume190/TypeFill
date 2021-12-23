@@ -3,12 +3,12 @@ name: Create Release
 # Create XCFramework when a version is tagged
 on:
   push:
-    tags:
+    tags: "*"
 
 jobs:
   create_release:
     name: Create Release
-    runs-on: macos-latest
+    runs-on: macOS-11
     steps:
 
       - uses: actions/checkout@v2
