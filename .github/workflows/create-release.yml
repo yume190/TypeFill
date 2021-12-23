@@ -14,7 +14,23 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create XCFramework
-        uses: unsignedapps/swift-create-xcframework@v2.1
+        uses: unsignedapps/swift-create-xcframework@v2
+        
+        
+      - name: swift-create-xcframework
+        # You may pin to the exact commit or the version.
+        # uses: unsignedapps/swift-create-xcframework@859acbb5fd207eb5c24bdd7d5846390af3b741b6
+        uses: unsignedapps/swift-create-xcframework@v2.1.0
+        # with:
+          # The name of the target(s) you want to create an XCFramework bundle for. One artifact will be uploaded for each target. Separate target names with commas.
+          # target: # optional
+          # The platform(s) that you want to build for. Default is to build for all platforms supported in your Package.swift, or all Apple platforms if omited. Comma-delimited string supported.
+          # platforms: # optional
+          # Build with a specific configuration ('debug' or 'release')
+          # configuration: # optional, default is release
+          # The path to a .xcconfig file that can be used to override Xcode build settings. Relative to the package path.
+          # xcconfig: # optional
+        
 
       # Create a release
       # Upload those artifacts to the release
