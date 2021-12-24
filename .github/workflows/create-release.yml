@@ -82,6 +82,7 @@ jobs:
           sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' package.swift
           sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' package.swift
           git add package.swift
-          git tag ${{ steps.get_version.outputs.VERSION }}
           git commit -am "Automated release"
+          git tag ${{ steps.get_version.outputs.VERSION }}
           git push origin ${{ steps.get_version.outputs.VERSION }}
+          
