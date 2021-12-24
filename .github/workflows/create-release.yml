@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.mint
-          key: ${{ runner.os }}-mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('~/.mint/metadata.json') }}
           restore-keys: |
             ${{ runner.os }}-mint-
       
