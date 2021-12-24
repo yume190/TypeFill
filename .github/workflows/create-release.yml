@@ -33,17 +33,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .build
-          key: ${{ runner.os }}-${{ matrix.xcode }}-spm-${{ hashFiles('**/Package.resolved') }}
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.xcode }}-spm-
+            ${{ runner.os }}-spm-
       
       - name: Mint Cache
         uses: actions/cache@v2
         with:
           path: ~/.mint
-          key: ${{ runner.os }}-${{ matrix.xcode }}-mint
+          key: ${{ runner.os }}-mint
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.xcode }}-mint-
+            ${{ runner.os }}-mint-
       
       - name: Install mint
         run: brew install mint
