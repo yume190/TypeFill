@@ -1,9 +1,23 @@
 name: Create Release
 
 # Create XCFramework when a version is tagged
-on:
+on: 
   push:
-    tags: 
+    tags: "*"
+    branches: 
+      - master
+      - hotfix
+    paths:
+      - 'Source/**'
+      - 'Tests/**'
+      - '.github/workflows/**'
+      - 'Package.swift'
+  pull_request:
+    paths:
+      - 'Source/**'
+      - 'Tests/**'
+      - '.github/workflows/**'
+      - 'Package.swift'
 
 jobs:
   create_release:
@@ -13,6 +27,22 @@ jobs:
 
       - uses: actions/checkout@v2
       
+      - name: SPM Cache ${{ matrix.xcode }}
+        uses: actions/cache@v2
+        with:
+          path: .build
+          key: ${{ runner.os }}-${{ matrix.xcode }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.xcode }}-spm-
+      
+      - name: Mint Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.mint/bin/
+          key: ${{ runner.os }}-${{ matrix.xcode }}-mint
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.xcode }}-mint-
+      
       - name: Install mint
         run: brew install mint
         
@@ -20,7 +50,10 @@ jobs:
         run: mint install unsignedapps/swift-create-xcframework
         
       - name: Create xcframework
-        run: /Users/runner/.mint/bin/swift-create-xcframework --stack-evolution
+        run: ~/.mint/bin/swift-create-xcframework --stack-evolution
+        
+      - name: Zip xcframework
+        run: zip -r TypeFillKit.xcframework.zip TypeFillKit.xcframework
 
       - name: Upload release
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -30,4 +63,4 @@ jobs:
           prerelease: true
           title: "Release Build"
           files: |
-            TypeFillKit.xcframework
+            TypeFillKit.xcframework.zip
