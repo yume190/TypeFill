@@ -40,7 +40,7 @@ jobs:
       - name: Mint Cache
         uses: actions/cache@v2
         with:
-          path: ~/.mint/bin/
+          path: ~/.mint
           key: ${{ runner.os }}-${{ matrix.xcode }}-mint
           restore-keys: |
             ${{ runner.os }}-${{ matrix.xcode }}-mint-
@@ -48,12 +48,15 @@ jobs:
       - name: Install mint
         run: brew install mint
         
-      - name: Install Create xcframework
+      - name: Install Create xcframework(SPM)
         run: mint install unsignedapps/swift-create-xcframework
         
       - name: Create xcframework
         run: ~/.mint/bin/swift-create-xcframework --stack-evolution
         
+      - name: Clear Create xcframework
+        run: rm -Rf .build/swift-create-xcframework
+
       - name: Zip xcframework
         run: zip -r TypeFillKit.xcframework.zip TypeFillKit.xcframework
 
