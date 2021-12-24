@@ -11,6 +11,9 @@ let branch = "release/5.4"
 let branch = "release/5.3"
 #endif
 
+let checksum = ""
+let binaryURL = ""
+
 let appleDependencies: [Package.Dependency] = [
     // .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch(branch)),
     .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch(branch)),
@@ -70,7 +73,13 @@ let package = Package(
             ]
         ),
         
-        // MARK: Frameworks
+         // MARK: Frameworks
+        //  .binaryTarget(
+        //      name: "a",
+        //      url: ,
+        //      checksum: ""
+        //  ),
+        
         .target(
             name: "TypeFillKit",
             dependencies: [

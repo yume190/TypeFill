@@ -40,7 +40,7 @@ githubRelease:
 	git add Makefile
 
 	git commit -m "Update to $(VERSION)"
-	git tag $(VERSION)
+	git tag release-$(VERSION)
 
 
 
