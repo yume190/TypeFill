@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.mint
-          key: ${{ runner.os }}-mint-${{ hashFiles('~/.mint/metadata.json') }}
+          key: ${{ runner.os }}-mint-${{ hashFiles('~/.mint/**/metadata.json') }}
           restore-keys: |
             ${{ runner.os }}-mint-
       
@@ -81,6 +81,7 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' package.swift
           sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' package.swift
+          git add package.swift
           git tag ${{ steps.get_version.outputs.VERSION }}
           git commit -am "Automated release"
           git push origin ${{ steps.get_version.outputs.VERSION }}
