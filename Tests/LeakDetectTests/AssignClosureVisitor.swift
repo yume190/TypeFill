@@ -8,6 +8,7 @@ import Foundation
 import XCTest
 import SwiftSyntax
 @testable import Cursor
+@testable import LeakDetectExtension
 
 final class AssignClosureTests: XCTestCase {
     

@@ -10,6 +10,7 @@
 
 import SwiftSyntax
 import Cursor
+import LeakDetectExtension
 
 public protocol Graph {
   var sourceFileScope: SourceFileScope { get }

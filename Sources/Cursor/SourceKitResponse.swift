@@ -102,6 +102,10 @@ public struct SourceKitResponse {
         return self[#function]
     }
     
+    public var parent_loc: Int64? {
+        return self[#function]
+    }
+    
     public var isHaveInout: Bool {
         guard let demangled = USR(self.usr)?.demangle() else { return false }
         return demangled.contains("(inout ")
@@ -115,4 +119,10 @@ public struct SourceKitResponse {
         return self.kind == .refFunctionMethodInstance
     }
     
+    
+    public var secondary_symbols: SourceKitResponse? {
+        guard let array: [SourceKitRepresentable] = self[#function] else {return nil}
+        guard let dict = array.first as? [String:SourceKitRepresentable] else {return nil}
+        return SourceKitResponse(dict)
+    }
 }

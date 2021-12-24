@@ -7,6 +7,9 @@
 
 import Foundation
 
+/// not found
+/// source.lang.swift.ref.function.method.class
+
 /// https://github.com/apple/swift/blob/b0678ca5244e343cec109b4e7dde4b8bc430a8c1/tools/SourceKit/docs/SwiftSupport.txt
 public enum Kind: String, CaseIterable {
     case declFunctionFree = "source.lang.swift.decl.function.free"
@@ -52,4 +55,11 @@ public enum Kind: String, CaseIterable {
     case declExtensionStruct = "source.lang.swift.decl.extension.struct"
     case declExtensionClass = "source.lang.swift.decl.extension.class"
     case declExtensionEnum = "source.lang.swift.decl.extension.enum"
+    
+    ///
+    case declVarClass = "source.lang.swift.decl.var.class"
+    case refVarClass = "source.lang.swift.ref.var.class"
+    
+    case declFunctionMethodClass = "source.lang.swift.decl.function.method.class"
+    case refFunctionMethodClass = "source.lang.swift.ref.function.method.class"
 }

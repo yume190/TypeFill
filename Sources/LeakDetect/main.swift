@@ -9,10 +9,11 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 import SwiftLeakCheck
+import LeakDetectExtension
 import Cursor
 import Derived
 import Rainbow
-    
+
 struct Command: ParsableCommand {
     static var configuration: CommandConfiguration = CommandConfiguration(
         // commandName: "xcode",
@@ -49,21 +50,22 @@ struct Command: ParsableCommand {
                 }
             }
             
+            
             let all: Int = module.sourceFiles.count
             try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-                print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
-                
+                let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                 switch mode {
                 case .assign:
-                    let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let visitor = AssignClosureVisitor(cursor, verbose)
                     let leaks = visitor.detect()
+                    print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
                     leaks.forEach(reporter.report)
                     leakCount += leaks.count
+                    
                 case .capture:
                     let detector = GraphLeakDetector()
-                    let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
                     let leaks = detector.detect(cursor)
+                    print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
                     leaks.forEach(reporter.report)
                     leakCount += leaks.count
                 }

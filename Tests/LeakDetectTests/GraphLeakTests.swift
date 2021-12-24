@@ -7,9 +7,8 @@
 
 import Foundation
 import XCTest
-import SwiftSyntax
 @testable import Cursor
-import SwiftLeakCheck
+@testable import SwiftLeakCheck
 
 final class GraphLeakTests: XCTestCase {
     

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftSyntax
 import Rainbow
+import Cursor
 
 extension ExprSyntax {
     var tokenSyntax: TokenSyntax? {

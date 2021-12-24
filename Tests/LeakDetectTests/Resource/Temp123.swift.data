@@ -1,0 +1,15 @@
+let a = 1
+
+class A {
+    let a = 2
+    let b = 2
+
+    func test(a1 i1: Int, a2 i2: Int) {
+        let a = 3
+        let b = self.b
+
+        let c = 2, d = 3
+        let (cc, dd) = (22, 33)
+    }
+    
+}

@@ -1,0 +1,73 @@
+let global = AAA()
+func globalFunc() {}
+
+struct BBB {}
+enum CCC {
+    case test
+}
+
+class AAA {
+    static let globalS = AAA()
+
+    static var a: Int {1}
+    class var b: Int {1}
+    var c: Int {1}
+
+    class func classFunc() {}
+    static func staticFunc() {}
+    func instanceFunc() {}
+    
+    typealias C = () -> Void
+
+    func test() {
+
+        func funcInfunc() {
+            print(self)         // self parent_loc -> test
+        }
+
+        let aaa = AAA()
+        let c: C = { [ccc = aaa, weak this = self] in   // self parent_loc -> test
+            // Optional Binding
+            if let this1 = this {}                  // "source.lang.swift.decl.var.local"
+            guard let this2 = this else {return}    // "source.lang.swift.decl.var.local"
+
+            // init
+            _ = AAA()           // "source.lang.swift.ref.class"
+                                // secondary_symbols
+                                //     "source.lang.swift.ref.function.constructor"
+            _ = BBB()           // "source.lang.swift.ref.struct"
+                                // secondary_symbols
+                                //     "source.lang.swift.ref.function.constructor"
+            let _c: CCC = .test // "source.lang.swift.ref.enumelement"
+            _ = CCC.test        // "source.lang.swift.ref.enumelement"
+            
+            let bbb = AAA()
+            // local
+            print(aaa)          // "source.lang.swift.ref.var.local"
+            print(bbb)          // "source.lang.swift.ref.var.local"
+            print(ccc)          // "source.lang.swift.ref.var.local"
+            print(self)         // "source.lang.swift.ref.var.local"
+            print(this)         // "source.lang.swift.ref.var.local"
+            
+            // global
+            print(global)       // "source.lang.swift.ref.var.global"
+            print(AAA.globalS)  // "source.lang.swift.ref.var.static"
+            print(AAA.a)        // "source.lang.swift.ref.var.static"
+            print(AAA.b)        // "source.lang.swift.ref.var.class"
+            
+            // instance
+            print(aaa.c)        // "source.lang.swift.ref.var.instance"
+            
+            // func
+            globalFunc()        // "source.lang.swift.ref.function.free"
+            AAA.classFunc()     // "source.lang.swift.ref.function.method.class"
+            AAA.staticFunc()    // "source.lang.swift.ref.function.method.static"
+            aaa.instanceFunc()  // "source.lang.swift.ref.function.method.instance"
+
+            // double closure, weak self in second closure
+            let c2: C = { [weak self] in
+                print(self)
+            }
+        }
+    }
+}

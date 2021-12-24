@@ -8,7 +8,11 @@
 import Foundation
 
 public enum Duration {
-    public static func logger(_ prefix: @autoclosure () throws -> String, verbose: Bool, _ content: () throws -> ()) rethrows {
+    public static func logger(
+        _ prefix: @autoclosure () throws -> String = "",
+        verbose: Bool = true,
+        _ content: () throws -> ()
+    ) rethrows {
         if verbose {
             let now = Date()
             try content()
