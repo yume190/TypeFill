@@ -19,7 +19,7 @@ public struct TypeFill: ParsableCommand {
     public static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "typefill",
         abstract: "A utility for fill swift types.",
-        version: "0.2.5.3",
+        version: "0.2.5.4",
         subcommands: [XCode.self, SingleFile.self, SPMModule.self, WorkSpace.self, Project.self],
         defaultSubcommand: XCode.self
     )

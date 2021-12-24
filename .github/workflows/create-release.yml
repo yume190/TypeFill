@@ -31,7 +31,7 @@ jobs:
 
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${echo ${{ steps.get_tag.outputs.VERSION }} | sed -En 's|release-||p'}
+        run: echo ::set-output name=VERSION::`{echo ${{ steps.get_tag.outputs.VERSION }} | sed -En 's|release-||p'`
       
       - name: SPM Cache ${{ matrix.xcode }}
         uses: actions/cache@v2
