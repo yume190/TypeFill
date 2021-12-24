@@ -31,7 +31,7 @@ jobs:
 
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::`{echo ${{ steps.get_tag.outputs.VERSION }} | sed -En 's|release-||p'`
+        run: echo ::set-output name=VERSION::`echo ${{ steps.get_tag.outputs.VERSION }} | sed -En 's|release-||p'`
       
       - name: SPM Cache ${{ matrix.xcode }}
         uses: actions/cache@v2
@@ -79,7 +79,7 @@ jobs:
           git config --global user.name 'yume190'
           git config --global user.email 'yume190@users.noreply.github.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1${ swift package compute-checksum TypeFillKit.zip }\3|' package.swift
+          sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' package.swift
           sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' package.swift
           git tag ${{ steps.get_version.outputs.VERSION }}
           git commit -am "Automated release"
