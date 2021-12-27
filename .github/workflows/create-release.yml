@@ -64,6 +64,17 @@ jobs:
       - name: Zip xcframework
         run: zip -r TypeFillKit.zip TypeFillKit.xcframework
 
+      - name: Commit xcframework
+        run: |
+          git config --global user.name 'yume190'
+          git config --global user.email 'yume190@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' package.swift
+          sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' package.swift
+          git add package.swift
+          git commit -m "Automated release"
+          git push
+
       - name: Upload release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -73,16 +84,3 @@ jobs:
           title: "Release Build"
           files: |
             TypeFillKit.zip
-
-      - name: Commit xcframework
-        run: |
-          git config --global user.name 'yume190'
-          git config --global user.email 'yume190@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' package.swift
-          sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' package.swift
-          git add package.swift
-          git commit -am "Automated release"
-          git tag ${{ steps.get_version.outputs.VERSION }}
-          git push origin ${{ steps.get_version.outputs.VERSION }}
-          
