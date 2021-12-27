@@ -11,7 +11,7 @@ let branch = "release/5.4"
 let branch = "release/5.3"
 #endif
 
-let checksum = ""
+let checksum = "a"
 let binaryURL = ""
 
 let appleDependencies: [Package.Dependency] = [
