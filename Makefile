@@ -1,4 +1,4 @@
-VERSION = 0.2.5.12
+VERSION = 0.2.5.13
 
 include SourceKitten.mk
 include TypeFill.mk

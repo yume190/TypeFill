@@ -57,6 +57,9 @@ jobs:
         
       - name: Create xcframework
         run: ~/.mint/bin/swift-create-xcframework --stack-evolution
+      
+      - name: Compute xcframework checksum
+        run: swift package compute-checksum TypeFillKit.zip > checksum
         
       - name: Clear Create xcframework
         run: rm -Rf .build/swift-create-xcframework
@@ -64,16 +67,16 @@ jobs:
       - name: Zip xcframework
         run: zip -r TypeFillKit.zip TypeFillKit.xcframework
 
-      - name: Commit xcframework
-        run: |
-          git config --global user.name 'yume190'
-          git config --global user.email 'yume190@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' Package.swift
-          sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' Package.swift
-          git add Package.swift
-          git commit -m "Automated release"
-          git push
+      # - name: Commit xcframework
+      #   run: |
+      #     git config --global user.name 'yume190'
+      #     git config --global user.email 'yume190@users.noreply.github.com'
+      #     git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+      #     sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' Package.swift
+      #     sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/${{ steps.get_version.outputs.VERSION }}/TypeFillKit.xcframework.zip\3|' Package.swift
+      #     git add Package.swift
+      #     git commit -m "Automated release"
+      #     git push
 
       - name: Upload release
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -81,6 +84,7 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: ${{ steps.get_version.outputs.VERSION }}
           prerelease: false
-          title: "Release Build"
+          title: ${{ steps.get_version.outputs.VERSION }}
           files: |
             TypeFillKit.zip
+            checksum
