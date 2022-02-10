@@ -9,9 +9,6 @@ import Foundation
 import ArgumentParser
 import TypeFillKit
 
-//@OptionGroup()
-//var options: RunToolOptions
-
 struct ConfigOptions: ParsableArguments, Configable, BuildConfigable {
     @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
     var print: Bool = false
@@ -26,10 +23,6 @@ struct ConfigOptions: ParsableArguments, Configable, BuildConfigable {
     var args: [String] = []
 }
 
-//@Option(name: [.customLong("scheme", withSingleDash: false)], help: "xcode scheme")
-//var scheme: String
-//@Option(name: [.customLong("moduleName", withSingleDash: false)], help: "spm target name")
-//var moduleName: String
 struct ModuleOptions: ParsableArguments {
     @Option(name: [.customLong("module", withSingleDash: false)], help: "spm target name or xcode scheme")
     var name: String

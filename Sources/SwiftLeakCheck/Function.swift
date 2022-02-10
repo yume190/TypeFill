@@ -35,7 +35,7 @@ public extension Function {
   }
   
   func match(_ functionCallExpr: FunctionCallExprSyntax) -> MatchResult {
-    let (signature, mapping) = FunctionSignature.from(functionDeclExpr: self)
+    let (signature, mapping): (FunctionSignature, [FunctionParam : FunctionParameterSyntax]) = FunctionSignature.from(functionDeclExpr: self)
     switch signature.match(functionCallExpr) {
     case .nameMismatch:
       return .nameMismatch

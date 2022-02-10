@@ -20,9 +20,9 @@ public struct FunctionSignature {
   }
   
   public static func from(functionDeclExpr: FunctionDeclSyntax) -> (FunctionSignature, [FunctionParam: FunctionParameterSyntax]) {
-    let funcName = functionDeclExpr.identifier.text
-    let params = functionDeclExpr.signature.input.parameterList.map { FunctionParam(param: $0) }
-    let mapping = Dictionary(uniqueKeysWithValues: zip(params, functionDeclExpr.signature.input.parameterList))
+    let funcName: String = functionDeclExpr.identifier.text
+    let params: [FunctionParam] = functionDeclExpr.signature.input.parameterList.map { FunctionParam(param: $0) }
+    let mapping: [FunctionParam : FunctionParameterListSyntax.Element] = Dictionary(uniqueKeysWithValues: zip(params, functionDeclExpr.signature.input.parameterList))
     return (FunctionSignature(name: funcName, params: params), mapping)
   }
   
@@ -56,7 +56,7 @@ public struct FunctionSignature {
   }
   
   private func match(_ rhs: (ArgumentListWrapper, ClosureExprSyntax?)) -> MatchResult {
-    let (arguments, trailingClosure) = rhs
+    let (arguments, trailingClosure): (ArgumentListWrapper, ClosureExprSyntax?) = rhs
     
     guard params.count > 0 else {
       if arguments.count == 0 && trailingClosure == nil {
@@ -66,9 +66,9 @@ public struct FunctionSignature {
       }
     }
     
-    let firstParam = params[0]
+    let firstParam: FunctionParam = params[0]
     if firstParam.canOmit {
-      let matchResult = removingFirstParam().match(rhs)
+      let matchResult: FunctionSignature.MatchResult = removingFirstParam().match(rhs)
       if matchResult.isMatched {
         return matchResult
       }
@@ -76,7 +76,7 @@ public struct FunctionSignature {
     
     guard arguments.count > 0 else {
       // In order to match, trailingClosure must be firstParam, there're no more params
-      guard let trailingClosure = trailingClosure else {
+      guard let trailingClosure: ClosureExprSyntax = trailingClosure else {
         return .argumentMismatch
       }
       if params.count > 1 {
@@ -89,14 +89,14 @@ public struct FunctionSignature {
       }
     }
     
-    let firstArgument = arguments[0]
+    let firstArgument: FunctionCallArgumentSyntax = arguments[0]
     guard isMatched(param: firstParam, argument: firstArgument) else {
       return .argumentMismatch
     }
     
-    let matchResult = removingFirstParam().match((arguments.removingFirst(), trailingClosure))
+    let matchResult: FunctionSignature.MatchResult = removingFirstParam().match((arguments.removingFirst(), trailingClosure))
     if case let .matched(matchInfo) = matchResult {
-      var argumentToParamMapping = matchInfo.argumentToParamMapping
+      var argumentToParamMapping: [FunctionCallArgumentSyntax : FunctionParam] = matchInfo.argumentToParamMapping
       argumentToParamMapping[firstArgument] = firstParam
       return .matched(.init(argumentToParamMapping: argumentToParamMapping, trailingClosureArgumentToParam: matchInfo.trailingClosureArgumentToParam))
     } else {

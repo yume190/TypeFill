@@ -16,7 +16,7 @@ public extension SyntaxProtocol {
   }
   
   func getEnclosingNode<T: SyntaxProtocol>(_ type: T.Type) -> T? {
-    var parent = self.parent
+    var parent: Syntax? = self.parent
     while parent != nil && parent!.is(type) == false {
       parent = parent?.parent
       if parent == nil { return nil }
@@ -37,7 +37,7 @@ extension Syntax {
   // TODO (Le): should we consider self as ancestor of self like this ?
   func hasAncestor(_ predicate: (Syntax) -> Bool) -> Bool {
     if predicate(self) { return true }
-    var parent = self.parent
+    var parent: Syntax? = self.parent
     while parent != nil {
       if predicate(parent!) {
         return true
@@ -55,11 +55,11 @@ public extension ExprSyntax {
     var function: FunctionCallExprSyntax?
     var argument: FunctionCallArgumentSyntax?
     
-    if let parent = parent?.as(FunctionCallArgumentSyntax.self) { // Normal function argument
+    if let parent: FunctionCallArgumentSyntax = parent?.as(FunctionCallArgumentSyntax.self) { // Normal function argument
       assert(parent.parent?.is(FunctionCallArgumentListSyntax.self) == true)
       function = parent.parent?.parent?.as(FunctionCallExprSyntax.self)
       argument = parent
-    } else if let parent = parent?.as(FunctionCallExprSyntax.self),
+    } else if let parent: FunctionCallExprSyntax = parent?.as(FunctionCallExprSyntax.self),
               self.is(ClosureExprSyntax.self),
               parent.trailingClosure == self.as(ClosureExprSyntax.self)
     { // Trailing closure
@@ -75,7 +75,7 @@ public extension ExprSyntax {
   }
   
   func isCalledExpr() -> Bool {
-    if let parentNode = parent?.as(FunctionCallExprSyntax.self) {
+    if let parentNode: FunctionCallExprSyntax = parent?.as(FunctionCallExprSyntax.self) {
       if parentNode.calledExpression == self {
         return true
       }
@@ -229,35 +229,35 @@ public extension FunctionParameterSyntax {
 /// Convenient
 extension ArrayElementListSyntax {
   subscript(_ i: Int) -> ArrayElementSyntax {
-    let index = self.index(startIndex, offsetBy: i)
+    let index: ArrayElementListSyntax.Index = self.index(startIndex, offsetBy: i)
     return self[index]
   }
 }
 
 extension FunctionCallArgumentListSyntax {
   subscript(_ i: Int) -> FunctionCallArgumentSyntax {
-    let index = self.index(startIndex, offsetBy: i)
+    let index: TupleExprElementListSyntax.Index = self.index(startIndex, offsetBy: i)
     return self[index]
   }
 }
 
 extension ExprListSyntax {
   subscript(_ i: Int) -> ExprSyntax {
-    let index = self.index(startIndex, offsetBy: i)
+    let index: ExprListSyntax.Index = self.index(startIndex, offsetBy: i)
     return self[index]
   }
 }
 
 extension PatternBindingListSyntax {
   subscript(_ i: Int) -> PatternBindingSyntax {
-    let index = self.index(startIndex, offsetBy: i)
+    let index: PatternBindingListSyntax.Index = self.index(startIndex, offsetBy: i)
     return self[index]
   }
 }
 
 extension TupleTypeElementListSyntax {
   subscript(_ i: Int) -> TupleTypeElementSyntax {
-    let index = self.index(startIndex, offsetBy: i)
+    let index: TupleTypeElementListSyntax.Index = self.index(startIndex, offsetBy: i)
     return self[index]
   }
 }

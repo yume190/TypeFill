@@ -15,8 +15,8 @@ public final class GraphLeakDetector: BaseSyntaxTreeLeakDetector {
   
   override public func detect(_ cursor: Cursor) -> [Leak] {
     var res: [Leak] = []
-    let graph = GraphBuilder.buildGraph(cursor: cursor)
-    let visitor = LeakSyntaxVisitor(graph: graph, cursor: cursor) { leak in
+    let graph: GraphImpl = GraphBuilder.buildGraph(cursor: cursor)
+    let visitor: LeakSyntaxVisitor = LeakSyntaxVisitor(graph: graph, cursor: cursor) { (leak: Leak) in
         res.append(leak)
     }
     visitor.walk(cursor.sourceFile)
@@ -46,7 +46,7 @@ private final class LeakSyntaxVisitor: BaseGraphVistor {
   private func detectLeak(_ node: IdentifierExprSyntax) {
     var leak: Leak?
     defer {
-      if let leak = leak {
+      if let leak: Leak = leak {
         onLeakDetected(leak)
       }
     }
@@ -61,9 +61,9 @@ private final class LeakSyntaxVisitor: BaseGraphVistor {
     }
     
     var currentScope: Scope! = graph.closetScopeThatCanResolveSymbol(.identifier(node))
-    var isEscape = false
+    var isEscape: Bool = false
     while currentScope != nil {
-      if let variable = currentScope.getVariable(node) {
+      if let variable: Variable = currentScope.getVariable(node) {
         if !isEscape {
           // No leak
           return
@@ -77,7 +77,7 @@ private final class LeakSyntaxVisitor: BaseGraphVistor {
             leak = Leak(node: node, capturedNode: ExprSyntax(capturedNode), cursor: cursor)
           }
         case let .binding(_, valueNode):
-          if let referenceNode = valueNode?.as(IdentifierExprSyntax.self) {
+          if let referenceNode: IdentifierExprSyntax = valueNode?.as(IdentifierExprSyntax.self) {
             if variable.isStrong && isEscape {
               leak = Leak(node: node, capturedNode: ExprSyntax(referenceNode), cursor: cursor)
             }

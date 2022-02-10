@@ -14,10 +14,10 @@ import Cursor
 final class GraphBuilder {
   static func buildGraph(cursor: Cursor) -> GraphImpl {
     // First round: build the graph
-    let visitor = GraphBuilderVistor()
+    let visitor: GraphBuilderVistor = GraphBuilderVistor()
     visitor.walk(cursor.sourceFile)
     
-    let graph = GraphImpl(cursor: cursor, sourceFileScope: visitor.sourceFileScope)
+    let graph: GraphImpl = GraphImpl(cursor: cursor, sourceFileScope: visitor.sourceFileScope)
     
     // Second round: resolve the references
     ReferenceBuilderVisitor(graph: graph).walk(cursor.sourceFile)
@@ -50,16 +50,16 @@ class BaseGraphVistor: SyntaxAnyVisitor {
 
 fileprivate final class GraphBuilderVistor: BaseGraphVistor {
   fileprivate var sourceFileScope: SourceFileScope!
-  private var stack = Stack<Scope>()
+  private var stack: Stack<Scope> = Stack<Scope>()
   
   override func visitAny(_ node: Syntax) -> SyntaxVisitorContinueKind {
-    if let scopeNode = ScopeNode.from(node: node) {
+    if let scopeNode: ScopeNode = ScopeNode.from(node: node) {
       if case let .sourceFileNode(node) = scopeNode {
         assert(stack.peek() == nil)
         sourceFileScope = SourceFileScope(node: node, parent: stack.peek())
         stack.push(sourceFileScope)
       } else {
-        let scope = Scope(scopeNode: scopeNode, parent: stack.peek())
+        let scope: Scope = Scope(scopeNode: scopeNode, parent: stack.peek())
         stack.push(scope)
       }
     }
@@ -75,7 +75,7 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
   }
   
   override func visitAnyPost(_ node: Syntax) {
-    if let scopeNode = ScopeNode.from(node: node) {
+    if let scopeNode: ScopeNode = ScopeNode.from(node: node) {
       assert(stack.peek()?.scopeNode == scopeNode)
       stack.pop()
     }
@@ -91,10 +91,10 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
     
     _ = super.visit(node)
     
-    guard let scope = stack.peek(), scope.type.isFunction || scope.type == .enumCaseNode else {
+    guard let scope: Scope = stack.peek(), scope.type.isFunction || scope.type == .enumCaseNode else {
       fatalError()
     }
-    guard let name = node.secondName ?? node.firstName else {
+    guard let name: TokenSyntax = node.secondName ?? node.firstName else {
       assert(scope.type == .enumCaseNode)
       return .visitChildren
     }
@@ -111,7 +111,7 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
     
     _ = super.visit(node)
     
-    guard let scope = stack.peek(), scope.isClosure else {
+    guard let scope: Scope = stack.peek(), scope.isClosure else {
       fatalError()
     }
     
@@ -123,7 +123,7 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
     
     _ = super.visit(node)
     
-    guard let scope = stack.peek(), scope.isClosure else {
+    guard let scope: Scope = stack.peek(), scope.isClosure else {
       fatalError("A closure should be found for a ClosureParam node. Stack may have been corrupted")
     }
     scope.addVariable(Variable.from(node, scope: scope))
@@ -134,7 +134,7 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
     
     _ = super.visit(node)
     
-    guard let scope = stack.peek() else {
+    guard let scope: Scope = stack.peek() else {
       fatalError()
     }
     
@@ -149,14 +149,14 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
     
     _ = super.visit(node)
     
-    guard let scope = stack.peek() else {
+    guard let scope: Scope = stack.peek() else {
       fatalError()
     }
     
-    let isGuardCondition = node.isGuardCondition()
+    let isGuardCondition: Bool = node.isGuardCondition()
     assert(!isGuardCondition || scope.type == .guardNode)
-    let scopeThatOwnVariable = (isGuardCondition ? scope.parent! : scope)
-    if let variable = Variable.from(node, scope: scopeThatOwnVariable) {
+    let scopeThatOwnVariable: (Scope) = (isGuardCondition ? scope.parent! : scope)
+    if let variable: Variable = Variable.from(node, scope: scopeThatOwnVariable) {
       scopeThatOwnVariable.addVariable(variable)
     }
     return .visitChildren
@@ -166,11 +166,11 @@ fileprivate final class GraphBuilderVistor: BaseGraphVistor {
     
     _ = super.visit(node)
     
-    guard let scope = stack.peek(), scope.type == .forLoopNode else {
+    guard let scope: Scope = stack.peek(), scope.type == .forLoopNode else {
       fatalError()
     }
     
-    Variable.from(node, scope: scope).forEach { variable in
+    Variable.from(node, scope: scope).forEach { (variable: Variable) in
       scope.addVariable(variable)
     }
     

@@ -79,19 +79,19 @@ public class Variable: Hashable, CustomStringConvertible {
   public static func from(_ node: ClosureCaptureItemSyntax, scope: Scope) -> Variable? {
     assert(scope.scopeNode == node.enclosingScopeNode)
     
-    guard let identifierExpr = node.expression.as(IdentifierExprSyntax.self) else {
+    guard let identifierExpr: IdentifierExprSyntax = node.expression.as(IdentifierExprSyntax.self) else {
       // There're cases such as { [loggedInState.services] in ... }, which probably we don't need to care about
       return nil
     }
     
     let memoryAttribute: MemoryAttribute? = {
-      guard let specifier = node.specifier?.first else {
+      guard let specifier: TokenListSyntax.Element = node.specifier?.first else {
         return nil
       }
       
       assert(node.specifier!.count <= 1, "Unhandled case")
       
-      guard let memoryAttribute = MemoryAttribute.from(specifier.text) else {
+      guard let memoryAttribute: MemoryAttribute = MemoryAttribute.from(specifier.text) else {
         fatalError("Unhandled specifier \(specifier.text)")
       }
       return memoryAttribute
@@ -106,7 +106,7 @@ public class Variable: Hashable, CustomStringConvertible {
   }
   
   public static func from(_ node: ClosureParamSyntax, scope: Scope) -> Variable {
-    guard let closure = node.getEnclosingClosureNode() else {
+    guard let closure: ClosureExprSyntax = node.getEnclosingClosureNode() else {
       fatalError()
     }
     assert(scope.scopeNode == .closureNode(closure))
@@ -121,14 +121,14 @@ public class Variable: Hashable, CustomStringConvertible {
   public static func from(_ node: FunctionParameterSyntax, scope: Scope) -> Variable {
     assert(node.enclosingScopeNode == scope.scopeNode)
     
-    guard let token = node.secondName ?? node.firstName else {
+    guard let token: TokenSyntax = node.secondName ?? node.firstName else {
       fatalError()
     }
     
     assert(token.tokenKind != .wildcardKeyword, "Unhandled case")
     assert(node.attributes == nil, "Unhandled case")
     
-    guard let type = node.type else {
+    guard let type: TypeSyntax = node.type else {
       // Type is omited, must be used in closure signature
       guard case let .closureNode(closureNode) = scope.scopeNode else {
         fatalError("Only closure can omit the param type")
@@ -144,7 +144,7 @@ public class Variable: Hashable, CustomStringConvertible {
   }
   
   public static func from(_ node: PatternBindingSyntax, scope: Scope) -> [Variable] {
-    guard let parent = node.parent?.as(PatternBindingListSyntax.self) else {
+    guard let parent: PatternBindingListSyntax = node.parent?.as(PatternBindingListSyntax.self) else {
       fatalError()
     }
     
@@ -152,23 +152,23 @@ public class Variable: Hashable, CustomStringConvertible {
     
     func _typeFromNode(_ node: PatternBindingSyntax) -> TypeInfo {
       // var a: Int
-      if let typeAnnotation = node.typeAnnotation {
+      if let typeAnnotation: TypeAnnotationSyntax = node.typeAnnotation {
         return .exact(typeAnnotation.type)
       }
       // var a = value
-      if let value = node.initializer?.value {
+      if let value: ExprSyntax = node.initializer?.value {
         return .inferedFromExpr(value)
       }
       // var a, b, .... = value
-      let indexOfNextNode = node.indexInParent + 1
+      let indexOfNextNode: Int = node.indexInParent + 1
       return _typeFromNode(parent[indexOfNextNode])
     }
     
-    let type = _typeFromNode(node)
+    let type: TypeInfo = _typeFromNode(node)
     
-    if let identifier = node.pattern.as(IdentifierPatternSyntax.self) {
+    if let identifier: IdentifierPatternSyntax = node.pattern.as(IdentifierPatternSyntax.self) {
       let memoryAttribute: MemoryAttribute? = {
-        if let modifier = node.parent?.parent?.as(VariableDeclSyntax.self)!.modifiers?.first {
+        if let modifier: ModifierListSyntax.Element = node.parent?.parent?.as(VariableDeclSyntax.self)!.modifiers?.first {
           return MemoryAttribute.from(modifier.name.text)
         }
         return nil
@@ -184,7 +184,7 @@ public class Variable: Hashable, CustomStringConvertible {
       ]
     }
     
-    if let tuple = node.pattern.as(TuplePatternSyntax.self) {
+    if let tuple: TuplePatternSyntax = node.pattern.as(TuplePatternSyntax.self) {
       return extractVariablesFromTuple(tuple, tupleType: type, tupleValue: node.initializer?.value, scope: scope)
     }
     
@@ -192,10 +192,10 @@ public class Variable: Hashable, CustomStringConvertible {
   }
   
   public static func from(_ node: OptionalBindingConditionSyntax, scope: Scope) -> Variable? {
-    if let left = node.pattern.as(IdentifierPatternSyntax.self) {
-      let right = node.initializer.value
+    if let left: IdentifierPatternSyntax = node.pattern.as(IdentifierPatternSyntax.self) {
+      let right: ExprSyntax = node.initializer.value
       let type: TypeInfo
-      if let typeAnnotation = node.typeAnnotation {
+      if let typeAnnotation: TypeAnnotationSyntax = node.typeAnnotation {
         type = .exact(typeAnnotation.type)
       } else {
         type = .inferedFromExpr(right)
@@ -214,7 +214,7 @@ public class Variable: Hashable, CustomStringConvertible {
   
   public static func from(_ node: ForInStmtSyntax, scope: Scope) -> [Variable] {
     func _variablesFromPattern(_ pattern: PatternSyntax) -> [Variable] {
-      if let identifierPattern = pattern.as(IdentifierPatternSyntax.self) {
+      if let identifierPattern: IdentifierPatternSyntax = pattern.as(IdentifierPatternSyntax.self) {
         return [
           Variable(
             raw: .binding(token: identifierPattern.identifier, valueNode: nil),
@@ -224,7 +224,7 @@ public class Variable: Hashable, CustomStringConvertible {
         ]
       }
       
-      if let tuplePattern = pattern.as(TuplePatternSyntax.self) {
+      if let tuplePattern: TuplePatternSyntax = pattern.as(TuplePatternSyntax.self) {
         return extractVariablesFromTuple(
           tuplePattern,
           tupleType: .inferedFromSequence(node.sequenceExpr),
@@ -237,7 +237,7 @@ public class Variable: Hashable, CustomStringConvertible {
         return []
       }
       
-      if let valueBindingPattern = pattern.as(ValueBindingPatternSyntax.self) {
+      if let valueBindingPattern: ValueBindingPatternSyntax = pattern.as(ValueBindingPatternSyntax.self) {
         return _variablesFromPattern(valueBindingPattern.valuePattern)
       }
       
@@ -252,17 +252,17 @@ public class Variable: Hashable, CustomStringConvertible {
                                                 tupleType: TypeInfo,
                                                 tupleValue: ExprSyntax?,
                                                 scope: Scope) -> [Variable] {
-    return tuplePattern.elements.enumerated().flatMap { (index, element) -> [Variable] in
+    return tuplePattern.elements.enumerated().flatMap { (index: Int, element: TuplePatternElementListSyntax.Element) -> [Variable] in
       
       let elementType: TypeInfo = .inferedFromTuple(tupleType: tupleType, index: index)
       let elementValue: ExprSyntax? = {
-        if let tupleValue = tupleValue?.as(TupleExprSyntax.self) {
+        if let tupleValue: TupleExprSyntax = tupleValue?.as(TupleExprSyntax.self) {
           return tupleValue.elementList[index].expression
         }
         return nil
       }()
       
-      if let identifierPattern = element.pattern.as(IdentifierPatternSyntax.self) {
+      if let identifierPattern: IdentifierPatternSyntax = element.pattern.as(IdentifierPatternSyntax.self) {
         return [
           Variable(
             raw: .binding(token: identifierPattern.identifier, valueNode: elementValue),
@@ -272,7 +272,7 @@ public class Variable: Hashable, CustomStringConvertible {
         ]
       }
       
-      if let childTuplePattern = element.pattern.as(TuplePatternSyntax.self) {
+      if let childTuplePattern: TuplePatternSyntax = element.pattern.as(TuplePatternSyntax.self) {
         return extractVariablesFromTuple(
           childTuplePattern,
           tupleType: elementType,

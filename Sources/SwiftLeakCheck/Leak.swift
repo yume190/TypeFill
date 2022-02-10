@@ -40,7 +40,7 @@ open class Leak: CustomStringConvertible, Encodable {
   }
 
   open func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
+    var container: KeyedEncodingContainer<Leak.CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(line, forKey: .line)
     try container.encode(column, forKey: .column)
 

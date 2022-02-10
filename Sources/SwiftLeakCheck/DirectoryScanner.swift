@@ -12,7 +12,7 @@ import Foundation
 
 public final class DirectoryScanner {
   private let callback: (URL, inout Bool) -> Void
-  private var shouldStop = false
+  private var shouldStop: Bool = false
   
   public init(callback: @escaping (URL, inout Bool) -> Void) {
     self.callback = callback
@@ -24,11 +24,11 @@ public final class DirectoryScanner {
       return
     }
     
-    let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+    let isDirectory: Bool = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
     if !isDirectory {
       callback(url, &shouldStop)
     } else {
-      let enumerator = FileManager.default.enumerator(
+      let enumerator: FileManager.DirectoryEnumerator = FileManager.default.enumerator(
         at: url,
         includingPropertiesForKeys: nil,
         options: [.skipsSubdirectoryDescendants],
@@ -36,7 +36,7 @@ public final class DirectoryScanner {
         )!
       
       for childPath in enumerator {
-        if let url = childPath as? URL {
+        if let url: URL = childPath as? URL {
           scan(url: url)
           if shouldStop {
             return

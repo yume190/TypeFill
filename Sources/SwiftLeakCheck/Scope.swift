@@ -31,44 +31,44 @@ public enum ScopeNode: Hashable, CustomStringConvertible {
   case switchCaseNode(SwitchCaseSyntax)
   
   public static func from(node: Syntax) -> ScopeNode? {
-    if let sourceFileNode = node.as(SourceFileSyntax.self) {
+    if let sourceFileNode: SourceFileSyntax = node.as(SourceFileSyntax.self) {
       return .sourceFileNode(sourceFileNode)
     }
     
-    if let classNode = node.as(ClassDeclSyntax.self) {
+    if let classNode: ClassDeclSyntax = node.as(ClassDeclSyntax.self) {
       return .classNode(classNode)
     }
       
-    if let structNode = node.as(StructDeclSyntax.self) {
+    if let structNode: StructDeclSyntax = node.as(StructDeclSyntax.self) {
       return .structNode(structNode)
     }
       
-    if let enumNode = node.as(EnumDeclSyntax.self) {
+    if let enumNode: EnumDeclSyntax = node.as(EnumDeclSyntax.self) {
       return .enumNode(enumNode)
     }
       
-    if let enumCaseNode = node.as(EnumCaseDeclSyntax.self) {
+    if let enumCaseNode: EnumCaseDeclSyntax = node.as(EnumCaseDeclSyntax.self) {
       return .enumCaseNode(enumCaseNode)
     }
       
-    if let extensionNode = node.as(ExtensionDeclSyntax.self) {
+    if let extensionNode: ExtensionDeclSyntax = node.as(ExtensionDeclSyntax.self) {
       return .extensionNode(extensionNode)
     }
     
-    if let funcNode = node.as(FunctionDeclSyntax.self) {
+    if let funcNode: FunctionDeclSyntax = node.as(FunctionDeclSyntax.self) {
       return .funcNode(funcNode)
     }
       
-    if let initialiseNode = node.as(InitializerDeclSyntax.self) {
+    if let initialiseNode: InitializerDeclSyntax = node.as(InitializerDeclSyntax.self) {
       return .initialiseNode(initialiseNode)
     }
       
-    if let closureNode = node.as(ClosureExprSyntax.self) {
+    if let closureNode: ClosureExprSyntax = node.as(ClosureExprSyntax.self) {
       return .closureNode(closureNode)
     }
       
-    if let codeBlockNode = node.as(CodeBlockSyntax.self), codeBlockNode.parent?.is(IfStmtSyntax.self) == true {
-      let parent = (codeBlockNode.parent?.as(IfStmtSyntax.self))!
+    if let codeBlockNode: CodeBlockSyntax = node.as(CodeBlockSyntax.self), codeBlockNode.parent?.is(IfStmtSyntax.self) == true {
+      let parent: IfStmtSyntax = (codeBlockNode.parent?.as(IfStmtSyntax.self))!
       if codeBlockNode == parent.body {
         return .ifBlockNode(codeBlockNode, parent)
       } else if codeBlockNode == parent.elseBody?.as(CodeBlockSyntax.self) {
@@ -77,34 +77,34 @@ public enum ScopeNode: Hashable, CustomStringConvertible {
       return nil
     }
       
-    if let guardNode = node.as(GuardStmtSyntax.self) {
+    if let guardNode: GuardStmtSyntax = node.as(GuardStmtSyntax.self) {
       return .guardNode(guardNode)
     }
       
-    if let forLoopNode = node.as(ForInStmtSyntax.self) {
+    if let forLoopNode: ForInStmtSyntax = node.as(ForInStmtSyntax.self) {
       return .forLoopNode(forLoopNode)
     }
       
-    if let whileLoopNode = node.as(WhileStmtSyntax.self) {
+    if let whileLoopNode: WhileStmtSyntax = node.as(WhileStmtSyntax.self) {
       return .whileLoopNode(whileLoopNode)
     }
       
-    if let subscriptNode = node.as(SubscriptDeclSyntax.self) {
+    if let subscriptNode: SubscriptDeclSyntax = node.as(SubscriptDeclSyntax.self) {
       return .subscriptNode(subscriptNode)
     }
 
-    if let accessorNode = node.as(AccessorDeclSyntax.self) {
+    if let accessorNode: AccessorDeclSyntax = node.as(AccessorDeclSyntax.self) {
       return .accessorNode(accessorNode)
     }
       
-    if let codeBlockNode = node.as(CodeBlockSyntax.self),
+    if let codeBlockNode: CodeBlockSyntax = node.as(CodeBlockSyntax.self),
        codeBlockNode.parent?.is(PatternBindingSyntax.self) == true,
        codeBlockNode.parent?.parent?.is(PatternBindingListSyntax.self) == true,
        codeBlockNode.parent?.parent?.parent?.is(VariableDeclSyntax.self) == true {
       return .variableDeclNode(codeBlockNode)
     }
       
-    if let switchCaseNode = node.as(SwitchCaseSyntax.self) {
+    if let switchCaseNode: SwitchCaseSyntax = node.as(SwitchCaseSyntax.self) {
       return .switchCaseNode(switchCaseNode)
     }
     
@@ -203,8 +203,8 @@ public enum ScopeType: Equatable {
 open class Scope: Hashable, CustomStringConvertible {
   public let scopeNode: ScopeNode
   public let parent: Scope?
-  public private(set) var variables = Stack<Variable>()
-  public private(set) var childScopes = [Scope]()
+  public private(set) var variables: Stack<Variable> = Stack<Variable>()
+  public private(set) var childScopes: [Scope] = [Scope]()
   public var type: ScopeType {
     return scopeNode.type
   }
@@ -254,7 +254,7 @@ open class Scope: Hashable, CustomStringConvertible {
     self.scopeNode = scopeNode
     parent?.childScopes.append(self)
     
-    if let parent = parent {
+    if let parent: Scope = parent {
       assert(scopeNode.node.isDescendent(of: parent.scopeNode.node))
     }
   }
@@ -265,7 +265,7 @@ open class Scope: Hashable, CustomStringConvertible {
   }
   
   func getVariable(_ node: IdentifierExprSyntax) -> Variable? {
-    let name = node.identifier.text
+    let name: String = node.identifier.text
     for variable in variables.filter({ $0.name == name }) {
       // Special case: guard let `x` = x else { ... }
       // or: let x = x.doSmth()
@@ -287,7 +287,7 @@ open class Scope: Hashable, CustomStringConvertible {
   }
   
   func getFunctionWithSymbol(_ symbol: Symbol) -> [Function] {
-    return childFunctions.filter { function in
+    return childFunctions.filter { (function: Function) in
       if function.identifier.isBefore(symbol.node) || canUseVariableOrFuncInAnyOrder {
         return function.identifier.text == symbol.name
       }
@@ -297,7 +297,7 @@ open class Scope: Hashable, CustomStringConvertible {
   
   func getTypeDecl(name: String) -> [TypeDecl] {
     return childTypeDecls
-      .filter { typeDecl in
+      .filter { (typeDecl: TypeDecl) in
         return typeDecl.name == [name]
       }
   }

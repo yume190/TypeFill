@@ -25,6 +25,8 @@ fillSelf: build
 	typefill spm --module LeakDetectExtension -v --skipBuild
 	typefill spm --module TypeFill -v --skipBuild
 	typefill spm --module TypeFillKit -v --skipBuild
+	typefill spm --module SwiftLeakCheck -v --skipBuild
+	
 
 .PHONY: release
 release: 

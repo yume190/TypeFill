@@ -11,7 +11,7 @@ import SourceKittenFramework
 import TypeFillKit
 import Derived
 
-///--file SourceKitten.xcworkspace --module SourceKittenFramework
+/// --file SourceKitten.xcworkspace --module SourceKittenFramework
 struct Project: ParsableCommand, CommandBuild {
     static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "project",
