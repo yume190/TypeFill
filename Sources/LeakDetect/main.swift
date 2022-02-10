@@ -37,11 +37,31 @@ struct Command: ParsableCommand {
     @Option(name: [.customLong("reporter", withSingleDash: false)], help: "[\(Mode.all)]")
     var reporter: Reporter = .vscode
     
+    typealias LeakCount = Int
+    private func assignMode(module: Module, filePath: String) throws -> LeakCount {
+        let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+        let visitor = AssignClosureVisitor(cursor, verbose)
+        
+        try cursor.editorOpen()
+        let leaks = visitor.detect()
+        leaks.forEach(reporter.report)
+        try cursor.editorClose()
+        return leaks.count
+    }
+    
+    private func captureMode(module: Module, filePath: String) throws -> LeakCount {
+        let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+        let detector = GraphLeakDetector()
+        let leaks = detector.detect(cursor)
+        leaks.forEach(reporter.report)
+        return leaks.count
+    }
+    
     func run() throws {
         try Env.prepare { projectRoot, moduleName, args in
             let module: Module = Module(name: moduleName, compilerArguments: args)
             
-            var leakCount = 0
+            var leakCount: LeakCount = 0
             defer {
                 if leakCount == 0 {
                     print("Congratulation no leak found".green)
@@ -50,29 +70,14 @@ struct Command: ParsableCommand {
                 }
             }
             
-            
             let all: Int = module.sourceFiles.count
             try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
-                let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+                print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
                 switch mode {
                 case .assign:
-                    let visitor = AssignClosureVisitor(cursor, verbose)
-                    
-                    try cursor.editorOpen()
-                    defer {
-                        _ = try? cursor.editorClose()
-                    }
-                    let leaks = visitor.detect()
-                    print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
-                    leaks.forEach(reporter.report)
-                    leakCount += leaks.count
-                    
+                    leakCount += try assignMode(module: module, filePath: filePath)
                 case .capture:
-                    let detector = GraphLeakDetector()
-                    let leaks = detector.detect(cursor)
-                    print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
-                    leaks.forEach(reporter.report)
-                    leakCount += leaks.count
+                    leakCount += try captureMode(module: module, filePath: filePath)
                 }
             }
         }
