@@ -39,13 +39,11 @@ mint install yume190/TypeFill
 ### Usage
 
 ``` sh
-typefill single --filePath /ABSOLUTE/PATH/sample.swift --sdk macosx
+typefill single    --sdk macosx         --file PATH/TO/sample.swift 
 
-typefill spm --moduleName TypeFillKit
-
-typefill project --project PATH/TO/YOUR.xcodeproj --scheme YOUR_SCHEME
-
-typefill workspace --workspace PATH/TO/YOUR.xcworkspace --scheme YOUR_SCHEME
+typefill spm       --module TypeFillKit --file .       
+typefill project   --module YOUR_SCHEME --file PATH/TO/YOUR.xcodeproj 
+typefill workspace --module YOUR_SCHEME --file PATH/TO/YOUR.xcworkspace
 ```
 
 ## The Support Part & Todolist
