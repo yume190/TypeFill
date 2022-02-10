@@ -284,7 +284,7 @@ extension GraphImpl {
     }
     
     if let memberAccessExpr: MemberAccessExprSyntax = funcCallExpr.calledExpression.as(MemberAccessExprSyntax.self) { // a.doSmth(...) or .doSmth(...)
-      if let base: ExprSyntax = memberAccessExpr.base {
+      if let _ = memberAccessExpr.base {
         return _findFunction(symbol: .token(memberAccessExpr.name), funcCallExpr: funcCallExpr)
       } else {
         // Base is omitted when the type can be inferred.
@@ -747,7 +747,7 @@ extension GraphImpl {
       
       // Used as argument in function call: doSmth(a, b, c: {...}) or doSmth(a, b) {...}
       if let (functionCall, argument) = expr.getEnclosingFunctionCallExpression() {
-        if let (function, matchedInfo) = resolveFunction(functionCall) {
+        if let (_, matchedInfo) = resolveFunction(functionCall) {
           let param: FunctionParameterSyntax!
           if let argument: FunctionCallArgumentSyntax = argument {
             param = matchedInfo.argumentToParamMapping[argument]
