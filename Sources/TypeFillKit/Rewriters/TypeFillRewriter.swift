@@ -42,7 +42,7 @@ final class TypeFillRewriter: SyntaxRewriter {
         guard !isHaveInout else {return .init(node)}
         
         let types: [TypeSyntax?] = node.map { (param: ClosureParamListSyntax.Element) -> TypeSyntax? in
-            guard let response: SourceKitResponse = try? cursor(param) else {return nil}
+            guard let response: SourceKitResponse = try? cursor(param) else { return nil }
             return response.typeSyntax
         }
         

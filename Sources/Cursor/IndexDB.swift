@@ -22,7 +22,7 @@
 //     public let db: IndexStoreDB
 //
 //     public init?(provider: IndexStoreProvider) {
-//         guard let path: String = provider.indexStorePath else {return nil}
+//         guard let path: String = provider.indexStorePath else { return nil }
 //         self.init(path: path)
 //     }
 //
@@ -30,7 +30,7 @@
 //         guard let lspPath: String = Exec.run(
 //             "/usr/bin/xcrun",
 //             "--find", "sourcekit-lsp"
-//         ).string else {return nil}
+//         ).string else { return nil }
 //
 //         let indexStoreLibPath: URL = URL(fileURLWithPath: lspPath)
 //             .deletingLastPathComponent()

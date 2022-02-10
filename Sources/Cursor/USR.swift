@@ -61,7 +61,7 @@ public enum USR {
     }
     
     public init?(_ usr: String) {
-        guard let usr = USR.new(usr) else {return nil}
+        guard let usr = USR.new(usr) else { return nil }
         self = usr
     }
 }

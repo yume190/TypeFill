@@ -72,8 +72,8 @@ extension CompilerArguments {
     }
     
     public static func byFile(name: String, arguments: [String]) -> CompilerArgumentsGettable? {
-        guard let settings: [String: [String]] = try? CompilerArguments.ByFile.buildSettings(name: name, arguments: arguments) else {return nil}
-        guard !settings.isEmpty else {return nil}
+        guard let settings: [String: [String]] = try? CompilerArguments.ByFile.buildSettings(name: name, arguments: arguments) else { return nil }
+        guard !settings.isEmpty else { return nil }
         return self.byFile(compilerArguments: settings)
     }
 }

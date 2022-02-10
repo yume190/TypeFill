@@ -4,3 +4,6 @@
 /*.xcodeproj
 .swiftpm/
 TestingData/Index/
+*.xcframework
+*.zip
+.vscode/

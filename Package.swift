@@ -2,6 +2,7 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import Foundation
 
 #if swift(>=5.5)
 let branch = "release/5.5"
@@ -30,10 +31,10 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.31.0")),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "0.3.2")),
+        .package(url: "https://github.com/jpsim/SourceKitten", .upToNextMinor(from: "0.31.1")),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "1.0.3")),
         
-        .package(url: "https://github.com/krzyzanowskim/CryptoSwift", .upToNextMinor(from: "1.4.2")),
+        .package(url: "https://github.com/krzyzanowskim/CryptoSwift", .upToNextMinor(from: "1.4.3")),
         .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.1"),
     ] + appleDependencies,
     targets: [

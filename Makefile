@@ -30,10 +30,13 @@ clear:
 clearAll: clear
 	@rm -Rf .build
 
-.PHONY: githubRelease
+.PHONY: githubRelease xcframework
 githubRelease:
 	sed -i '' 's|\(version: "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/TypeFill/Command/TypeFill.swift
 	sed -i '' 's|\(version: "\)\(.*\)\("\)|\1$(VERSION)\3|' Sources/LeakDetect/main.swift
+
+	sed -i '' 's|\(let checksum = "\)\(.*\)\("\)|\1`swift package compute-checksum TypeFillKit.zip`\3|' Package.swift
+	sed -i '' 's|\(let binaryURL = "\)\(.*\)\("\)|\1https://github.com/yume190/TypeFill/releases/download/$(VERSION)/TypeFillKit.xcframework.zip\3|' Package.swift
 
 	git add Sources/TypeFill/Command/TypeFill.swift
 	git add Sources/LeakDetect/main.swift
@@ -41,10 +44,7 @@ githubRelease:
 
 	git commit -m "Update to $(VERSION)"
 	git tag $(VERSION)
-
-
-
-
+	git push origin $(VERSION)
 
 # other
 index:
@@ -57,6 +57,14 @@ index2:
 
 graph:
 	swift package show-dependencies --format dot | dot -Tsvg -o graph.svg
+
+.PHONY: xcframework
+xcframework:
+	swift-create-xcframework --stack-evolution
+	zip -r TypeFillKit.zip TypeFillKit.xcframework
+# swift package compute-checksum TypeFillKit.zip
+
+
 
 # project --project /Users/yume/git/yume/TypeFill/TypeFill.xcodeproj --scheme TypeFill -v --skipBuild
 

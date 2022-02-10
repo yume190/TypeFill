@@ -13,7 +13,7 @@ public struct Rewrite {
     public let fileHandle: FileHandle
     private let cursor: Cursor
     
-    public init(path: String, arguments: CompilerArgumentsGettable, config: Configable) throws {
+    public init(path: String, cursor: Cursor, config: Configable) throws {
         if config.print {
             self.fileHandle = .standardOutput
         } else {
@@ -21,8 +21,13 @@ public struct Rewrite {
             self.fileHandle = try FileHandle(forWritingTo: url)
         }
         
+        self.cursor = cursor
+    }
+    
+    public init(path: String, arguments: CompilerArgumentsGettable, config: Configable) throws {
         let _arguments: [String] = arguments(path)
-        self.cursor = try Cursor(path: path, arguments: _arguments)
+        let cursor = try Cursor(path: path, arguments: _arguments)
+        try self.init(path: path, cursor: cursor, config: config)
     }
     
     public func parse() {

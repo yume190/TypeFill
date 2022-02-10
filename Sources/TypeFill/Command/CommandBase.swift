@@ -11,6 +11,7 @@ import enum TypeFillKit.Logger
 import struct TypeFillKit.Rewrite
 import protocol TypeFillKit.Configable
 import protocol TypeFillKit.CompilerArgumentsGettable
+import Cursor
 
 protocol CommandBase: Configable {}
 
@@ -57,8 +58,16 @@ extension CommandBuild {
         let all: Int = module.sourceFiles.count
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             Logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
+            
+            let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+            
+            try cursor.editorOpen()
+            defer {
+                _ = try? cursor.editorClose()
+            }
+            
             // TODO: xcode arguments use `self.buildSetting`
-            try Rewrite(path: filePath, arguments: module.compilerArguments, config: self).parse()
+            try Rewrite(path: filePath, cursor: cursor, config: self).parse()
         }
     }
 }

@@ -159,7 +159,52 @@ final class AutoFillTests: XCTestCase {
     //     let override: String = try rewriter(file: "Test.swift.data").dump()
 
     // }
-
+    
+    
+    ///▿ 13 elements
+    ///  ▿ 0 : 2 elements
+    ///    - key : "key.length"
+    ///    - value : 5
+    ///  ▿ 1 : 2 elements
+    ///    - key : "key.typeusr"
+    ///    - value : "$syySicD"
+    ///    "(Swift.Int) -> ()"
+    ///  ▿ 2 : 2 elements
+    ///    - key : "key.annotated_decl"
+    ///    - value : "<Declaration>let block: <Type usr=\"s:4main8Closure2a\">Closure2</Type></Declaration>"
+    ///    "main.Closure2"
+    ///  ▿ 3 : 2 elements
+    ///    - key : "key.decl_lang"
+    ///    - value : "source.lang.swift"
+    ///  ▿ 4 : 2 elements
+    ///    - key : "key.filepath"
+    ///    - value : "/Users/yume/git/yume/TypeFill/Tests/TypeFillTests/Resource/ClousureEscaping1.swift.data"
+    ///  ▿ 5 : 2 elements
+    ///    - key : "key.column"
+    ///    - value : 16
+    ///  ▿ 6 : 2 elements
+    ///    - key : "key.offset"
+    ///    - value : 189
+    ///  ▿ 7 : 2 elements
+    ///    - key : "key.name"
+    ///    - value : "block"
+    ///  ▿ 8 : 2 elements
+    ///    - key : "key.typename"
+    ///    - value : "(Int) -> ()"
+    ///  ▿ 9 : 2 elements
+    ///    - key : "key.usr"
+    ///    - value : "s:4mainyySiccfU_5blockL_yySicvp"
+    ///    "block #1 : (Swift.Int) -> () in closure #1 ((Swift.Int) -> ()) -> () in main"
+    ///  ▿ 10 : 2 elements
+    ///    - key : "key.kind"
+    ///    - value : "source.lang.swift.decl.var.parameter"
+    ///  ▿ 11 : 2 elements
+    ///    - key : "key.fully_annotated_decl"
+    ///    - value : "<decl.var.parameter><syntaxtype.keyword>let</syntaxtype.keyword> <decl.var.parameter.name>block</decl.var.parameter.name>: <decl.var.parameter.type><ref.typealias usr=\"s:4main8Closure2a\">Closure2</ref.typealias></decl.var.parameter.type></decl.var.parameter>"
+    ///  ▿ 12 : 2 elements
+    ///    - key : "key.line"
+    ///    - value : 7
+    ///
     /// typealias Closure = (@escaping Closure2) -> Void
     /// typealias Closure2 = (Int) -> Void
     /// var closure: Closure?

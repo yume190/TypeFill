@@ -200,7 +200,7 @@ public final class ClosureCaptureVisitor: SyntaxVisitor {
         self.decls = .level0(list: [:])
         
         try! node.signature.input.parameterList.compactMap { syntax in
-            guard let name = syntax.secondName else {return nil}
+            guard let name = syntax.secondName else { return nil }
             return try (name.text, cursor(name))
         }.forEach { (key, response) in
             self.decls = self.decls.append(key: key, value: response)

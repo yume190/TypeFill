@@ -57,6 +57,11 @@ struct Command: ParsableCommand {
                 switch mode {
                 case .assign:
                     let visitor = AssignClosureVisitor(cursor, verbose)
+                    
+                    try cursor.editorOpen()
+                    defer {
+                        _ = try? cursor.editorClose()
+                    }
                     let leaks = visitor.detect()
                     print("\("[SCAN FILE]:".applyingCodes(Color.yellow, Style.bold)) [\(index + 1)/\(all)] \(filePath)")
                     leaks.forEach(reporter.report)

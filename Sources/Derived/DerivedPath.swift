@@ -41,7 +41,7 @@ public struct DerivedPath {
             resultStr[index] = UInt8(startValue % 26) + 97 // 'a'
             startValue /= 26
         }
-        guard let derived: String = String(bytes: resultStr, encoding: .utf8) else {return nil}
+        guard let derived: String = String(bytes: resultStr, encoding: .utf8) else { return nil }
         self.name = "\(fileName)-\(derived)"
     }
 
@@ -56,7 +56,7 @@ public struct DerivedPath {
     /// .../Index/DataStore
     public var indexStorePath: String? {
         let path = DerivedPath.default + "/\(name)/Index/DataStore"
-        guard FileManager.default.fileExists(atPath: path) else {return nil}
+        guard FileManager.default.fileExists(atPath: path) else { return nil }
         return path
     }
 }
@@ -66,14 +66,14 @@ extension DerivedPath {
     public struct SPM {
         private let root: String
         public init?(_ root: String) {
-            guard FileManager.default.fileExists(atPath: root + "/.build") else {return nil}
+            guard FileManager.default.fileExists(atPath: root + "/.build") else { return nil }
             self.root = root
         }
         
         /// .../.build/debug/index/store"
         public var indexStorePath: String? {
             let path = root + "/.build/debug/index/store"
-            guard FileManager.default.fileExists(atPath: path) else {return nil}
+            guard FileManager.default.fileExists(atPath: path) else { return nil }
             return path
         }
     }
