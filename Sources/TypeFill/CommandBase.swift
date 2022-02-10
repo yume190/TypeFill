@@ -13,10 +13,13 @@ import protocol TypeFillKit.Configable
 import protocol TypeFillKit.CompilerArgumentsGettable
 import Cursor
 
-protocol CommandBase: Configable {}
-
-protocol CommandBuild: CommandBase {
+protocol BuildConfigable {
     var skipBuild: Bool { get }
+}
+
+typealias Config = BuildConfigable & Configable
+protocol CommandBuild {
+    var config: Config { get }
     
     var isIndexStoreExist: Bool { get }
     var buildSetting: CompilerArgumentsGettable? { get }
@@ -28,7 +31,7 @@ protocol CommandBuild: CommandBase {
 extension CommandBuild {
     var module: Module? {
         let _buildSetting = self.buildSetting
-        guard _buildSetting != nil, self.skipBuild && isIndexStoreExist else {
+        guard _buildSetting != nil, self.config.skipBuild && isIndexStoreExist else {
             if !isIndexStoreExist {
                 Swift.print("can't find index store db, force build")
                 return self.buildModule
@@ -53,7 +56,7 @@ extension CommandBuild {
         }
         
         defer { Logger.summery() }
-        Logger.set(logEvent: self.verbose)
+        Logger.set(logEvent: self.config.verbose)
         
         let all: Int = module.sourceFiles.count
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
@@ -67,7 +70,7 @@ extension CommandBuild {
             }
             
             // TODO: xcode arguments use `self.buildSetting`
-            try Rewrite(path: filePath, cursor: cursor, config: self).parse()
+            try Rewrite(path: filePath, cursor: cursor, config: config).parse()
         }
     }
 }

@@ -11,39 +11,33 @@ import SourceKittenFramework
 import TypeFillKit
 import Derived
 
-///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework
+///--file SourceKitten.xcworkspace --module SourceKittenFramework
 struct Project: ParsableCommand, CommandBuild {
     static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "project",
         abstract: "Fill type to XCode project."
     )
     
-    @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
-    var print: Bool = false
+    @OptionGroup()
+    var _config: ConfigOptions
+    var config: Config {
+        _config
+    }
     
-    @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print fix item")
-    var verbose: Bool = false
+    @OptionGroup()
+    var module: ModuleOptions
     
-    @Option(name: [.customLong("project", withSingleDash: false)], help: "absolute path of project")
-    var project: String
-    
-    @Option(name: [.customLong("scheme", withSingleDash: false)], help: "xcode scheme")
-    var scheme: String
-    
-    @Flag(name: [.customLong("skipBuild", withSingleDash: false)], help: "skip build")
-    var skipBuild: Bool = false
-    
-    @Argument(help: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
-    var args: [String] = []
+    @OptionGroup()
+    var targetFile: TargetFileOptions
     
     private var xcodeBuildArguments: [String] {
         let newArgs: [String] = [
             "-project",
-            project,
+            targetFile.path,
             "-scheme",
-            scheme,
+            module.name,
         ]
-        return args + newArgs
+        return _config.args + newArgs
     }
     
     func run() throws {
@@ -51,12 +45,11 @@ struct Project: ParsableCommand, CommandBuild {
     }
     
     var isIndexStoreExist: Bool {
-        let path = URL(fileURLWithPath: project).path
-        return DerivedPath(path)?.indexStorePath != nil
+        return DerivedPath(targetFile.path)?.indexStorePath != nil
     }
     
     var buildSetting: CompilerArgumentsGettable? {
-        return CompilerArguments.byFile(name: scheme, arguments: self.xcodeBuildArguments)
+        return CompilerArguments.byFile(name: module.name, arguments: self.xcodeBuildArguments)
     }
     
     var buildModule: Module? {
@@ -65,6 +58,6 @@ struct Project: ParsableCommand, CommandBuild {
     
     var skipBuildModule: Module? {
         guard let _compilerArguments = buildSetting else { return nil }
-        return Module(name: self.scheme, compilerArguments: _compilerArguments.default)
+        return Module(name: module.name, compilerArguments: _compilerArguments.default)
     }
 }

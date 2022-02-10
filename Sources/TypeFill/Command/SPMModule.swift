@@ -17,30 +17,24 @@ struct SPMModule: ParsableCommand, CommandBuild {
         abstract: "Fill type to SPM Project."
     )
     
-    @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
-    var print: Bool = false
+    @OptionGroup()
+    var _config: ConfigOptions
+    var config: Config {
+        _config
+    }
     
-    @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print fix item")
-    var verbose: Bool = false
+    @OptionGroup()
+    var module: ModuleOptions
     
-    @Option(name: [.customLong("moduleName", withSingleDash: false)], help: "spm target name")
-    var moduleName: String
-    
-    @Option(name: [.customLong("path", withSingleDash: false)], help: "path to spm dir")
-    var path: String = "."
-    
-    @Flag(name: [.customLong("skipBuild", withSingleDash: false)], help: "skip build")
-    var skipBuild: Bool = false
-    
-    @Argument(help: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
-    var args: [String] = []
+    @OptionGroup()
+    var package: PackageOptions
     
     func run() throws {
         try self.scan()
     }
     
     var isIndexStoreExist: Bool {
-        DerivedPath.SPM(URL(fileURLWithPath: path).path)?.indexStorePath != nil
+        DerivedPath.SPM(package.path)?.indexStorePath != nil
     }
     
     var buildSetting: CompilerArgumentsGettable? {
@@ -48,11 +42,11 @@ struct SPMModule: ParsableCommand, CommandBuild {
     }
     
     var buildModule: Module? {
-        return Module(spmArguments: args, spmName: moduleName, inPath: path)
+        return Module(spmArguments: _config.args, spmName: module.name, inPath: package.path)
     }
     
     var skipBuildModule: Module? {
-        return Module(spmName: moduleName, inPath: path)
+        return Module(spmName: module.name, inPath: package.path)
     }
 }
 

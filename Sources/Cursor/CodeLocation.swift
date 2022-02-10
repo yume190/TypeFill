@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftSyntax
+import Rainbow
 
 public struct CodeLocation: CustomStringConvertible, Equatable {
     public let path: String

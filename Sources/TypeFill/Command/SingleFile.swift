@@ -13,38 +13,36 @@ import Cursor
 
 extension SDK: ExpressibleByArgument {}
 
-struct SingleFile: ParsableCommand, CommandBase {
+struct SingleFile: ParsableCommand {
     static var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "single",
         abstract: "Fill type to single file"
     )
     
-    @Flag(name: [.customLong("print", withSingleDash: false)], help: "print fixed code, if false it will overwrite source file")
-    var print: Bool = false
+    @OptionGroup()
+    var _config: ConfigOptions
+    var config: Config {
+        _config
+    }
     
-    @Flag(name: [.customLong("verbose", withSingleDash: false), .short], help: "print fix item")
-    var verbose: Bool = false
-    
-    @Option(name: [.customLong("filePath", withSingleDash: false)], help: "absolute path")
-    var filePath: String
+    @OptionGroup()
+    var targetFile: TargetFileOptions
     
     @Option(name: [.customLong("sdk", withSingleDash: false)], help: "[\(SDK.all)]")
     var sdk: SDK
     
-    @Argument(help: "Arguments passed to `xcodebuild` or `swift build`. If `-` prefixed argument exists, place ` -- ` before that.")
-    var args: [String] = []
-    
     func run() throws {
-        let arguments: [String] = args + [filePath] + sdk.pathArgs
+        let arguments: [String] = _config.args + [targetFile.path] + sdk.pathArgs
 
         defer { Logger.summery() }
-        Logger.set(logEvent: self.verbose)
+        Logger.set(logEvent: config.verbose)
         
-        Logger.add(event: .openFile(path: "\(filePath)"))
+        
+        Logger.add(event: .openFile(path: "\(targetFile.path)"))
         try Rewrite(
-            path: filePath,
+            path: targetFile.path,
             arguments: arguments,
-            config: self
+            config: config
         ).parse()
     }
 }
