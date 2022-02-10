@@ -80,7 +80,7 @@ final class TypeFillRewriter: SyntaxRewriter {
     override func visit(_ node: ParameterClauseSyntax) -> Syntax {
         let newParams: [FunctionParameterSyntax] = node.parameterList.map { (parameter: FunctionParameterListSyntax.Element) -> FunctionParameterSyntax in
             guard parameter.colon == nil, parameter.type == nil else { return parameter }
-            guard let firstName = parameter.firstName else { return parameter }
+            guard let firstName: TokenSyntax = parameter.firstName else { return parameter }
             guard let type: SourceKitResponse = try? cursor(firstName) else { return parameter }
             guard let typeSyntax: TypeSyntax = type.typeSyntax else { return parameter }
             let newNode: FunctionParameterSyntax = parameter

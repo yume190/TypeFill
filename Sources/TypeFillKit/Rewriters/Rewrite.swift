@@ -26,7 +26,7 @@ public struct Rewrite {
     
     public init(path: String, arguments: CompilerArgumentsGettable, config: Configable) throws {
         let _arguments: [String] = arguments(path)
-        let cursor = try Cursor(path: path, arguments: _arguments)
+        let cursor: Cursor = try Cursor(path: path, arguments: _arguments)
         try self.init(path: path, cursor: cursor, config: config)
     }
     

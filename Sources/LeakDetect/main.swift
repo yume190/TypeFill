@@ -39,26 +39,26 @@ struct Command: ParsableCommand {
     
     typealias LeakCount = Int
     private func assignMode(module: Module, filePath: String) throws -> LeakCount {
-        let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
-        let visitor = AssignClosureVisitor(cursor, verbose)
+        let cursor: Cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+        let visitor: AssignClosureVisitor = AssignClosureVisitor(cursor, verbose)
         
         try cursor.editorOpen()
-        let leaks = visitor.detect()
+        let leaks: [CodeLocation] = visitor.detect()
         leaks.forEach(reporter.report)
         try cursor.editorClose()
         return leaks.count
     }
     
     private func captureMode(module: Module, filePath: String) throws -> LeakCount {
-        let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
-        let detector = GraphLeakDetector()
-        let leaks = detector.detect(cursor)
+        let cursor: Cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+        let detector: GraphLeakDetector = GraphLeakDetector()
+        let leaks: [Leak] = detector.detect(cursor)
         leaks.forEach(reporter.report)
         return leaks.count
     }
     
     func run() throws {
-        try Env.prepare { projectRoot, moduleName, args in
+        try Env.prepare { (projectRoot: String, moduleName: String, args: [String]) in
             let module: Module = Module(name: moduleName, compilerArguments: args)
             
             var leakCount: LeakCount = 0
@@ -89,7 +89,7 @@ extension Command {
         case assign
         case capture
         
-        static let all = Mode
+        static let all: String = Mode
             .allCases
             .map(\.rawValue)
             .joined(separator: "|")
@@ -97,7 +97,7 @@ extension Command {
 }
 
 extension Reporter:  ExpressibleByArgument {
-    static let all = Reporter
+    static let all: String = Reporter
         .allCases
         .map(\.rawValue)
         .joined(separator: "|")

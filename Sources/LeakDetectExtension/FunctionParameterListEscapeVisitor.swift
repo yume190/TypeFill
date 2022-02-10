@@ -20,20 +20,20 @@ public final class FunctionParameterListEscapeVisitor: SyntaxVisitor {
     }
 
     public override func visit(_ node: FunctionTypeSyntax) -> SyntaxVisitorContinueKind {
-        let args = node.arguments.map{$0}
+        let args: [TupleTypeElementListSyntax.Element] = node.arguments.map{$0}
         
         guard args.count > index else {return .skipChildren}
         let arg: TupleTypeElementSyntax = args[index]
         
         /// @escaping Closure
-        if let attrs = arg.type.as(AttributedTypeSyntax.self)?.attributes {
+        if let attrs: AttributeListSyntax = arg.type.as(AttributedTypeSyntax.self)?.attributes {
             self.walk(attrs)
             return .skipChildren
         }
         
         /// (Closure)
         if
-            let elements = arg.type.as(TupleTypeSyntax.self)?.elements,
+            let elements: TupleTypeElementListSyntax = arg.type.as(TupleTypeSyntax.self)?.elements,
             let _ = elements.first?.type.as(FunctionTypeSyntax.self),
             elements.count == 1 {
             self.isEscape = true
@@ -49,10 +49,10 @@ public final class FunctionParameterListEscapeVisitor: SyntaxVisitor {
     }
     
     public static func detect(code: String, index: Int) -> Bool {
-        let target = "typealias A = \(code)"
+        let target: String = "typealias A = \(code)"
         do {
-            let source = try SyntaxParser.parse(source: target)
-            let visitor = FunctionParameterListEscapeVisitor(index)
+            let source: SourceFileSyntax = try SyntaxParser.parse(source: target)
+            let visitor: FunctionParameterListEscapeVisitor = FunctionParameterListEscapeVisitor(index)
             visitor.walk(source)
             return visitor.isEscape
         } catch {

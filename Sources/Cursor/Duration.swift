@@ -14,7 +14,7 @@ public enum Duration {
         _ content: () throws -> ()
     ) rethrows {
         if verbose {
-            let now = Date()
+            let now: Date = Date()
             try content()
             print("\(try prefix()) \(Date().timeIntervalSince(now)) sec")
         } else {

@@ -9,13 +9,26 @@ proj:
 	swift package generate-xcodeproj --xcconfig-overrides overrides.xcconfig
 	open TypeFill.xcodeproj
 
+.PHONY: build
+build: 
+	swift build
+
+.PHONY: test
+test: build
+	@swift test -v 2>&1 | xcpretty
+
+.PHONY: fillSelf
+fillSelf: build
+	typefill spm --module Cursor -v --skipBuild
+	typefill spm --module DerivedPath -v --skipBuild
+	typefill spm --module LeakDetect -v --skipBuild
+	typefill spm --module LeakDetectExtension -v --skipBuild
+	typefill spm --module TypeFill -v --skipBuild
+	typefill spm --module TypeFillKit -v --skipBuild
+
 .PHONY: release
 release: 
 	@swift build -c release
-
-.PHONY: test
-test:
-	@swift test -v 2>&1 | xcpretty
 
 .PHONY: install
 install: release
@@ -69,16 +82,3 @@ xcframework:
 # project --project /Users/yume/git/yume/TypeFill/TypeFill.xcodeproj --scheme TypeFill -v --skipBuild
 
 # spm --moduleName TypeFill --path /Users/yume/git/yume/TypeFill -v --print --skipBuild
-.PHONY: build
-build: 
-	swift build
-
-.PHONY: fillSelf
-fillSelf: build
-	typefill spm --module Cursor -v --skipBuild
-	typefill spm --module DerivedPath -v --skipBuild
-	typefill spm --module LeakDetect -v --skipBuild
-	typefill spm --module LeakDetectExtension -v --skipBuild
-	typefill spm --module Typefill -v --skipBuild
-	typefill spm --module TypefillKit -v --skipBuild
-

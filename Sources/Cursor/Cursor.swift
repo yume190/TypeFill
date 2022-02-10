@@ -17,7 +17,7 @@ public struct Cursor {
     
     
     public init(path: String, sdk: SDK = .macosx) throws {
-        let arguments = sdk.pathArgs + [path]
+        let arguments: [String] = sdk.pathArgs + [path]
         try self.init(path: path, arguments: arguments)
     }
     
@@ -80,7 +80,7 @@ public struct Cursor {
     
     @discardableResult
     public func docInfo() throws -> SourceKitResponse {
-        let text = try String(contentsOf: URL(fileURLWithPath: path))
+        let text: String = try String(contentsOf: URL(fileURLWithPath: path))
         let raw: [String : SourceKitRepresentable] = try Request.docInfo(text: text, arguments: arguments).send()
         return SourceKitResponse(raw)
     }

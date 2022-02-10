@@ -30,7 +30,7 @@ public enum Env: String {
         if let projectTempRoot: String = Env.projectTempRoot.value {
             projectRoot = projectTempRoot
         } else if let path: String = Env.projectPath.value {
-            guard let derived = DerivedPath(path) else {
+            guard let derived: DerivedPath = DerivedPath(path) else {
                 Swift.print("Env `\(Env.projectPath.rawValue)` not found, quit.");exit(0)
             }
             guard derived.isExist() else {
@@ -54,7 +54,7 @@ public enum Env: String {
         exit(0)
     }
     
-    public static let discussion = """
+    public static let discussion: String = """
     Needed Environment Variable:
      * `\(Env.projectTempRoot.rawValue)`/`\(Env.projectPath.rawValue)`
      * `\(Env.targetName.rawValue)`

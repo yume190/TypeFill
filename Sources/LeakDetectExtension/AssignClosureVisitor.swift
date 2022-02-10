@@ -56,13 +56,13 @@ public final class AssignClosureVisitor: SyntaxVisitor {
     @inline(__always)
     private final func find(_ node: ExprListSyntax) {
         guard node.count == 3 else {return}
-        let exprs = node.map {$0}
+        let exprs: [ExprListSyntax.Element] = node.map {$0}
         
         guard let _ = exprs[0].tokenSyntax else {return}
         guard exprs[1].is(AssignmentExprSyntax.self) else {return}
         
         guard !exprs[2].is(FunctionCallExprSyntax.self) else {return}
-        guard let identifier = exprs[2].tokenSyntax else {return}
+        guard let identifier: TokenSyntax = exprs[2].tokenSyntax else {return}
 
         do {
             try Duration.logger("\("[INSPECT]".applyingColor(.green)) assign\t\(cursor(location: identifier)) \(identifier)", verbose: verbose) {
@@ -91,7 +91,7 @@ public final class AssignClosureVisitor: SyntaxVisitor {
     private final func find(_ node: FunctionCallExprSyntax) {
         for param in node.argumentList {
             do {
-                guard let identifier = param.expression.tokenSyntax else {continue}
+                guard let identifier: TokenSyntax = param.expression.tokenSyntax else {continue}
                 try Duration.logger("\("[INSPECT]".applyingColor(.green)) parameter\t\(cursor(location: identifier)) \(identifier)", verbose: verbose) {
                     guard try cursor(identifier).isRefInstanceFunction else {return}
                     self.results.append(cursor(location: identifier))

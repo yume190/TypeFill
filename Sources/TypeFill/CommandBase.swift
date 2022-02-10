@@ -62,7 +62,7 @@ extension CommandBuild {
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             Logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
             
-            let cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+            let cursor: Cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
             
             try cursor.editorOpen()
             defer {

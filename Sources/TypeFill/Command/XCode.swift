@@ -25,7 +25,7 @@ struct XCode: ParsableCommand, Configable {
     var verbose: Bool = false
     
     func run() throws {
-        try Env.prepare { projectRoot, moduleName, args in
+        try Env.prepare { (projectRoot: String, moduleName: String, args: [String]) in
             let module: Module = Module(name: moduleName, compilerArguments: args)
             
             defer { Logger.summery() }

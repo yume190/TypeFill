@@ -21,19 +21,19 @@ public final class TypeEscapeVisitor: SyntaxVisitor {
     
     private final func find(type: TypeSyntax) -> SyntaxVisitorContinueKind? {
         /// X?
-        if let wrapped = type.as(OptionalTypeSyntax.self)?.wrappedType {
+        if let wrapped: TypeSyntax = type.as(OptionalTypeSyntax.self)?.wrappedType {
             return find(type: wrapped)
         }
         
         /// @escaping Closure
-        if let attrs = type.as(AttributedTypeSyntax.self)?.attributes {
+        if let attrs: AttributeListSyntax = type.as(AttributedTypeSyntax.self)?.attributes {
             self.walk(attrs)
             return .skipChildren
         }
         
         /// (Closure)
         if
-            let elements = type.as(TupleTypeSyntax.self)?.elements,
+            let elements: TupleTypeElementListSyntax = type.as(TupleTypeSyntax.self)?.elements,
             let _ = elements.first?.type.as(FunctionTypeSyntax.self),
             elements.count == 1 {
             self.isEscape = true
@@ -49,10 +49,10 @@ public final class TypeEscapeVisitor: SyntaxVisitor {
     }
     
     public static func detect(code: String) -> Bool {
-        let target = "typealias A = \(code)"
+        let target: String = "typealias A = \(code)"
         do {
-            let source = try SyntaxParser.parse(source: target)
-            let visitor = TypeEscapeVisitor()
+            let source: SourceFileSyntax = try SyntaxParser.parse(source: target)
+            let visitor: TypeEscapeVisitor = TypeEscapeVisitor()
             visitor.walk(source)
             return visitor.isEscape
         } catch {

@@ -9,8 +9,8 @@ import Foundation
 import SwiftSyntax
 
 private let engine: DiagnosticEngine = {
-    let engine = DiagnosticEngine()
-    let consumer = PrintingDiagnosticConsumer()
+    let engine: DiagnosticEngine = DiagnosticEngine()
+    let consumer: PrintingDiagnosticConsumer = PrintingDiagnosticConsumer()
     engine.addConsumer(consumer)
     return engine
 }()
@@ -35,7 +35,7 @@ public enum Reporter: String, CaseIterable {
         case .vscode:
             print(reportable.reportVSCode)
         case .xcode:
-            let message = Diagnostic.Message(.warning, "LeakDetect: find at \(reportable.reportXCode)")
+            let message: Diagnostic.Message = Diagnostic.Message(.warning, "LeakDetect: find at \(reportable.reportXCode)")
             engine.diagnose(message, location: reportable.reportXCodeLocation, actions: nil)
         }
     }

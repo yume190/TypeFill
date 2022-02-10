@@ -40,7 +40,7 @@ struct TargetFileOptions: ParsableArguments {
     var file: String
     
     var path: String {
-        URL(fileURLWithPath: file).absoluteString
+        URL(fileURLWithPath: file).path
     }
 }
 
@@ -49,6 +49,6 @@ struct PackageOptions: ParsableArguments {
     var file: String = "."
     
     var path: String {
-        URL(fileURLWithPath: file).absoluteString
+        URL(fileURLWithPath: file).path
     }
 }
