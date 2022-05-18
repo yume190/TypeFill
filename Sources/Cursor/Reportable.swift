@@ -7,13 +7,7 @@
 
 import Foundation
 import SwiftSyntax
-
-private let engine: DiagnosticEngine = {
-    let engine: DiagnosticEngine = DiagnosticEngine()
-    let consumer: PrintingDiagnosticConsumer = PrintingDiagnosticConsumer()
-    engine.addConsumer(consumer)
-    return engine
-}()
+import SwiftSyntaxParser
 
 public protocol XCodeReportable {
     var reportXCode: String {get}
@@ -36,7 +30,9 @@ public enum Reporter: String, CaseIterable {
             print(reportable.reportVSCode)
         case .xcode:
             let message: Diagnostic.Message = Diagnostic.Message(.warning, "LeakDetect: find at \(reportable.reportXCode)")
-            engine.diagnose(message, location: reportable.reportXCodeLocation, actions: nil)
+            let diag = Diagnostic(message: message, location: reportable.reportXCodeLocation, notes: [], highlights: [], fixIts: [])
+            
+            print(diag.debugDescription)
         }
     }
 }
