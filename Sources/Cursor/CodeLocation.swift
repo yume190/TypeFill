@@ -12,8 +12,16 @@ import Rainbow
 public struct CodeLocation: CustomStringConvertible, Equatable {
     public let path: String
     public let location: SwiftSyntax.SourceLocation
+    public let syntax: SyntaxProtocol?
+    
+    public init(path: String, location: SwiftSyntax.SourceLocation, syntax: SyntaxProtocol? = nil) {
+        self.path = path
+        self.location = location
+        self.syntax = syntax
+    }
+    
     public var description: String {
-        return "\(path):\(location)"
+        return "\(path):\(location) \(syntax?.withoutTrivia().description ?? "")"
     }
     
     public static func == (lhs: CodeLocation, rhs: CodeLocation) -> Bool {

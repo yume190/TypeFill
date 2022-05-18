@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftSyntax
+import SwiftSyntaxParser
 import SourceKittenFramework
 
 public struct Cursor {
@@ -41,12 +42,12 @@ public struct Cursor {
     }
     
     // MARK: code location
-    public func callAsFunction<Syntax: SyntaxProtocol>(offset syntax: Syntax) -> SwiftSyntax.SourceLocation {
+    public func callAsFunction(offset syntax: SyntaxProtocol) -> SwiftSyntax.SourceLocation {
         return self.converter.location(for: syntax.positionAfterSkippingLeadingTrivia)
     }
     
-    public func callAsFunction<Syntax: SyntaxProtocol>(location syntax: Syntax) -> CodeLocation {
-        return CodeLocation(path: path, location: self(offset: syntax))
+    public func callAsFunction(location syntax: SyntaxProtocol) -> CodeLocation {
+        return CodeLocation(path: path, location: self(offset: syntax), syntax: syntax)
     }
     
     // MARK: SourceKit Command
