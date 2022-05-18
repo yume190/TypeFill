@@ -13,6 +13,7 @@ proj:
 build: 
 	swift build
 
+# --parallel
 .PHONY: test
 test: build
 	@swift test -v 2>&1 | xcpretty
@@ -35,7 +36,7 @@ release:
 .PHONY: install
 install: release
 	@cp .build/release/typefill /usr/local/bin
-	@cp .build/release/LeakDetect /usr/local/bin
+	@cp .build/release/leakDetect /usr/local/bin
 
 .PHONY: clear
 clear: 
