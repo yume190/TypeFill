@@ -49,8 +49,10 @@ public struct Cursor {
     public func callAsFunction(location syntax: SyntaxProtocol) -> CodeLocation {
         return CodeLocation(path: path, location: self(offset: syntax), syntax: syntax)
     }
-    
-    // MARK: SourceKit Command
+}
+
+// MARK: SourceKit Command
+extension Cursor {
     @discardableResult
     public func cursorInfo(_ offset: Int) throws -> SourceKitResponse {
         let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: path, offset: ByteCount(offset), arguments: arguments).send()

@@ -20,3 +20,9 @@ extension String {
         }
     }
 }
+
+extension XMLElement {
+    subscript(name: String) -> [XMLElement] {
+        self.elements(forName: name)
+    }
+}

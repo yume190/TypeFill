@@ -7,9 +7,6 @@
 
 import Foundation
 
-/// not found
-/// source.lang.swift.ref.function.method.class
-
 /// https://github.com/apple/swift/blob/b0678ca5244e343cec109b4e7dde4b8bc430a8c1/tools/SourceKit/docs/SwiftSupport.txt
 public enum Kind: String, CaseIterable {
     case declFunctionFree = "source.lang.swift.decl.function.free"

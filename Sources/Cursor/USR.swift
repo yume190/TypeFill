@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libswiftDemangle.dylib
 /// https://github.com/apple/swift/blob/main/docs/ABI/Mangling.rst
 public enum USR {
     case _demangle(usr: String)

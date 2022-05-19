@@ -55,6 +55,14 @@ public struct SourceKitResponse {
         return self[#function]
     }
     
+    public var isWeak: Bool {
+        let xml = fully_annotated_decl?
+            .xml?["syntaxtype.keyword"] ?? []
+        return xml
+            .compactMap(\.stringValue)
+            .contains("weak")
+    }
+    
     public var annotated_decl: String? {
         return self[#function]
     }
@@ -91,8 +99,14 @@ public struct SourceKitResponse {
     public var typeusr: String? {
         return self[#function]
     }
+    public var typeusr_demangle: String? {
+        return USR(typeusr)?.demangle()
+    }
     public var usr: String? {
         return self[#function]
+    }
+    public var usr_demangle: String? {
+        return USR(usr)?.demangle()
     }
     
     public var length: Int64? {
