@@ -80,13 +80,13 @@ let package = Package(
             dependencies: [
                 "Rainbow",
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                "lib_InternalSwiftSyntaxParser",
+//                "lib_InternalSwiftSyntaxParser",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Cursor",
-            ],
-            linkerSettings: [
-                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
             ]
+//            linkerSettings: [
+//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
+//            ]
         ),
         
 //        .target(
@@ -124,12 +124,12 @@ let package = Package(
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
-                "lib_InternalSwiftSyntaxParser",
+//                "lib_InternalSwiftSyntaxParser",
                 "Derived",
-            ],
-            linkerSettings: [
-                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
             ]
+//            linkerSettings: [
+//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
+//            ]
         ),
         
         // MARK: Tests
@@ -137,16 +137,16 @@ let package = Package(
             name: "TypeFillTests",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                "lib_InternalSwiftSyntaxParser",
+//                "lib_InternalSwiftSyntaxParser",
                 "TypeFillKit",
                 "Cursor",
             ],
             resources: [
                 .copy("Resource")
-            ],
-            linkerSettings: [
-                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
             ]
+//            linkerSettings: [
+//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
+//            ]
         ),
         
 //        .testTarget(
