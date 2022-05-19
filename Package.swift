@@ -29,6 +29,8 @@ let package = Package(
         
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
         .library(name: "Cursor", targets: ["Cursor"]),
+        .library(name: "StaticSwiftSyntax", targets: ["_SwiftSyntax"]),
+        .library(name: "StaticSwiftSyntaxParser", targets: ["_SwiftSyntaxParser"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
