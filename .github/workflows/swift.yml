@@ -31,15 +31,15 @@ jobs:
     # 12.5.1  5.4.2
     # 12.4    5.3.2
     # 11.7    5.2.4
-    runs-on: macos-11
+    runs-on: macos-12
 
     strategy:
       matrix:
         xcode: 
+        - "13.4"
+        - "13.3.1"
+        - "13.2.1"
         - "13.1"
-        - "13.0"
-        - "12.5.1"
-        - "12.4"
 
     steps:
     - uses: actions/checkout@v2
