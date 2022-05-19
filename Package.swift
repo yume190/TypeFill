@@ -79,14 +79,10 @@ let package = Package(
             name: "TypeFillKit",
             dependencies: [
                 "Rainbow",
-                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-//                "lib_InternalSwiftSyntaxParser",
+                "_SwiftSyntax",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Cursor",
             ]
-//            linkerSettings: [
-//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-//            ]
         ),
         
 //        .target(
@@ -122,31 +118,23 @@ let package = Package(
             dependencies: [
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
-                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
-//                "lib_InternalSwiftSyntaxParser",
+                "_SwiftSyntax",
+                "_SwiftSyntaxParser",
                 "Derived",
             ]
-//            linkerSettings: [
-//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-//            ]
         ),
         
         // MARK: Tests
         .testTarget(
             name: "TypeFillTests",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-//                "lib_InternalSwiftSyntaxParser",
+                "_SwiftSyntax",
                 "TypeFillKit",
                 "Cursor",
             ],
             resources: [
                 .copy("Resource")
             ]
-//            linkerSettings: [
-//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-//            ]
         ),
         
 //        .testTarget(
@@ -177,34 +165,34 @@ let package = Package(
         // Pass `-dead_strip_dylibs` to ignore the dynamic version of `lib_InternalSwiftSyntaxParser`
         // that ships with SwiftSyntax because we want the static version from
         // `StaticInternalSwiftSyntaxParser`.
-//        .target(
-//            name: "_SwiftSyntax",
-//            dependencies: [
-//                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-//                "lib_InternalSwiftSyntaxParser",
-//                
-//            ],
-//            linkerSettings: [
-//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-//            ]
-//        ),
-//        
-//        .target(
-//            name: "_SwiftSyntaxParser",
-//            dependencies: [
-//                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
-//                "lib_InternalSwiftSyntaxParser",
-//                
-//            ],
-//            linkerSettings: [
-//                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-//            ]
-//        ),
-//        
-//        .binaryTarget(
-//            name: "lib_InternalSwiftSyntaxParser",
-//            url: "https://github.com/keith/StaticInternalSwiftSyntaxParser/releases/download/5.6/lib_InternalSwiftSyntaxParser.xcframework.zip",
-//            checksum: "88d748f76ec45880a8250438bd68e5d6ba716c8042f520998a438db87083ae9d"
-//        )
+        .target(
+            name: "_SwiftSyntax",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                "lib_InternalSwiftSyntaxParser",
+                
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
+            ]
+        ),
+        
+        .target(
+            name: "_SwiftSyntaxParser",
+            dependencies: [
+                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
+                "lib_InternalSwiftSyntaxParser",
+                
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
+            ]
+        ),
+        
+        .binaryTarget(
+            name: "lib_InternalSwiftSyntaxParser",
+            url: "https://github.com/keith/StaticInternalSwiftSyntaxParser/releases/download/5.6/lib_InternalSwiftSyntaxParser.xcframework.zip",
+            checksum: "88d748f76ec45880a8250438bd68e5d6ba716c8042f520998a438db87083ae9d"
+        )
     ]
 )
