@@ -79,9 +79,13 @@ let package = Package(
             name: "TypeFillKit",
             dependencies: [
                 "Rainbow",
-                "_SwiftSyntax",
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                "lib_InternalSwiftSyntaxParser",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Cursor",
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
             ]
         ),
         
@@ -118,9 +122,13 @@ let package = Package(
             dependencies: [
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
-                "_SwiftSyntax",
-                "_SwiftSyntaxParser",
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
+                "lib_InternalSwiftSyntaxParser",
                 "Derived",
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
             ]
         ),
         
@@ -128,12 +136,16 @@ let package = Package(
         .testTarget(
             name: "TypeFillTests",
             dependencies: [
-                "_SwiftSyntax",
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                "lib_InternalSwiftSyntaxParser",
                 "TypeFillKit",
                 "Cursor",
             ],
             resources: [
                 .copy("Resource")
+            ],
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
             ]
         ),
         
