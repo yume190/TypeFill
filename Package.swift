@@ -28,6 +28,7 @@ let package = Package(
         .executable(name: "derivedPath", targets: ["DerivedPath"]),
         
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
+        .library(name: "Cursor", targets: ["Cursor"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
