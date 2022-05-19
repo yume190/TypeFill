@@ -24,7 +24,7 @@ let package = Package(
     ],
     products: [
         .executable(name: "typefill", targets: ["TypeFill"]),
-        .executable(name: "leakDetect", targets: ["LeakDetect"]),
+//        .executable(name: "leakDetect", targets: ["LeakDetect"]),
         .executable(name: "derivedPath", targets: ["DerivedPath"]),
         
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
@@ -62,17 +62,17 @@ let package = Package(
             ]
         ),
         
-        .target(
-            name: "LeakDetect",
-            dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "SourceKittenFramework", package: "SourceKitten"),
-                "SwiftLeakCheck",
-                "Cursor",
-                "Derived",
-                "LeakDetectExtension",
-            ]
-        ),
+//        .target(
+//            name: "LeakDetect",
+//            dependencies: [
+//                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+//                .product(name: "SourceKittenFramework", package: "SourceKitten"),
+//                "SwiftLeakCheck",
+//                "Cursor",
+//                "Derived",
+//                "LeakDetectExtension",
+//            ]
+//        ),
         
         // MARK: Frameworks
         .target(
@@ -85,26 +85,26 @@ let package = Package(
             ]
         ),
         
-        .target(
-            name: "SwiftLeakCheck",
-            dependencies: [
-                "Rainbow",
-                "_SwiftSyntax",
-                "_SwiftSyntaxParser",
-                "Cursor",
-                "LeakDetectExtension",
-            ]
-        ),
+//        .target(
+//            name: "SwiftLeakCheck",
+//            dependencies: [
+//                "Rainbow",
+//                "_SwiftSyntax",
+//                "_SwiftSyntaxParser",
+//                "Cursor",
+//                "LeakDetectExtension",
+//            ]
+//        ),
         
-        .target(
-            name: "LeakDetectExtension",
-            dependencies: [
-                "Rainbow",
-                "_SwiftSyntax",
-                "_SwiftSyntaxParser",
-                "Cursor",
-            ]
-        ),
+//        .target(
+//            name: "LeakDetectExtension",
+//            dependencies: [
+//                "Rainbow",
+//                "_SwiftSyntax",
+//                "_SwiftSyntaxParser",
+//                "Cursor",
+//            ]
+//        ),
         
         // MARK: Common Frameworks
         .target(
@@ -137,18 +137,18 @@ let package = Package(
             ]
         ),
         
-        .testTarget(
-            name: "LeakDetectTests",
-            dependencies: [
-                "_SwiftSyntax",
-                "LeakDetectExtension",
-                "SwiftLeakCheck",
-                "Cursor",
-            ],
-            resources: [
-                .copy("Resource")
-            ]
-        ),
+//        .testTarget(
+//            name: "LeakDetectTests",
+//            dependencies: [
+//                "_SwiftSyntax",
+//                "LeakDetectExtension",
+//                "SwiftLeakCheck",
+//                "Cursor",
+//            ],
+//            resources: [
+//                .copy("Resource")
+//            ]
+//        ),
         
         .testTarget(
             name: "CursorTests",
