@@ -11,9 +11,6 @@ import SourceKittenFramework
 import TypeFillKit
 import Derived
 
-// /Users/yume/Library/Developer/Xcode/DerivedData/
-// derivedPath("/Users/yume/git/work/05_Tangram/Tangran-iOS/Tangran-iOS/Tangran-iOS.xcworkspace")
-// Tangran-iOS-dypjjsfgpgnwevbnyblbgyscmmcg
 // Index/DataStore
 
 ///-workspace SourceKitten.xcworkspace -scheme SourceKittenFramework

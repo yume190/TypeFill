@@ -25,7 +25,7 @@ public enum Env: String {
         return Self.processInfo.environment[self.rawValue]
     }
     
-    public static func prepare(_ completion: (String, String, [String]) throws -> ()) rethrows -> Never {
+    public static func prepare(_ completion: (String, String, [String]) throws -> ()) rethrows -> Void {
         let projectRoot: String
         if let projectTempRoot: String = Env.projectTempRoot.value {
             projectRoot = projectTempRoot
@@ -51,7 +51,6 @@ public enum Env: String {
         }
         
         try completion(projectRoot, moduleName, args)
-        exit(0)
     }
     
     public static let discussion: String = """
@@ -61,7 +60,7 @@ public enum Env: String {
     
     Example:
     `\(Env.projectTempRoot.rawValue)`="/PATH_TO/DerivedData/TypeFill-abpidkqveyuylveyttvzvsspldln/Build/Intermediates.noindex"
-    `\(Env.projectPath.rawValue)`="PATH_TO/xxx.xcodeproj" or "/PATH_TO/Tangran-xxx.xcworkspace"
+    `\(Env.projectPath.rawValue)`="PATH_TO/xxx.xcodeproj" or "/PATH_TO/xxx.xcworkspace"
     `\(Env.targetName.rawValue)`="Typefill"
     """
 }
