@@ -9,7 +9,7 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 import TypeFillKit
-import Cursor
+import SKClient
 
 extension SDK: ExpressibleByArgument {}
 

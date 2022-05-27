@@ -9,7 +9,7 @@ import Foundation
 import ArgumentParser
 import SourceKittenFramework
 import TypeFillKit
-import Cursor
+import SKClient
 
 struct XCode: ParsableCommand, Configable {
     static var configuration: CommandConfiguration = CommandConfiguration(

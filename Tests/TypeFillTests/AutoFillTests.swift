@@ -2,221 +2,241 @@ import XCTest
 import class Foundation.Bundle
 import SourceKittenFramework
 @testable import TypeFillKit
-@testable import Cursor
+@testable import SKClient
 
-struct Config: Configable {
-    //    let typeFill: Bool = true
-    //    let ibaction: Bool = false
-    //    let iboutlet: Bool = false
-    //    let objc: Bool = false
-    let print: Bool = true
-    let verbose: Bool = false
+
+final class TypeTests: XCTestCase {
+    final func testType() throws {
+        let code = """
+        let a = 1
+        var b = a
+        """
+        
+        try client(code: code) { client in
+            try XCTAssertEqual(client(4).typeSyntax?.description, "Int")
+            try XCTAssertEqual(client(14).typeSyntax?.description, "Int")
+        }
+    }
 }
 
-final class AutoFillTests: XCTestCase {
-    
-    private final func rewriter(file: String) throws -> Rewrite {
-        let path: String = resource(file: file)
-        let arguments: [String] = [path, "-sdk", sdkPath()]
-        return try Rewrite(path: path, arguments: arguments, config: Config())
-    }
-    
-    /// let a = 1
-    /// var b = a
-    final func testType() throws {
-        let file: String = resource(file: "Decl.swift.data")
-        let args: [String] = [file, "-sdk", sdkPath()]
-        let cursor: Cursor = try Cursor(path: file, arguments: args)
-        let type: SourceKitResponse = try cursor(4)
-        XCTAssertEqual(type.typeSyntax?.description, "Int")
-    }
-    
-    /// let a = 1
-    /// var b = a
+final class AutoFillTests: XCTestCase {}
+
+// MARK: Pattern Binding
+extension AutoFillTests {
     final func testDecl() throws {
-        let override: String = try rewriter(file: "Decl.swift.data").dump()
+        let code = """
+        let a = 1
+        var b = a
+        """
         let result: String = """
         let a: Int = 1
         var b: Int = a
         """
-        XCTAssertEqual(override, result)
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
-    /// let (a, b) = (1, 2)
-    final func testTuple() throws {
-        let override: String = try rewriter(file: "Tuple.swift.data").dump()
+    final func testDeclTuple() throws {
+        let code = """
+        let (a, b) = (1, 2)
+        """
         let result: String = """
         let (a, b): (Int, Int) = (1, 2)
         """
-        XCTAssertEqual(override, result)
+        
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
-    
-    /// struct Test {
-    ///     let a, b: Int
-    ///     let c = 1, d = 2
-    /// }
     final func testDeclWithComma() throws {
-        let override: String = try rewriter(file: "DeclWithComma.swift.data").dump()
+        let code = """
+        struct Test {
+            let a, b: Int
+            let c = 1, d = 2
+        }
+        """
         let result: String = """
         struct Test {
             let a: Int, b: Int
             let c: Int = 1, d: Int = 2
         }
         """
-        XCTAssertEqual(override, result)
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
-    
-    /// typealias NewInt = Int
-    /// let a: NewInt! = 1
-    /// let b = a
-    final func testTypeAlias() throws {
-        let override: String = try rewriter(file: "TypeAlias.swift.data").dump()
+}
+
+// MARK: typealais
+extension AutoFillTests {
+    final func testTypeAliasAndOptional() throws {
+        let code = """
+        typealias NewInt = Int
+        let a: NewInt! = 1
+        let b = a
+        """
         let result: String = """
         typealias NewInt = Int
         let a: NewInt! = 1
         let b: NewInt? = a
         """
-        XCTAssertEqual(override, result)
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
-    /// let a: (Int, Int) -> String = { a, b -> String in
-    ///     return ""
-    /// }
+    final func testProtocolAnd() throws {
+        let code = """
+        protocol A {}
+        protocol B {}
+        extension Int: A, B {}
+        
+        let a: A & B = 1
+        let b = a
+        """
+        let result: String = """
+        protocol A {}
+        protocol B {}
+        extension Int: A, B {}
+
+        let a: A & B = 1
+        let b: A & B = a
+        """
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
+    }
+}
+
+// MARK: Closure
+extension AutoFillTests {
     final func testClosure1() throws {
-        let override: String = try rewriter(file: "Closure1.swift.data").dump()
+        let code = """
+        let a: (Int, Int) -> String = { a, b -> String in
+            return ""
+        }
+        """
         let result: String = """
         let a: (Int, Int) -> String = { (a: Int, b: Int) -> String in
             return ""
         }
         """
-        XCTAssertEqual(override, result)
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
-    /// let a: (Int, Int) -> String = { (a, b) -> String in
-    ///     return ""
-    /// }
     final func testClosure2() throws {
-        let override: String = try rewriter(file: "Closure2.swift.data").dump()
+        let code = """
+        let a: (Int, Int) -> String = { (a, b) -> String in
+            return ""
+        }
+        """
         let result: String = """
         let a: (Int, Int) -> String = { (a: Int, b: Int) -> String in
             return ""
         }
         """
-        XCTAssertEqual(override, result)
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
-    
-    /// let a: (Int, Int) -> String = { (_, _) -> String in
-    ///     return ""
-    /// }
     final func testClosureUnderLine() throws {
-        let override: String = try rewriter(file: "ClosureUnderLine.swift.data").dump()
+        let code = """
+        let a: (Int, Int) -> String = { (_, _) -> String in
+            return ""
+        }
+        """
         let result: String = """
         let a: (Int, Int) -> String = { (_, _) -> String in
             return ""
         }
         """
-        XCTAssertEqual(override, result)
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
-    /// let a: () -> Void = {
-    ///     return
-    /// }
     final func testClosureEmpty() throws {
-        let override: String = try rewriter(file: "ClosureEmpty.swift.data").dump()
-        let result: String = """
+        let code: String = """
         let a: () -> Void = {
             return
         }
         """
-        XCTAssertEqual(override, result)
+        let result = code
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
+}
     
-    /// let a: Int? = nil
-    /// if let aa = a {}
-    final func testIf() throws {
-        let override: String = try rewriter(file: "If.swift.data").dump()
+// MARK: Optional Binding
+extension AutoFillTests {
+    final func testIfLet() throws {
+        let code = """
+        let a: Int? = nil
+        if let aa = a {}
+        """
         let result: String = """
         let a: Int? = nil
         if let aa: Int = a {}
         """
-        XCTAssertEqual(override, result)
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
-    
-    /// let a: Int? = nil
-    /// guard let aa = a else {return}
-    final func testGuard() throws {
-        let override: String = try rewriter(file: "Guard.swift.data").dump()
+
+    final func testGuardLet() throws {
+        let code = """
+        let a: Int? = nil
+        guard let aa = a else {return}
+        """
         let result: String = """
         let a: Int? = nil
         guard let aa: Int = a else {return}
         """
-        XCTAssertEqual(override, result)
-    }
-    
-    // final func testOnly() throws {
-    //     let override: String = try rewriter(file: "Test.swift.data").dump()
 
-    // }
-    
-    
-    ///▿ 13 elements
-    ///  ▿ 0 : 2 elements
-    ///    - key : "key.length"
-    ///    - value : 5
-    ///  ▿ 1 : 2 elements
-    ///    - key : "key.typeusr"
-    ///    - value : "$syySicD"
-    ///    "(Swift.Int) -> ()"
-    ///  ▿ 2 : 2 elements
-    ///    - key : "key.annotated_decl"
-    ///    - value : "<Declaration>let block: <Type usr=\"s:4main8Closure2a\">Closure2</Type></Declaration>"
-    ///    "main.Closure2"
-    ///  ▿ 3 : 2 elements
-    ///    - key : "key.decl_lang"
-    ///    - value : "source.lang.swift"
-    ///  ▿ 4 : 2 elements
-    ///    - key : "key.filepath"
-    ///    - value : "/Users/yume/git/yume/TypeFill/Tests/TypeFillTests/Resource/ClousureEscaping1.swift.data"
-    ///  ▿ 5 : 2 elements
-    ///    - key : "key.column"
-    ///    - value : 16
-    ///  ▿ 6 : 2 elements
-    ///    - key : "key.offset"
-    ///    - value : 189
-    ///  ▿ 7 : 2 elements
-    ///    - key : "key.name"
-    ///    - value : "block"
-    ///  ▿ 8 : 2 elements
-    ///    - key : "key.typename"
-    ///    - value : "(Int) -> ()"
-    ///  ▿ 9 : 2 elements
-    ///    - key : "key.usr"
-    ///    - value : "s:4mainyySiccfU_5blockL_yySicvp"
-    ///    "block #1 : (Swift.Int) -> () in closure #1 ((Swift.Int) -> ()) -> () in main"
-    ///  ▿ 10 : 2 elements
-    ///    - key : "key.kind"
-    ///    - value : "source.lang.swift.decl.var.parameter"
-    ///  ▿ 11 : 2 elements
-    ///    - key : "key.fully_annotated_decl"
-    ///    - value : "<decl.var.parameter><syntaxtype.keyword>let</syntaxtype.keyword> <decl.var.parameter.name>block</decl.var.parameter.name>: <decl.var.parameter.type><ref.typealias usr=\"s:4main8Closure2a\">Closure2</ref.typealias></decl.var.parameter.type></decl.var.parameter>"
-    ///  ▿ 12 : 2 elements
-    ///    - key : "key.line"
-    ///    - value : 7
-    ///
-    /// typealias Closure = (@escaping Closure2) -> Void
-    /// typealias Closure2 = (Int) -> Void
-    /// var closure: Closure?
-    /// func doSomething1(block: @escaping Closure) {
-    ///     closure = block
-    /// }
-    /// doSomething1 { block in
-    ///     block(111)
-    /// }
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
+    }
+}
+
+// MARK: Array
+extension AutoFillTests {
+    final func testArrayIndex() throws {
+        let code = """
+        let array: [Int] = [1]
+        let element = array.firstIndex(of: 2)
+        """
+        let result: String = """
+        let array: [Int] = [1]
+        let element: Array<Int>.Index? = array.firstIndex(of: 2)
+        """
+
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
+    }
+}
+
+// MARK: Skip
+extension AutoFillTests {
     // MARK: skip Escaping
     final func _testEscaping1() throws {
-        let override: String = try rewriter(file: "ClousureEscaping1.swift.data").dump()
+        let code = """
+        """
         let result: String = """
         typealias Closure = (@escaping Closure2) -> Void
         typealias Closure2 = (Int) -> Void
@@ -228,7 +248,10 @@ final class AutoFillTests: XCTestCase {
             block(111)
         }
         """
-        XCTAssertEqual(override, result)
+        
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
     /// typealias Closure = (@escaping Closure2) -> Void
@@ -241,7 +264,9 @@ final class AutoFillTests: XCTestCase {
     ///     block(111)
     /// }
     final func _testEscaping2() throws {
-        let override: String = try rewriter(file: "ClousureEscaping2.swift.data").dump()
+        
+        let code = """
+        """
         let result: String = """
         typealias Closure = (@escaping Closure2) -> Void
         typealias Closure2 = (Int) -> Void
@@ -253,16 +278,19 @@ final class AutoFillTests: XCTestCase {
             block(111)
         }
         """
-        XCTAssertEqual(override, result)
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
-    
     
     /// let a: (Int, inout Int) -> Int = { i, ii in
     ///     return i + ii
     /// }
     // MARK: skip inout
     final func _testInout() throws {
-        let override: String = try rewriter(file: "Inout.swift.data").dump()
+        
+        let code = """
+        """
         /// let trueResult = """
         /// let a: (Int, inout Int) -> Int = { (i: Int, ii: inout Int) in
         ///     return i + ii
@@ -273,7 +301,10 @@ final class AutoFillTests: XCTestCase {
             return i + ii
         }
         """
-        XCTAssertEqual(override, result)
+        
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
+        }
     }
     
     /// let a: (inout Int, Int) -> Int = { i, ii in
@@ -281,7 +312,9 @@ final class AutoFillTests: XCTestCase {
     /// }
     // MARK: skip inout
     final func _testProtocolInout() throws {
-        let override: String = try rewriter(file: "ClousureInout.swift.data").dump()
+        
+        let code = """
+        """
         /// let trueResult = """
         /// let a: (inout Int, Int) -> Int = { (i: inout Int, ii: Int) in
         ///     return i + ii
@@ -292,58 +325,8 @@ final class AutoFillTests: XCTestCase {
             return i + ii
         }
         """
-        XCTAssertEqual(override, result)
-    }
-
-    /// protocol A {}
-    /// protocol B {}
-    /// extension Int: A, B {}
-    /// 
-    /// let a: A & B = 1
-    /// let b = a
-    final func testProtocolAnd() throws {
-        let override: String = try rewriter(file: "ProtocolAnd.swift.data").dump()
-        let result: String = """
-        protocol A {}
-        protocol B {}
-        extension Int: A, B {}
-
-        let a: A & B = 1
-        let b: A & B = a
-        """
-        XCTAssertEqual(override, result)
-    }
-        
-    /// let array: [Int] = [1]
-    /// let element = array.firstIndex(of: 2)
-    final func testArrayIndex() throws {
-        let override: String = try rewriter(file: "ArrayIndex.swift.data").dump()
-        let result: String = """
-        let array: [Int] = [1]
-        let element: Array<Int>.Index? = array.firstIndex(of: 2)
-        """
-        XCTAssertEqual(override, result)
-    }
-    
-    /// Returns path to the built products directory.
-    var productsDirectory: URL {
-        #if os(macOS)
-        for bundle in Bundle.allBundles where bundle.bundlePath.hasSuffix(".xctest") {
-            return bundle.bundleURL.deletingLastPathComponent()
+        try rewriter(code: code) { modified in
+            XCTAssertEqual(modified, result)
         }
-        fatalError("couldn't find the products directory")
-        #else
-        return Bundle.main.bundleURL
-        #endif
     }
-    
-    static var allTests = [
-        ("testType", testType),
-        ("testDecl", testDecl),
-        ("testClosure1", testClosure1),
-        ("testClosure2", testClosure2),
-        ("testClosureEmpty", testClosureEmpty),
-        ("testIf", testIf),
-        ("testGuard", testGuard),
-    ]
 }

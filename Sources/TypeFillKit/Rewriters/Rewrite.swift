@@ -7,13 +7,13 @@
 
 import Foundation
 import SwiftSyntax
-import Cursor
+import SKClient
 
 public struct Rewrite {
     public let fileHandle: FileHandle
-    private let cursor: Cursor
+    private let cursor: SKClient
     
-    public init(path: String, cursor: Cursor, config: Configable) throws {
+    public init(path: String, cursor: SKClient, config: Configable) throws {
         if config.print {
             self.fileHandle = .standardOutput
         } else {
@@ -26,7 +26,7 @@ public struct Rewrite {
     
     public init(path: String, arguments: CompilerArgumentsGettable, config: Configable) throws {
         let _arguments: [String] = arguments(path)
-        let cursor: Cursor = try Cursor(path: path, arguments: _arguments)
+        let cursor: SKClient = try SKClient(path: path, arguments: _arguments)
         try self.init(path: path, cursor: cursor, config: config)
     }
     

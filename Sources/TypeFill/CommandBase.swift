@@ -11,7 +11,7 @@ import enum TypeFillKit.Logger
 import struct TypeFillKit.Rewrite
 import protocol TypeFillKit.Configable
 import protocol TypeFillKit.CompilerArgumentsGettable
-import Cursor
+import SKClient
 
 protocol BuildConfigable {
     var skipBuild: Bool { get }
@@ -62,7 +62,7 @@ extension CommandBuild {
         try module.sourceFiles.sorted().enumerated().forEach{ (index: Int, filePath: String) in
             Logger.add(event: .openFile(path: "[\(index + 1)/\(all)] \(filePath)"))
             
-            let cursor: Cursor = try Cursor(path: filePath, arguments: module.compilerArguments)
+            let cursor: SKClient = try SKClient(path: filePath, arguments: module.compilerArguments)
             
             try cursor.editorOpen()
             defer {

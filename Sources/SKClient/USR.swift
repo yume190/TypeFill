@@ -10,37 +10,40 @@ import Foundation
 /// /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libswiftDemangle.dylib
 /// https://github.com/apple/swift/blob/main/docs/ABI/Mangling.rst
 public enum USR {
-    case _demangle(usr: String)
+    
+    /// $s6sample1aSivp
+    case _normal(usr: String)
+    /// s:6sample1aSivp
     case _indexStoreDB(usr: String) 
     
     public var usr: String {
         switch self {
-        case ._demangle(let usr): fallthrough
+        case ._normal(let usr): fallthrough
         case ._indexStoreDB(let usr): return usr
         }
     }
     
-    public func toDemagle() -> USR {
+    public func toNormal() -> USR {
         switch self {
-        case ._demangle: return self
-        case ._indexStoreDB(let usr): return ._demangle(usr: USR.toDemangle(usr))
+        case ._normal: return self
+        case ._indexStoreDB(let usr): return ._normal(usr: USR.toNormal(usr))
         }
     }
     
     public func toIndexStoreDB() -> USR {
         switch self {
-        case ._demangle(let usr): return ._indexStoreDB(usr: USR.toIndexStoreDB(usr))
+        case ._normal(let usr): return ._indexStoreDB(usr: USR.toIndexStoreDB(usr))
         case ._indexStoreDB: return self
         }
     }
     
     public func demangle() -> String? {
-        return _Swift.demangle(self.toDemagle().usr)
+        return _Swift.demangle(self.toNormal().usr)
     }
     
     /// s:6sample1aSivp -> $s6sample1aSivp
     /// for `demangle(symbol: String)`
-    private static func toDemangle(_ usr: String) -> String {
+    private static func toNormal(_ usr: String) -> String {
         return usr.replacingOccurrences(of: "s:", with: "$s")
     }
     
@@ -51,7 +54,7 @@ public enum USR {
     }
     
     private static func new(_ usr: String) -> USR? {
-        if usr.hasPrefix("$s") { return ._demangle(usr: usr) }
+        if usr.hasPrefix("$s") { return ._normal(usr: usr) }
         if usr.hasPrefix("s:") { return ._indexStoreDB(usr: usr) }
         return nil
     }

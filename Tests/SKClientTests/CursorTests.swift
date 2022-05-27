@@ -7,12 +7,48 @@
 
 import Foundation
 import XCTest
-@testable import Cursor
+@testable import SKClient
 
 final class CursorTests: XCTestCase {
     
     private lazy var path: String = resource(file: "Cursor.swift.data")
-    private lazy var cursor = try! Cursor(path: path)
+    private lazy var cursor = try! SKClient(path: path)
+    
+    @inline(__always)
+    private final func prepare(code: String, action: (SKClient) throws -> ()) throws {
+        let client = try SKClient(code: code)
+        _ = try client.editorOpen()
+        try action(client)
+        _ = try client.editorClose()
+    }
+    
+    func testCode() throws {
+        let code = """
+        class A {
+            var a: A {
+                return self
+            }
+        }
+        """
+        
+        try prepare(code: code) { client in
+            let ci = try client.cursorInfo(40)
+            XCTAssertEqual(ci.offset, 23)
+        }
+        
+        let code2 = """
+        class A {
+            var a: A  {
+                return self
+            }
+        }
+        """
+        try prepare(code: code2) { client in
+            let ci = try client.cursorInfo(41)
+            XCTAssertEqual(ci.offset, 24)
+        }
+    }
+    
     
     /// _ = AAA()           // "source.lang.swift.ref.class"
     ///                 // secondary_symbols

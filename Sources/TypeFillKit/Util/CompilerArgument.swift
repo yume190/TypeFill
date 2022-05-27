@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Cursor
+import SKClient
 
 public protocol CompilerArgumentsGettable {
     func callAsFunction(_ path: String) -> [String]

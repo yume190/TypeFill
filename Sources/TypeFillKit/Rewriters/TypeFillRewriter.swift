@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftSyntax
-import Cursor
+import SKClient
 
 extension TypeAnnotationSyntax {
     init(_ type: TypeSyntax) {
@@ -19,8 +19,8 @@ extension TypeAnnotationSyntax {
 }
 
 final class TypeFillRewriter: SyntaxRewriter {
-    let cursor: Cursor
-    init(_ cursor: Cursor) {
+    let cursor: SKClient
+    init(_ cursor: SKClient) {
         self.cursor = cursor
     }
     

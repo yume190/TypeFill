@@ -1,6 +1,6 @@
 //
-//  Cursor.swift
-//  TypeFillKit
+//  SKClient.swift
+//  SKClient
 //
 //  Created by Yume on 2021/2/5.
 //
@@ -10,12 +10,14 @@ import SwiftSyntax
 import SwiftSyntaxParser
 import SourceKittenFramework
 
-public struct Cursor {
+public struct SKClient {
+    /// file path or temp path.
     public let path: String
+    /// snapshot code by ``path``.
+    public let code: String
     public let arguments: [String]
     public let sourceFile: SourceFileSyntax
     public let converter: SourceLocationConverter
-    
     
     public init(path: String, sdk: SDK = .macosx) throws {
         let arguments: [String] = sdk.pathArgs + [path]
@@ -23,10 +25,26 @@ public struct Cursor {
     }
     
     public init(path: String, arguments: [String]) throws {
+        let code = try String(contentsOfFile: path, encoding: .utf8)
+        try self.init(path: path, code: code, arguments: arguments)
+    }
+    
+    public init(code: String, sdk: SDK = .macosx) throws {
+        let path = "code: /temp.swift"
+        let arguments: [String] = sdk.pathArgs + [path]
+        try self.init(path: path, code: code, arguments: arguments)
+    }
+
+    public init(code: String, arguments: [String]) throws {
+        let path = "code: /temp.swift"
+        try self.init(path: path, code: code, arguments: arguments)
+    }
+    
+    private init(path: String, code: String, arguments: [String]) throws {
         self.path = path
+        self.code = code
         self.arguments = arguments
-        let url: URL = URL(fileURLWithPath: path)
-        self.sourceFile = try SyntaxParser.parse(url)
+        self.sourceFile = try SyntaxParser.parse(source: code)
         self.converter = SourceLocationConverter(file: path, tree: sourceFile)
     }
     
@@ -52,12 +70,25 @@ public struct Cursor {
 }
 
 // MARK: SourceKit Command
-extension Cursor {
-    @discardableResult
+extension SKClient {
     public func cursorInfo(_ offset: Int) throws -> SourceKitResponse {
-        let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: path, offset: ByteCount(offset), arguments: arguments).send()
+        let raw: [String : SourceKitRepresentable] = try Request.customRequest(request: [
+            "key.request": UID("source.request.cursorinfo"),
+            "key.name": path,
+            "key.sourcefile": path,
+            "key.sourcetext": code,
+            "key.offset": Int64(offset),
+            "key.compilerargs": arguments
+
+        ]).send()
         return SourceKitResponse(raw)
     }
+    
+//    @discardableResult
+//    public func cursorInfo(_ offset: Int) throws -> SourceKitResponse {
+//        let raw: [String : SourceKitRepresentable] = try Request.cursorInfo(file: path, offset: ByteCount(offset), arguments: arguments).send()
+//        return SourceKitResponse(raw)
+//    }
     
     @discardableResult
     public func index() throws -> SourceKitResponse {
@@ -66,17 +97,28 @@ extension Cursor {
     }
     
     @discardableResult
-    public func editorOpen() throws -> SourceKitResponse{
-        let raw: [String : SourceKitRepresentable] = try Request.editorOpen(file: File(path: path)!).send()
+    public func editorOpen() throws -> SourceKitResponse {
+        let raw: [String : SourceKitRepresentable] = try Request.customRequest(request: [
+            "key.request": UID("source.request.editor.open"),
+            "key.name": path,
+            "key.sourcetext": code,
+            "keys.compilerargs": arguments
+        ]).send()
         return SourceKitResponse(raw)
     }
+    
+//    public func editorOpen() throws -> SourceKitResponse{
+//        let raw: [String : SourceKitRepresentable] = try Request.editorOpen(file: File(path: path)!).send()
+//        return SourceKitResponse(raw)
+//    }
 
     @discardableResult
     public func editorClose() throws -> SourceKitResponse {
         let raw: [String : SourceKitRepresentable] = try Request.customRequest(request: [
             "key.request": UID("source.request.editor.close"),
             "key.name": path,
-            "key.sourcefile": path
+//            "key.sourcefile": path,
+//            "keys.compilerargs": arguments
         ]).send()
         return SourceKitResponse(raw)
     }

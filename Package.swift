@@ -72,7 +72,7 @@ let package = Package(
         .executable(name: "derivedPath", targets: ["DerivedPath"]),
         
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
-        .library(name: "Cursor", targets: ["Cursor"]),
+        .library(name: "SKClient", targets: ["SKClient"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -95,7 +95,7 @@ let package = Package(
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 "TypeFillKit",
-                "Cursor",
+                "SKClient",
             ]
         ),
 
@@ -112,7 +112,7 @@ let package = Package(
 //                .product(name: "ArgumentParser", package: "swift-argument-parser"),
 //                .product(name: "SourceKittenFramework", package: "SourceKitten"),
 //                "SwiftLeakCheck",
-//                "Cursor",
+//                "SKClient",
 //                "Derived",
 //                "LeakDetectExtension",
 //            ]
@@ -125,7 +125,7 @@ let package = Package(
                 swiftSyntax,
                 "Rainbow",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
-                "Cursor",
+                "SKClient",
             ]
         ),
         
@@ -135,7 +135,7 @@ let package = Package(
 //                "Rainbow",
 //                "_SwiftSyntax",
 //                "_SwiftSyntaxParser",
-//                "Cursor",
+//                "SKClient",
 //                "LeakDetectExtension",
 //            ]
 //        ),
@@ -146,7 +146,7 @@ let package = Package(
 //                "Rainbow",
 //                "_SwiftSyntax",
 //                "_SwiftSyntaxParser",
-//                "Cursor",
+//                "SKClient",
 //            ]
 //        ),
         
@@ -158,7 +158,7 @@ let package = Package(
             ]),
         
         .target(
-            name: "Cursor",
+            name: "SKClient",
             dependencies: [
                 swiftSyntax,
                 swiftSyntaxParser,
@@ -174,7 +174,7 @@ let package = Package(
             dependencies: [
                 swiftSyntax,
                 "TypeFillKit",
-                "Cursor",
+                "SKClient",
             ],
             resources: [
                 .copy("Resource")
@@ -187,7 +187,7 @@ let package = Package(
 //                "_SwiftSyntax",
 //                "LeakDetectExtension",
 //                "SwiftLeakCheck",
-//                "Cursor",
+//                "SKClient",
 //            ],
 //            resources: [
 //                .copy("Resource")
@@ -195,9 +195,9 @@ let package = Package(
 //        ),
         
         .testTarget(
-            name: "CursorTests",
+            name: "SKClientTests",
             dependencies: [
-                "Cursor",
+                "SKClient",
             ],
             resources: [
                 .copy("Resource")
