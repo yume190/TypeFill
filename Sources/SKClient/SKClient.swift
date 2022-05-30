@@ -29,15 +29,14 @@ public struct SKClient {
         try self.init(path: path, code: code, arguments: arguments)
     }
     
+    private static let codePath = "code: /temp.swift"
     public init(code: String, sdk: SDK = .macosx) throws {
-        let path = "code: /temp.swift"
-        let arguments: [String] = sdk.pathArgs + [path]
-        try self.init(path: path, code: code, arguments: arguments)
+        let arguments: [String] = sdk.pathArgs
+        try self.init(path: Self.codePath, code: code, arguments: arguments + [Self.codePath])
     }
 
     public init(code: String, arguments: [String]) throws {
-        let path = "code: /temp.swift"
-        try self.init(path: path, code: code, arguments: arguments)
+        try self.init(path: Self.codePath, code: code, arguments: arguments + [Self.codePath])
     }
     
     private init(path: String, code: String, arguments: [String]) throws {
