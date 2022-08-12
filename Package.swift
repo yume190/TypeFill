@@ -55,7 +55,7 @@ let swiftSyntax: Target.Dependency = isLibrary ?
 let swiftSyntaxParser: Target.Dependency = isLibrary ?
     .product(name: "SwiftSyntaxParser", package: "SwiftSyntax") : "_SwiftSyntaxParser"
 
-
+//https://github.com/apple/indexstore-db/tree/
 //let appleDependencies: [Package.Dependency] = [
 //    // .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch(branch)),
 //    .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch(branch)),
@@ -64,11 +64,10 @@ let swiftSyntaxParser: Target.Dependency = isLibrary ?
 let package = Package(
     name: "TypeFill",
     platforms: [
-        .macOS(SupportedPlatform.MacOSVersion.v10_12)
+        .macOS(SupportedPlatform.MacOSVersion.v12)
     ],
     products: [
         .executable(name: "typefill", targets: ["TypeFill"]),
-//        .executable(name: "leakDetect", targets: ["LeakDetect"]),
         .executable(name: "derivedPath", targets: ["DerivedPath"]),
         
         .library(name: "TypeFillKit", targets: ["TypeFillKit"]),
@@ -77,8 +76,9 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50600.1")),
+//        .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", revision: "swift-5.6.1-RELEASE"),
         
-        .package(url: "https://github.com/jpsim/SourceKitten", from: "0.32.0"),
+        .package(url: "https://github.com/jpsim/SourceKitten", from: "0.33.0"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.1.0"),
         
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift", from: "1.5.0"),
@@ -106,18 +106,6 @@ let package = Package(
             ]
         ),
         
-//        .target(
-//            name: "LeakDetect",
-//            dependencies: [
-//                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-//                .product(name: "SourceKittenFramework", package: "SourceKitten"),
-//                "SwiftLeakCheck",
-//                "SKClient",
-//                "Derived",
-//                "LeakDetectExtension",
-//            ]
-//        ),
-        
         // MARK: Frameworks
         .target(
             name: "TypeFillKit",
@@ -128,27 +116,6 @@ let package = Package(
                 "SKClient",
             ]
         ),
-        
-//        .target(
-//            name: "SwiftLeakCheck",
-//            dependencies: [
-//                "Rainbow",
-//                "_SwiftSyntax",
-//                "_SwiftSyntaxParser",
-//                "SKClient",
-//                "LeakDetectExtension",
-//            ]
-//        ),
-        
-//        .target(
-//            name: "LeakDetectExtension",
-//            dependencies: [
-//                "Rainbow",
-//                "_SwiftSyntax",
-//                "_SwiftSyntaxParser",
-//                "SKClient",
-//            ]
-//        ),
         
         // MARK: Common Frameworks
         .target(
@@ -162,6 +129,7 @@ let package = Package(
             dependencies: [
                 swiftSyntax,
                 swiftSyntaxParser,
+                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 "Derived",
@@ -180,19 +148,6 @@ let package = Package(
                 .copy("Resource")
             ]
         ),
-        
-//        .testTarget(
-//            name: "LeakDetectTests",
-//            dependencies: [
-//                "_SwiftSyntax",
-//                "LeakDetectExtension",
-//                "SwiftLeakCheck",
-//                "SKClient",
-//            ],
-//            resources: [
-//                .copy("Resource")
-//            ]
-//        ),
         
         .testTarget(
             name: "SKClientTests",
