@@ -129,7 +129,7 @@ let package = Package(
             dependencies: [
                 swiftSyntax,
                 swiftSyntaxParser,
-                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
+//                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
                 "Derived",

@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "IndexStoreDB",
-        "repositoryURL": "https://github.com/apple/indexstore-db.git",
-        "state": {
-          "branch": "swift-5.6.1-RELEASE",
-          "revision": "47aa228fa4d47ab90e8a3b8d9468d2ca99434463",
-          "version": null
-        }
-      },
-      {
         "package": "Rainbow",
         "repositoryURL": "https://github.com/onevcat/Rainbow",
         "state": {
