@@ -23,25 +23,16 @@ concurrency:
 
 jobs:
   build:
-
-    # https://github.com/actions/virtual-environments
-    # https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md
-    # 13.1    5.5.1
-    # 13.0    5.5
-    # 12.5.1  5.4.2
-    # 12.4    5.3.2
-    # 11.7    5.2.4
-    runs-on: macos-12
+    # https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md
+    runs-on: macos-latest
 
     strategy:
       matrix:
         xcode: 
-        - "13.4"
-        - "13.3.1"
-        - "13.2.1"
+        - "14.1"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Xcode Select ${{ matrix.xcode }}
       # You may pin to the exact commit or the version.
