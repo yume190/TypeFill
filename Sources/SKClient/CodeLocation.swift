@@ -32,17 +32,12 @@ public struct CodeLocation: CustomStringConvertible, Equatable {
 }
 
 extension CodeLocation: Reportable {
+    /// /path/to/xxx.swift:line:column: warning: desc
     public var reportXCode: String {
-        if let column = location.column {
-            return "col: \(column)"
-        }
-        return ""
+        return "\(path):\(location): warning: \(syntax?.withoutTrivia().description ?? "")"
     }
     
-    public var reportXCodeLocation: SourceLocation? {
-        return location
-    }
-    
+    /// /path/to/xxx.swift:line:column desc
     public var reportVSCode: String {
         return self.description.red
     }

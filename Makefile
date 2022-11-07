@@ -36,7 +36,6 @@ release:
 .PHONY: install
 install: release
 	@cp .build/release/typefill /usr/local/bin
-	@cp .build/release/leakDetect /usr/local/bin
 
 .PHONY: clear
 clear: 

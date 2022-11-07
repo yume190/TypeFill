@@ -7,11 +7,9 @@
 
 import Foundation
 import SwiftSyntax
-import SwiftSyntaxParser
 
 public protocol XCodeReportable {
     var reportXCode: String {get}
-    var reportXCodeLocation: SourceLocation? {get}
 }
 
 public protocol VSCodeReportable {
@@ -29,10 +27,7 @@ public enum Reporter: String, CaseIterable {
         case .vscode:
             print(reportable.reportVSCode)
         case .xcode:
-            let message: Diagnostic.Message = Diagnostic.Message(.warning, "LeakDetect: find at \(reportable.reportXCode)")
-            let diag = Diagnostic(message: message, location: reportable.reportXCodeLocation, notes: [], highlights: [], fixIts: [])
-            
-            print(diag.debugDescription)
+            print(reportable.reportXCode)
         }
     }
 }

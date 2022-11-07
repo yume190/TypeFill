@@ -4,57 +4,6 @@
 import PackageDescription
 import Foundation
 
-//#if swift(>=5.5)
-//let branch = "release/5.5"
-//#elseif swift(>=5.4)
-//let branch = "release/5.4"
-//#else
-//let branch = "release/5.3"
-//#endif
-
-let isLibrary = true
-
-// from https://github.com/krzysztofzablocki/Sourcery/blob/master/Package.swift
-// Pass `-dead_strip_dylibs` to ignore the dynamic version of `lib_InternalSwiftSyntaxParser`
-// that ships with SwiftSyntax because we want the static version from
-// `StaticInternalSwiftSyntaxParser`.
-let _targets: [Target] = [
-    .target(
-        name: "_SwiftSyntax",
-        dependencies: [
-            .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-            "lib_InternalSwiftSyntaxParser",
-            
-        ],
-        linkerSettings: [
-            .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-        ]
-    ),
-
-    .target(
-        name: "_SwiftSyntaxParser",
-        dependencies: [
-            .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
-            "lib_InternalSwiftSyntaxParser",
-            
-        ],
-        linkerSettings: [
-            .unsafeFlags(["-Xlinker", "-dead_strip_dylibs"])
-        ]
-    ),
-
-    .binaryTarget(
-        name: "lib_InternalSwiftSyntaxParser",
-        url: "https://github.com/keith/StaticInternalSwiftSyntaxParser/releases/download/5.6/lib_InternalSwiftSyntaxParser.xcframework.zip",
-        checksum: "88d748f76ec45880a8250438bd68e5d6ba716c8042f520998a438db87083ae9d"
-    ),
-]
-let targets = isLibrary ?  [] : _targets
-let swiftSyntax: Target.Dependency = isLibrary ?
-    .product(name: "SwiftSyntax", package: "SwiftSyntax") : "_SwiftSyntax"
-let swiftSyntaxParser: Target.Dependency = isLibrary ?
-    .product(name: "SwiftSyntaxParser", package: "SwiftSyntax") : "_SwiftSyntaxParser"
-
 //https://github.com/apple/indexstore-db/tree/
 //let appleDependencies: [Package.Dependency] = [
 //    // .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", .branch(branch)),
@@ -64,7 +13,7 @@ let swiftSyntaxParser: Target.Dependency = isLibrary ?
 let package = Package(
     name: "TypeFill",
     platforms: [
-        .macOS(SupportedPlatform.MacOSVersion.v12)
+        .macOS(.v12)
     ],
     products: [
         .executable(name: "typefill", targets: ["TypeFill"]),
@@ -75,11 +24,11 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50600.1")),
+        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50700.1")),
 //        .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", revision: "swift-5.6.1-RELEASE"),
         
         .package(url: "https://github.com/jpsim/SourceKitten", from: "0.33.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.1.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.1.3"),
         
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift", from: "1.5.0"),
         .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.1"),
@@ -110,7 +59,7 @@ let package = Package(
         .target(
             name: "TypeFillKit",
             dependencies: [
-                swiftSyntax,
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 "Rainbow",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "SKClient",
@@ -127,8 +76,8 @@ let package = Package(
         .target(
             name: "SKClient",
             dependencies: [
-                swiftSyntax,
-                swiftSyntaxParser,
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
 //                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
@@ -140,7 +89,7 @@ let package = Package(
         .testTarget(
             name: "TypeFillTests",
             dependencies: [
-                swiftSyntax,
+                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
                 "TypeFillKit",
                 "SKClient",
             ],
@@ -158,5 +107,5 @@ let package = Package(
                 .copy("Resource")
             ]
         ),
-    ] + targets
+    ]
 )

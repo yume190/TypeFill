@@ -102,10 +102,11 @@ final class TypeFillRewriter: SyntaxRewriter {
     ///     typeAnnotation
     ///     initializer
     override func visit(_ node: OptionalBindingConditionSyntax) -> Syntax {
-        return .init(
-            node.fill(rewriter: self)
-                .withInitializer(self.visit(node.initializer).as(InitializerClauseSyntax.self))
-        )
+        let newNode = node.fill(rewriter: self)
+        guard let initializer: InitializerClauseSyntax = node.initializer else {
+            return .init(newNode)
+        }
+        return .init(newNode.withInitializer(self.visit(initializer).as(InitializerClauseSyntax.self)))
     }
     
     /// PatternBindingSyntax
