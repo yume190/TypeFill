@@ -24,7 +24,7 @@ concurrency:
 jobs:
   build:
     # https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md
-    runs-on: macos-latest
+    runs-on: macos-12
 
     strategy:
       matrix:
