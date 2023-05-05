@@ -35,7 +35,7 @@ public struct Rewrite {
     }
     
     public func dump() -> String {
-        let rewrite: Syntax = TypeFillRewriter(cursor).visit(cursor.sourceFile)
+        let rewrite = TypeFillRewriter(cursor).visit(cursor.sourceFile)
         
         var result: String = ""
         rewrite.write(to: &result)

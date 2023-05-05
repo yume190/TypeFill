@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftSyntax
-import SwiftSyntaxParser
+import SwiftParser
 import SourceKittenFramework
 
 public struct SKClient {
@@ -26,24 +26,24 @@ public struct SKClient {
     
     public init(path: String, arguments: [String]) throws {
         let code = try String(contentsOfFile: path, encoding: .utf8)
-        try self.init(path: path, code: code, arguments: arguments)
+        self.init(path: path, code: code, arguments: arguments)
     }
     
     private static let codePath = "code: /temp.swift"
-    public init(code: String, sdk: SDK = .macosx) throws {
+    public init(code: String, sdk: SDK = .macosx) {
         let arguments: [String] = sdk.pathArgs
-        try self.init(path: Self.codePath, code: code, arguments: arguments + [Self.codePath])
+        self.init(path: Self.codePath, code: code, arguments: arguments + [Self.codePath])
     }
 
-    public init(code: String, arguments: [String]) throws {
-        try self.init(path: Self.codePath, code: code, arguments: arguments + [Self.codePath])
+    public init(code: String, arguments: [String]) {
+        self.init(path: Self.codePath, code: code, arguments: arguments + [Self.codePath])
     }
     
-    private init(path: String, code: String, arguments: [String]) throws {
+    public init(path: String, code: String, arguments: [String]) {
         self.path = path
         self.code = code
         self.arguments = arguments
-        self.sourceFile = try SyntaxParser.parse(source: code)
+        self.sourceFile = Parser.parse(source: code)
         self.converter = SourceLocationConverter(file: path, tree: sourceFile)
     }
     

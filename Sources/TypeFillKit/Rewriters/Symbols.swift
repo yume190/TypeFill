@@ -10,21 +10,21 @@ import SwiftSyntax
 enum Symbols {
     /// `: `
     static var colon: TokenSyntax {
-        return SyntaxFactory.makeColonToken().withTrailingTrivia(.spaces(1))
+        return TokenSyntax.colonToken(leadingTrivia: .zero, trailingTrivia: .space)
     }
     
     /// `, `
     static var comma: TokenSyntax {
-        return SyntaxFactory.makeCommaToken().withTrailingTrivia(.spaces(1))
+        return TokenSyntax.commaToken(leadingTrivia: .zero, trailingTrivia: .space)
     }
     
     /// `(`
     static var leftParen: TokenSyntax {
-        return SyntaxFactory.makeLeftParenToken()
+        return TokenSyntax.leftParenToken()
     }
     
     /// `)`
     static var rightParen: TokenSyntax {
-        return SyntaxFactory.makeRightParenToken()
+        return TokenSyntax.rightParenToken()
     }
 }

@@ -7,14 +7,15 @@
 
 import Foundation
 import SwiftSyntax
+import SwiftSyntaxBuilder
 import SKClient
 
 extension TypeAnnotationSyntax {
     init(_ type: TypeSyntax) {
-        self = TypeAnnotationSyntax { (builder: inout TypeAnnotationSyntaxBuilder) in
-            builder.useColon(Symbols.colon)
-            builder.useType(type)
-        }.withTrailingTrivia(.spaces(1))
+        self = TypeAnnotationSyntax(
+            colon: Symbols.colon,
+            type: type,
+            trailingTrivia: .space)
     }
 }
 
@@ -32,43 +33,58 @@ final class TypeFillRewriter: SyntaxRewriter {
     }
     
     // MARK: closure
+    /// ClosureSignatureSyntax
+    ///     input ClosureParamListSyntax / ParameterClauseSyntax
+    override func visit(_ node: ClosureSignatureSyntax) -> ClosureSignatureSyntax {
+        if let syntax = node.input?.as(ClosureParamListSyntax.self) {
+            if let newSyntax = replace(syntax) {
+                return node.withInput(.init(newSyntax).withTrailingTrivia(.space))
+            }
+        }
+        
+        if let syntax = node.input?.as(ParameterClauseSyntax.self) {
+            let newSyntax = replace(syntax)
+            return node.withInput(.init(newSyntax))
+        }
+        return node
+    }
     
     /// ClosureParamList
     ///     ClosureParam i
-    override func visit(_ node: ClosureParamListSyntax) -> Syntax {
+    private func replace(_ node: ClosureParamListSyntax) -> ParameterClauseSyntax? {
         // MARK: skip inout
-        guard let arg: ClosureParamSyntax = node.first else {return .init(node)}
+        guard let arg: ClosureParamSyntax = node.first else {return nil}
         let isHaveInout: Bool = (try? self.cursor(arg).isHaveInout) ?? false
-        guard !isHaveInout else {return .init(node)}
-        
+        guard !isHaveInout else {return nil}
+
         let types: [TypeSyntax?] = node.map { (param: ClosureParamListSyntax.Element) -> TypeSyntax? in
             guard let response: SourceKitResponse = try? cursor(param) else { return nil }
             return response.typeSyntax
         }
-        
+
         let params: [FunctionParameterSyntax] = zip(types, node).enumerated().map { (index: Int, item: (TypeSyntax?, ClosureParamListSyntax.Element)) in
-            let paramNode: ClosureParamListSyntax.Element = item.1
-            let newParamNode: FunctionParameterSyntax = FunctionParameterSyntax { builder in
-                builder.useFirstName(paramNode.name.withTrailingTrivia(.zero))
-                
-                if let type: TypeSyntax = item.0 {
-                    builder.useColon(Symbols.colon)
-                    builder.useType(type)
-                }
-                
-                if index + 1 != node.count {
-                    builder.useTrailingComma(Symbols.comma)
-                }
+            let paramNode = item.1
+            var newParamNode = FunctionParameterSyntax(
+                firstName: paramNode.name.withTrailingTrivia(.zero)
+            )
+            
+            if let type: TypeSyntax = item.0 {
+                newParamNode = newParamNode
+                    .withColon(Symbols.colon)
+                    .withType(type)
             }
+            if index + 1 != node.count {
+                newParamNode = newParamNode.withTrailingComma(Symbols.comma)
+            }
+            
             if let _ = item.0 {
                 Logger.add(event: .implicitType(origin: found(syntax: paramNode), fixed: newParamNode.description))
             }
             return newParamNode
         }
         
-        let clause: ParameterClauseSyntax = ParameterClauseSyntax.build { params }
-        
-        return .init(clause)
+        let result = ParameterClauseSyntax(parameterList: .init(params))
+        return result
     }
     
     /// ParameterClause
@@ -77,7 +93,7 @@ final class TypeFillRewriter: SyntaxRewriter {
     ///         FunctionParameter: str,
     ///         FunctionParameter: a: String
     ///     )
-    override func visit(_ node: ParameterClauseSyntax) -> Syntax {
+    private func replace(_ node: ParameterClauseSyntax) -> ParameterClauseSyntax {
         let newParams: [FunctionParameterSyntax] = node.parameterList.map { (parameter: FunctionParameterListSyntax.Element) -> FunctionParameterSyntax in
             guard parameter.colon == nil, parameter.type == nil else { return parameter }
             guard let firstName: TokenSyntax = parameter.firstName else { return parameter }
@@ -90,8 +106,8 @@ final class TypeFillRewriter: SyntaxRewriter {
             return newNode
         }
         
-        let clause: ParameterClauseSyntax = node.withParameterList(SyntaxFactory.makeFunctionParameterList(newParams))
-        return .init(clause)
+        return node
+            .withParameterList(FunctionParameterListSyntax(newParams))
     }
     
     // MARK: Binding Syntax
@@ -101,12 +117,13 @@ final class TypeFillRewriter: SyntaxRewriter {
     ///     pattern
     ///     typeAnnotation
     ///     initializer
-    override func visit(_ node: OptionalBindingConditionSyntax) -> Syntax {
+    override func visit(_ node: OptionalBindingConditionSyntax) -> OptionalBindingConditionSyntax {
         let newNode = node.fill(rewriter: self)
         guard let initializer: InitializerClauseSyntax = node.initializer else {
-            return .init(newNode)
+            return newNode
         }
-        return .init(newNode.withInitializer(self.visit(initializer).as(InitializerClauseSyntax.self)))
+        return newNode
+            .withInitializer(self.visit(initializer).as(InitializerClauseSyntax.self))
     }
     
     /// PatternBindingSyntax
@@ -115,11 +132,12 @@ final class TypeFillRewriter: SyntaxRewriter {
     ///     initializer
     ///     accessor
     ///     trailingComma
-    override func visit(_ node: PatternBindingSyntax) -> Syntax {
+    override func visit(_ node: PatternBindingSyntax) -> PatternBindingSyntax {
         let newNode: PatternBindingSyntax = node.fill(rewriter: self)
         guard let initializer: InitializerClauseSyntax = node.initializer else {
-            return .init(newNode)
+            return newNode
         }
-        return .init(newNode.withInitializer(self.visit(initializer).as(InitializerClauseSyntax.self)))
+        return newNode
+            .withInitializer(self.visit(initializer).as(InitializerClauseSyntax.self))
     }
 }

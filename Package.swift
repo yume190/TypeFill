@@ -24,13 +24,16 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .exact("0.50700.1")),
-//        .package(name: "IndexStoreDB", url: "https://github.com/apple/indexstore-db.git", revision: "swift-5.6.1-RELEASE"),
+        .package(
+            name: "SwiftSyntax",
+            url: "https://github.com/apple/swift-syntax.git",
+            revision: "508.0.0"
+        ),
         
-        .package(url: "https://github.com/jpsim/SourceKitten", from: "0.33.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.1.3"),
+        .package(url: "https://github.com/jpsim/SourceKitten", from: "0.34.1"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.2"),
         
-        .package(url: "https://github.com/krzyzanowskim/CryptoSwift", from: "1.5.0"),
+        .package(url: "https://github.com/krzyzanowskim/CryptoSwift", from: "1.7.1"),
         .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.1"),
     ],
     targets: [
@@ -60,6 +63,8 @@ let package = Package(
             name: "TypeFillKit",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntaxBuilder", package: "SwiftSyntax"),
+                
                 "Rainbow",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "SKClient",
@@ -77,7 +82,8 @@ let package = Package(
             name: "SKClient",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
+                .product(name: "SwiftParser", package: "SwiftSyntax"),
+//                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
 //                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),

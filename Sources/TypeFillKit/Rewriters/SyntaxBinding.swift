@@ -6,6 +6,7 @@
 //
 
 import SwiftSyntax
+import SwiftSyntaxBuilder
 
 protocol SyntaxBinding: SyntaxProtocol {
     var typeAnnotation: TypeAnnotationSyntax? {get}
@@ -49,17 +50,15 @@ extension SyntaxBinding {
         guard types.count == pattern.elements.count else { return self }
         
         let tupleTypeElements: [TupleTypeElementSyntax] = types.enumerated().map { (index: Int, type: TypeSyntax) -> TupleTypeElementSyntax in
-            return TupleTypeElementSyntax { builder in
-                builder.useType(type)
-                if (index + 1) != types.count {
-                    builder.useTrailingComma(Symbols.comma)
-                }
+            var syntax = TupleTypeElementSyntax(type: type)
+            if (index + 1) != types.count {
+                syntax = syntax.withTrailingComma(Symbols.comma)
             }
+            return syntax
         }
         
-        let type: TupleTypeSyntax = TupleTypeSyntax.build {
-            tupleTypeElements
-        }
+        let type: TupleTypeSyntax = TupleTypeSyntax(elements: TupleTypeElementListSyntax(tupleTypeElements))
+
         let typeAnnotation: TypeAnnotationSyntax = TypeAnnotationSyntax(.init(type))
         return self.replace(typeAnnotation: typeAnnotation, rewriter: rewriter)
     }
