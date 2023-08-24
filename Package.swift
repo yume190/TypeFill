@@ -26,7 +26,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(
             url: "https://github.com/apple/swift-syntax",
-            revision: "508.0.0"
+            from: "508.0.0"
         ),
         
         .package(url: "https://github.com/jpsim/SourceKitten", from: "0.34.1"),

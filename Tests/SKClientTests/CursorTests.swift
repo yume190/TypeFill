@@ -16,7 +16,7 @@ final class CursorTests: XCTestCase {
     
     @inline(__always)
     private final func prepare(code: String, action: (SKClient) throws -> ()) throws {
-        let client = try SKClient(code: code)
+        let client = SKClient(code: code)
         _ = try client.editorOpen()
         try action(client)
         _ = try client.editorClose()

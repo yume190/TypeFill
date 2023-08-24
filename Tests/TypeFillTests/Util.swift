@@ -25,7 +25,7 @@ struct Config: Configable {
 
 @inline(__always)
 func client(code: String, action: (SKClient) throws -> ()) throws {
-    let client = try SKClient(code: code)
+    let client = SKClient(code: code)
     _ = try client.editorOpen()
     try action(client)
     _ = try client.editorClose()
