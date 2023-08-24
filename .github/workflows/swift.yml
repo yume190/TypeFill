@@ -35,14 +35,14 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Xcode Select ${{ matrix.xcode }}
-      # You may pin to the exact commit or the version.
-      # uses: devbotsxyz/xcode-select@05f94658217eb8575f0aabd3b95e702a47995d21
-      uses: devbotsxyz/xcode-select@v1.1.0
-      with:
-        # Version to use (like '11.7', '12' or simply 'latest')
-        version: ${{ matrix.xcode }} # optional, default is latest
-        # Whether to select a beta release or not. Beta releases may not always be available.
-        beta: false # optional, default is false
+      run: |
+        echo "Available Xcode versions:"
+        ls /Applications | grep Xcode
+        echo "Choosing Xcode_${{ matrix.xcode }}.app"
+        sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+        xcodebuild -version
+        swift --version
+        swift package --version
 
     - name: Get swift version
       run: swift --version # Swift 5.3.3
