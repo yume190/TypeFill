@@ -1,4 +1,4 @@
-// swift-tools-version: 5.5
+// swift-tools-version: 5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -25,8 +25,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(
-            name: "SwiftSyntax",
-            url: "https://github.com/apple/swift-syntax.git",
+            url: "https://github.com/apple/swift-syntax",
             revision: "508.0.0"
         ),
         
@@ -62,8 +61,8 @@ let package = Package(
         .target(
             name: "TypeFillKit",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                .product(name: "SwiftSyntaxBuilder", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxBuilder", package: "swift-syntax"),
                 
                 "Rainbow",
                 // .product(name: "IndexStoreDB", package: "IndexStoreDB"),
@@ -79,11 +78,14 @@ let package = Package(
             ]),
         
         .target(
+
             name: "SKClient",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
-                .product(name: "SwiftParser", package: "SwiftSyntax"),
-//                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
+//                .product(name: "SwiftDiagnostics", package: "swift-syntax"),
+//                .product(name: "SwiftParserDiagnostics", package: "swift-syntax"),
+//                .product(name: "SwiftSyntaxParser", package: "swift-syntax"),
 //                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
                 "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
@@ -95,7 +97,7 @@ let package = Package(
         .testTarget(
             name: "TypeFillTests",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "TypeFillKit",
                 "SKClient",
             ],
