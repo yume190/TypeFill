@@ -21,7 +21,7 @@ public struct CodeLocation: CustomStringConvertible, Equatable {
     }
     
     public var description: String {
-        return "\(path):\(location) \(syntax?.withoutTrivia().description ?? "")"
+        return "\(path):\(location)"
     }
     
     public static func == (lhs: CodeLocation, rhs: CodeLocation) -> Bool {
@@ -31,10 +31,10 @@ public struct CodeLocation: CustomStringConvertible, Equatable {
     }
 }
 
-extension CodeLocation: Reportable {
+extension CodeLocation {
     /// /path/to/xxx.swift:line:column: warning: desc
     public var reportXCode: String {
-        return "\(path):\(location): warning: \(syntax?.withoutTrivia().description ?? "")"
+        return "\(path):\(location): warning:"
     }
     
     /// /path/to/xxx.swift:line:column desc
