@@ -7,14 +7,14 @@
 
 import Foundation
 import SwiftSyntax
-import Danger
 
-public enum Reporter: String, CaseIterable {
+
+public enum Reporter {
+    public typealias R = (CodeLocation, String?) -> Void
+    
     case xcode
     case vscode
-    case danger
-    
-    private static let _danger = Danger()
+    case custom(R)
     
     public func report(_ info: CodeLocation, reason: String? = nil) {
         let defaultReason = info.syntax?.withoutTrivia().description ?? ""
@@ -24,12 +24,8 @@ public enum Reporter: String, CaseIterable {
             print("\(info.reportVSCode) \(newReason)")
         case .xcode:
             print("\(info.reportXCode) \(newReason)")
-        case .danger:
-            if let line = info.location.line {
-                Reporter._danger.warn(message: newReason, file: info.path, line: line)
-            } else {
-                Reporter._danger.warn(newReason)
-            }
+        case let .custom(report):
+            report(info, reason)
         }
     }
 }
