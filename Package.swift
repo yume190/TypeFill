@@ -26,7 +26,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(
             url: "https://github.com/apple/swift-syntax",
-            from: "508.0.0"
+            from: "509.1.0"
         ),
         
         .package(url: "https://github.com/jpsim/SourceKitten", from: "0.34.1"),
@@ -82,12 +82,8 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
-//                .product(name: "SwiftDiagnostics", package: "swift-syntax"),
-//                .product(name: "SwiftParserDiagnostics", package: "swift-syntax"),
-//                .product(name: "SwiftSyntaxParser", package: "swift-syntax"),
-//                .product(name: "IndexStoreDB", package: "IndexStoreDB"),
-                "Rainbow",
                 .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                "Rainbow",
                 "Derived",
             ]
         ),

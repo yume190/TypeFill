@@ -10,12 +10,12 @@ import SwiftSyntax
 enum Symbols {
     /// `: `
     static var colon: TokenSyntax {
-        return TokenSyntax.colonToken(leadingTrivia: .zero, trailingTrivia: .space)
+        return TokenSyntax.colonToken(leadingTrivia: .spaces(0), trailingTrivia: .space)
     }
     
     /// `, `
     static var comma: TokenSyntax {
-        return TokenSyntax.commaToken(leadingTrivia: .zero, trailingTrivia: .space)
+        return TokenSyntax.commaToken(leadingTrivia: .spaces(0), trailingTrivia: .space)
     }
     
     /// `(`

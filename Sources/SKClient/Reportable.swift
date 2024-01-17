@@ -8,7 +8,6 @@
 import Foundation
 import SwiftSyntax
 
-
 public enum Reporter {
     public typealias R = (CodeLocation, String?) -> Void
     
@@ -17,7 +16,7 @@ public enum Reporter {
     case custom(R)
     
     public func report(_ info: CodeLocation, reason: String? = nil) {
-        let defaultReason = info.syntax?.withoutTrivia().description ?? ""
+      let defaultReason = info.syntax?.withoutTrivia().description ?? ""
         let newReason = reason ?? defaultReason
         switch self {
         case .vscode:
@@ -27,5 +26,13 @@ public enum Reporter {
         case let .custom(report):
             report(info, reason)
         }
+    }
+}
+
+extension SyntaxProtocol {
+    func withoutTrivia() -> Self {
+        return self
+            .with(\.leadingTrivia, .spaces(0))
+            .with(\.trailingTrivia, .spaces(0))
     }
 }

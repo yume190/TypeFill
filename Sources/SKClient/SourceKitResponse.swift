@@ -48,7 +48,7 @@ public struct SourceKitResponse {
         guard let type = self.decl else { return nil }
         guard type != "<<error type>>" else { return nil }
         
-        return SyntaxFactory.makeTypeIdentifier(type)
+        return TypeSyntax(IdentifierTypeSyntax(name: TokenSyntax.identifier(type)))
     }
     
     public var fully_annotated_decl: String? {
